@@ -32,7 +32,7 @@ namespace pEp {
         BlobList::Iterator BlobList::Iterator::operator++ (int)
         {
             Iterator second = *this;
-            (*this)++;
+            ++(*this);
             return second;
         }
 
