@@ -37,7 +37,6 @@ namespace pEp {
                         bool operator== (const Iterator& second) const { return p == second.p; }
                         bool operator!= (const Iterator& second) const { return p != second.p; }
                         const Blob& operator* ();
-                        operator bloblist_t *() { return p; }
                         Iterator& operator++ ();
                         Iterator operator++ (int);
                 };
@@ -53,6 +52,8 @@ namespace pEp {
                 void push_back(const Blob& val);
                 size_t size() const { return _size; }
                 bool empty() const { return _size == 0; }
+
+                operator ::bloblist_t *() { return bl.get(); }
 
             private:
                 static void release_value(char *v);
