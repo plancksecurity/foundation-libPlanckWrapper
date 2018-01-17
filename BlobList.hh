@@ -54,6 +54,7 @@ namespace pEp {
                 bool empty() const { return _size == 0; }
 
                 operator ::bloblist_t *() { return bl.get(); }
+                operator const ::bloblist_t *() const { return bl.get(); }
 
             private:
                 static void release_value(char *v);
