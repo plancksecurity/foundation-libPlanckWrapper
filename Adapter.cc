@@ -38,15 +38,13 @@ namespace pEp {
         if (notifyHandshake)
             _notifyHandshake = notifyHandshake;
 
-        PEP_SESSION _session = session();
+        session();
 
         {
             lock_guard<mutex> lock(mtx());
 
-            if (!Adapter::_sync_thread) {
+            if (!Adapter::_sync_thread)
                 Adapter::_sync_thread = new thread(sync_thread, obj);
-                Adapter::_sync_thread->detach();
-            }
         }
     }
 
