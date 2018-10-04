@@ -18,7 +18,7 @@ namespace pEp {
         public:
             Adapter(messageToSend_t messageToSend,
                     notifyHandshake_t notifyHandshake, void *obj = nullptr);
-            virtual ~Adapter() { }
+            ~Adapter() { }
 
             enum session_action {
                 init,
