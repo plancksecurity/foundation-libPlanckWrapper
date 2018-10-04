@@ -6,7 +6,7 @@ include Makefile.conf
 TARGET?=libpEpAdapter.a
 PEPENGINE_IN?=$(HOME)
 
-CXXFLAGS += -I$(HOME)/include -std=c++14
+CXXFLAGS += -I$(HOME)/include -std=c++14 -O0 -g
 
 SOURCE=$(wildcard *.cc)
 OBJECTS=$(subst .cc,.o,$(SOURCE))
