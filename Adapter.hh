@@ -4,6 +4,7 @@
 #pragma once
 
 #include "locked_queue.hh"
+#include <thread>
 #include <pEp/sync_api.h>
 
 namespace pEp {
@@ -12,11 +13,11 @@ namespace pEp {
     class Adapter {
             static messageToSend_t _messageToSend;
             static notifyHandshake_t _notifyHandshake;
+            static std::thread *_sync_thread;
 
         public:
             Adapter(messageToSend_t messageToSend,
-                    notifyHandshake_t notifyHandshake,
-                    bool is_sync_thread = false);
+                    notifyHandshake_t notifyHandshake);
             virtual ~Adapter() { }
 
             enum session_action {
@@ -34,6 +35,7 @@ namespace pEp {
         protected:
             static int _inject_sync_event(SYNC_EVENT ev, void *management);
             static SYNC_EVENT _retrieve_next_sync_event(void *management, time_t threshold);
+            static void sync_thread();
 
         private:
             static std::mutex& mtx()
