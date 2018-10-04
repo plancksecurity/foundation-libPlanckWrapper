@@ -1,3 +1,7 @@
+// C++ encapsulation of bloblist_t in pEp engine
+// this file is under GNU GPL 3.0, see LICENSE.txt
+
+
 #include "BlobList.hh"
 
 namespace pEp {

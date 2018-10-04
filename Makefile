@@ -1,3 +1,5 @@
+# this file is under GNU GPL 3.0, see LICENSE.txt
+
 include Makefile.conf
 -include local.conf
 
