@@ -24,7 +24,7 @@ PEP_STATUS notifyHandshake(void *obj, pEp_identity *me, pEp_identity *partner, s
 
 int main()
 {
-    cout << "creating identity for me\n";
+    cout << "updating or creating identity for me\n";
     pEp_identity *me = new_identity("alice@peptest.ch", NULL, "23", "Who the F* is Alice");
     assert(me);
     PEP_STATUS status = myself(Adapter::session(), me);
