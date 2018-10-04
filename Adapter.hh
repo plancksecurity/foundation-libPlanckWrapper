@@ -25,6 +25,10 @@ namespace pEp {
                 release
             };
             static PEP_SESSION session(session_action action = init);
+            static void release_session()
+            {
+                session(release);
+            }
 
             void shutdown();
 
