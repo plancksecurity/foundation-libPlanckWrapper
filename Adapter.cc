@@ -72,9 +72,7 @@ namespace pEp {
                 status = PEP_ILLEGAL_VALUE;
         }
 
-        if (status)
-            throw_status(status);
-
+        throw_status(status);
         return _session;
     }
 
