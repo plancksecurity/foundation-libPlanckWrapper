@@ -84,6 +84,7 @@ namespace pEp {
             delete Adapter::_sync_thread;
             Adapter::_sync_thread = nullptr;
         }
+        session(release);
     }
 
     int Adapter::_inject_sync_event(SYNC_EVENT ev, void *management)
