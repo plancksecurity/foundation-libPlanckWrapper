@@ -17,7 +17,7 @@ namespace pEp {
 
         public:
             Adapter(messageToSend_t messageToSend,
-                    notifyHandshake_t notifyHandshake);
+                    notifyHandshake_t notifyHandshake, void *obj = nullptr);
             virtual ~Adapter() { }
 
             enum session_action {
@@ -35,7 +35,7 @@ namespace pEp {
         protected:
             static int _inject_sync_event(SYNC_EVENT ev, void *management);
             static SYNC_EVENT _retrieve_next_sync_event(void *management, time_t threshold);
-            static void sync_thread();
+            static void sync_thread(void *obj);
 
         private:
             static std::mutex& mtx()

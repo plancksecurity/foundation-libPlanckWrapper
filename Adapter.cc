@@ -30,7 +30,7 @@ namespace pEp {
     std::thread *_sync_thread = nullptr;
 
     Adapter::Adapter(messageToSend_t messageToSend,
-            notifyHandshake_t notifyHandshake)
+            notifyHandshake_t notifyHandshake, void *obj)
     {
         if (messageToSend)
             _messageToSend = messageToSend;
@@ -44,7 +44,7 @@ namespace pEp {
             lock_guard<mutex> lock(mtx());
 
             if (!_sync_thread)
-                _sync_thread = new thread();
+                _sync_thread = new thread(sync_thread, obj);
         }
     }
 
@@ -118,16 +118,17 @@ namespace pEp {
         return queue().pop_front();
     }
 
-    void Adapter::sync_thread()
+    void Adapter::sync_thread(void *obj)
     {
         PEP_STATUS status = register_sync_callbacks(session(), nullptr,
                 _notifyHandshake, _retrieve_next_sync_event);
         throw_status(status);
 
-        do_sync_protocol(session(), nullptr);
+        do_sync_protocol(session(), obj);
         unregister_sync_callbacks(session());
 
         session(release);
+        _sync_thread = nullptr;
     }
 }
 
