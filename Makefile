@@ -18,7 +18,7 @@ all: $(TARGET)
 $(TARGET): $(WITHOUT_TESTS)
 	ar -rc $@ $^
 
-.PHONY: clean test install
+.PHONY: clean test install uninstall
 
 clean:
 	rm -f $(TARGET) $(OBJECTS) *.a test_adapter
@@ -29,7 +29,11 @@ test: test_adapter
 test_adapter: test_adapter.o $(TARGET)
 	$(CXX) -o $@ -L$(PEP)/lib -lpEpEngine -L. -lpEpAdapter $<
 
-install:
+install: $(TARGET)
 	-mkdir -p $(PEP)/include
 	cp $(HEADERS) $(PEP)/include
+	cp $(TARGET) $(PEP)/lib
 
+uninstall:
+	cd $(PEP)/include && rm -f $(HEADERS)
+	cd $(PEP)/lib && rm -f $(TARGET)
