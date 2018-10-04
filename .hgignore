@@ -4,5 +4,6 @@ syntax: glob
 *.swp
 ws
 test_adapter
-.??*
+.gnupg
+.pEp*
 lib
