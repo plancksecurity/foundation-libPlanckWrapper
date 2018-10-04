@@ -28,6 +28,6 @@ clean:
 test: test_adapter
 	./test_adapter
 
-test_adapter: $(OBJECTS)
-	$(CXX) -o $@ -L$(HOME)/lib -lpEpEngine $(OBJECTS)
+test_adapter: test_adapter.o $(TARGET)
+	$(CXX) -o $@ -L$(HOME)/lib -lpEpEngine -L. -lpEpAdapter $<
 
