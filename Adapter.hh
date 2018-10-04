@@ -30,7 +30,7 @@ namespace pEp {
                 session(release);
             }
 
-            void shutdown();
+            static void shutdown();
 
         protected:
             static int _inject_sync_event(SYNC_EVENT ev, void *management);

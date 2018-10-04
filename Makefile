@@ -10,16 +10,24 @@ CXXFLAGS += -I$(HOME)/include -std=c++14
 
 SOURCE=$(wildcard *.cc)
 OBJECTS=$(subst .cc,.o,$(SOURCE))
+WITHOUT_TESTS=$(patsubst test%.o,,$(OBJECTS))
 
 all: $(TARGET)
 
 %.o: %.cc %.hh
 	$(CXX) $(CXXFLAGS) -c $<
 
-$(TARGET): $(OBJECTS)
+$(TARGET): $(WITHOUT_TESTS)
 	ar -rc $@ $^
 
-.PHONY: clean
+.PHONY: clean test
 
 clean:
-	rm -f $(TARGET) $(OBJECTS)
+	rm -f $(TARGET) $(OBJECTS) *.a test_adapter
+
+test: test_adapter
+	./test_adapter
+
+test_adapter: $(OBJECTS)
+	$(CXX) -o $@ -L$(HOME)/lib -lpEpEngine $(OBJECTS)
+

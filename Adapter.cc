@@ -27,7 +27,7 @@ namespace pEp {
 
     messageToSend_t Adapter::_messageToSend = nullptr;
     notifyHandshake_t Adapter::_notifyHandshake = nullptr;
-    std::thread *_sync_thread = nullptr;
+    std::thread *Adapter::_sync_thread = nullptr;
 
     Adapter::Adapter(messageToSend_t messageToSend,
             notifyHandshake_t notifyHandshake, void *obj)
@@ -43,9 +43,9 @@ namespace pEp {
         {
             lock_guard<mutex> lock(mtx());
 
-            if (!_sync_thread) {
-                _sync_thread = new thread(sync_thread, obj);
-                _sync_thread->detach();
+            if (!Adapter::_sync_thread) {
+                Adapter::_sync_thread = new thread(sync_thread, obj);
+                Adapter::_sync_thread->detach();
             }
         }
     }
@@ -81,9 +81,11 @@ namespace pEp {
     void Adapter::shutdown()
     {
         _inject_sync_event(nullptr, nullptr);
-        _sync_thread->join();
-        delete _sync_thread;
-        _sync_thread = nullptr;
+        if (Adapter::_sync_thread) {
+            Adapter::_sync_thread->join();
+            delete Adapter::_sync_thread;
+            Adapter::_sync_thread = nullptr;
+        }
     }
 
     int Adapter::_inject_sync_event(SYNC_EVENT ev, void *management)
