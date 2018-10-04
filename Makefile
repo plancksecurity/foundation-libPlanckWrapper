@@ -19,13 +19,19 @@ all: $(TARGET)
 $(TARGET): $(WITHOUT_TESTS)
 	ar -rc $@ $^
 
-.PHONY: clean test install uninstall
+.PHONY: clean distclean test install uninstall
 
 clean:
-	rm -f $(TARGET) $(OBJECTS) *.a test_adapter
+	rm -f $(TARGET) $(OBJECTS) *.a test_adapter lib
+
+distclean: clean
+	rm -Rf .gnupg .pEp_management*
 
 test: test_adapter
-	./test_adapter
+ifeq ($(HOME),$(PREFIX))
+	-ln -fs $$HOME/lib
+endif
+	HOME=$$(pwd) ./test_adapter
 
 test_adapter: test_adapter.o $(TARGET)
 	$(CXX) -o $@ -L$(PEP)/lib -lpEpEngine -L. -lpEpAdapter $<
