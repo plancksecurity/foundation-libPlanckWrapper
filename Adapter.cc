@@ -78,6 +78,11 @@ namespace pEp {
         return _session;
     }
 
+    void Adapter::shutdown()
+    {
+        _inject_sync_event(nullptr, nullptr);
+    }
+
     int Adapter::_inject_sync_event(SYNC_EVENT ev, void *management)
     {
         if (is_sync_thread(session())) {

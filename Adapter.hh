@@ -24,13 +24,9 @@ namespace pEp {
                 init,
                 release
             };
-
             static PEP_SESSION session(session_action action = init);
-            static ::utility::locked_queue< SYNC_EVENT >& queue()
-            {
-                static ::utility::locked_queue< SYNC_EVENT > q;
-                return q;
-            }
+
+            void shutdown();
 
         protected:
             static int _inject_sync_event(SYNC_EVENT ev, void *management);
@@ -38,6 +34,12 @@ namespace pEp {
             static void sync_thread(void *obj);
 
         private:
+            static ::utility::locked_queue< SYNC_EVENT >& queue()
+            {
+                static ::utility::locked_queue< SYNC_EVENT > q;
+                return q;
+            }
+
             static std::mutex& mtx()
             {
                 static std::mutex m;
