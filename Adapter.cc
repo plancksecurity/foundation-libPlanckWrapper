@@ -43,8 +43,10 @@ namespace pEp {
         {
             lock_guard<mutex> lock(mtx());
 
-            if (!_sync_thread)
+            if (!_sync_thread) {
                 _sync_thread = new thread(sync_thread, obj);
+                _sync_thread->detach();
+            }
         }
     }
 
