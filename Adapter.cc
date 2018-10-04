@@ -81,6 +81,9 @@ namespace pEp {
     void Adapter::shutdown()
     {
         _inject_sync_event(nullptr, nullptr);
+        _sync_thread->join();
+        delete _sync_thread;
+        _sync_thread = nullptr;
     }
 
     int Adapter::_inject_sync_event(SYNC_EVENT ev, void *management)
@@ -133,7 +136,6 @@ namespace pEp {
         unregister_sync_callbacks(session());
 
         session(release);
-        _sync_thread = nullptr;
     }
 }
 
