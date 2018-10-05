@@ -7,8 +7,8 @@
 #include <unistd.h>
 #include <pEp/keymanagement.h>
 
-using namespace pEp;
 using namespace std;
+using namespace pEp::Adapter;
 
 PEP_STATUS messageToSend(struct _message *msg)
 {
@@ -27,15 +27,15 @@ int main()
     cout << "updating or creating identity for me\n";
     pEp_identity *me = new_identity("alice@peptest.ch", NULL, "23", "Who the F* is Alice");
     assert(me);
-    PEP_STATUS status = myself(Adapter::session(), me);
+    PEP_STATUS status = myself(session(), me);
+    free_identity(me);
     throw_status(status);
 
     cout << "starting the adapter including sync\n";
-    Adapter::startup(messageToSend, notifyHandshake);
+    startup(messageToSend, notifyHandshake);
     sleep(3);
-    Adapter::shutdown();
+    shutdown();
 
-    free_identity(me);
     return 0;
 }
 

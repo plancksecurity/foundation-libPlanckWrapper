@@ -10,47 +10,19 @@
 namespace pEp {
     void throw_status(PEP_STATUS status);
 
-    class Adapter {
-            static messageToSend_t _messageToSend;
-            static notifyHandshake_t _notifyHandshake;
-            static std::thread *_sync_thread;
+    namespace Adapter {
+        void throw_status(PEP_STATUS status);
 
-        public:
-            Adapter(messageToSend_t messageToSend,
-                    notifyHandshake_t notifyHandshake, void *obj = nullptr);
+        void startup(messageToSend_t messageToSend,
+                notifyHandshake_t notifyHandshake, void *obj = nullptr);
 
-            static void startup(messageToSend_t messageToSend,
-                    notifyHandshake_t notifyHandshake, void *obj = nullptr);
+        enum session_action {
+            init,
+            release
+        };
+        PEP_SESSION session(session_action action = init);
 
-            enum session_action {
-                init,
-                release
-            };
-            static PEP_SESSION session(session_action action = init);
-            static void release_session()
-            {
-                session(release);
-            }
-
-            static void shutdown();
-
-        protected:
-            static int _inject_sync_event(SYNC_EVENT ev, void *management);
-            static SYNC_EVENT _retrieve_next_sync_event(void *management, time_t threshold);
-            static void sync_thread(void *obj);
-
-        private:
-            static ::utility::locked_queue< SYNC_EVENT >& queue()
-            {
-                static ::utility::locked_queue< SYNC_EVENT > q;
-                return q;
-            }
-
-            static std::mutex& mtx()
-            {
-                static std::mutex m;
-                return m;
-            }
-    };
+        void shutdown();
+    }
 }
 
