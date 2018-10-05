@@ -31,7 +31,7 @@ int main()
     throw_status(status);
 
     cout << "starting the adapter including sync\n";
-    Adapter(messageToSend, notifyHandshake);
+    Adapter::startup(messageToSend, notifyHandshake);
     sleep(3);
     Adapter::shutdown();
 

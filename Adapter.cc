@@ -32,6 +32,12 @@ namespace pEp {
     Adapter::Adapter(messageToSend_t messageToSend,
             notifyHandshake_t notifyHandshake, void *obj)
     {
+        startup(messageToSend, notifyHandshake, obj);
+    }
+
+    void Adapter::startup(messageToSend_t messageToSend,
+            notifyHandshake_t notifyHandshake, void *obj)
+    {
         if (messageToSend)
             _messageToSend = messageToSend;
 

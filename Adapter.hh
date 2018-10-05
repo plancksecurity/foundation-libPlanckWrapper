@@ -19,6 +19,9 @@ namespace pEp {
             Adapter(messageToSend_t messageToSend,
                     notifyHandshake_t notifyHandshake, void *obj = nullptr);
 
+            static void startup(messageToSend_t messageToSend,
+                    notifyHandshake_t notifyHandshake, void *obj = nullptr);
+
             enum session_action {
                 init,
                 release
