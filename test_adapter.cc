@@ -29,7 +29,7 @@ int main()
     assert(me);
     PEP_STATUS status = myself(session(), me);
     free_identity(me);
-    throw_status(status);
+    pEp::throw_status(status);
 
     cout << "starting the adapter including sync\n";
     startup(messageToSend, notifyHandshake);

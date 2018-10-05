@@ -11,8 +11,6 @@ namespace pEp {
     void throw_status(PEP_STATUS status);
 
     namespace Adapter {
-        void throw_status(PEP_STATUS status);
-
         void startup(messageToSend_t messageToSend,
                 notifyHandshake_t notifyHandshake, void *obj = nullptr);
 

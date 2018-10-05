@@ -6,10 +6,26 @@
 #include <iomanip>
 #include <assert.h>
 
-namespace pEp {
-    namespace Adapter {
-        using namespace std;
+using namespace std;
 
+namespace pEp {
+    void throw_status(PEP_STATUS status)
+    {
+        if (status == PEP_STATUS_OK)
+            return;
+        if (status >= 0x400 && status <= 0x4ff)
+            return;
+        if (status == PEP_OUT_OF_MEMORY)
+            throw bad_alloc();
+        if (status == PEP_ILLEGAL_VALUE)
+            throw invalid_argument("illegal value");
+
+        stringstream build;
+        build << setfill('0') << "p≡p 0x" << setw(4) << hex << status;
+        throw runtime_error(build.str());
+    }
+
+    namespace Adapter {
         static messageToSend_t _messageToSend = nullptr;
         static notifyHandshake_t _notifyHandshake = nullptr;
         static std::thread *_sync_thread = nullptr;
@@ -24,22 +40,6 @@ namespace pEp {
         {
             static std::mutex m;
             return m;
-        }
-
-        void throw_status(PEP_STATUS status)
-        {
-            if (status == PEP_STATUS_OK)
-                return;
-            if (status >= 0x400 && status <= 0x4ff)
-                return;
-            if (status == PEP_OUT_OF_MEMORY)
-                throw bad_alloc();
-            if (status == PEP_ILLEGAL_VALUE)
-                throw invalid_argument("illegal value");
-
-            stringstream build;
-            build << setfill('0') << "p≡p 0x" << setw(4) << hex << status;
-            throw runtime_error(build.str());
         }
 
         static int _inject_sync_event(SYNC_EVENT ev, void *management)
