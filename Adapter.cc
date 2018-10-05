@@ -78,8 +78,8 @@ namespace pEp {
 
     void Adapter::shutdown()
     {
-        _inject_sync_event(nullptr, nullptr);
         if (Adapter::_sync_thread) {
+            _inject_sync_event(nullptr, nullptr);
             Adapter::_sync_thread->join();
             delete Adapter::_sync_thread;
             Adapter::_sync_thread = nullptr;
