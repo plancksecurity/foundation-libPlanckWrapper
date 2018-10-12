@@ -22,25 +22,21 @@ namespace pEp {
 
         stringstream build;
         build << setfill('0') << "p≡p 0x" << setw(4) << hex << status;
-        throw runtime_error(build.str());
+        throw RuntimeError(build.str(), status);
+    }
+
+    RuntimeError::RuntimeError(string _text, PEP_STATUS _status)
+        : text(_text), runtime_error(text.c_str()), status(_status)
+    {
+
     }
 
     namespace Adapter {
         static messageToSend_t _messageToSend = nullptr;
         static notifyHandshake_t _notifyHandshake = nullptr;
         static std::thread *_sync_thread = nullptr;
-
-        static ::utility::locked_queue< SYNC_EVENT >& queue()
-        {
-            static ::utility::locked_queue< SYNC_EVENT > q;
-            return q;
-        }
-
-        static std::mutex& mtx()
-        {
-            static std::mutex m;
-            return m;
-        }
+        static ::utility::locked_queue< SYNC_EVENT > q;
+        static std::mutex m;
 
         static int _inject_sync_event(SYNC_EVENT ev, void *management)
         {
@@ -50,7 +46,7 @@ namespace pEp {
             }
 
             try {
-                queue().push_front(ev);
+                q.push_front(ev);
             }
             catch (exception&) {
                 return 1;
@@ -63,7 +59,7 @@ namespace pEp {
             time_t started = time(nullptr);
             bool timeout = false;
 
-            while (queue().empty()) {
+            while (q.empty()) {
                 int i = 0;
                 ++i;
                 if (i > 10) {
@@ -73,13 +69,18 @@ namespace pEp {
                     }
                     i = 0;
                 }
+#ifdef WIN32
+                const xtime xt[] = { { 0, 100000000L } };
+                _Thrd_sleep(xt);
+#else
                 nanosleep((const struct timespec[]){{0, 100000000L}}, NULL);
+#endif
             }
 
             if (timeout)
                 return new_sync_timeout_event();
 
-            return queue().pop_front();
+            return q.pop_front();
         }
 
         static void sync_thread(void *obj)
@@ -106,7 +107,7 @@ namespace pEp {
             session();
 
             {
-                lock_guard<mutex> lock(mtx());
+                lock_guard<mutex> lock(m);
 
                 if (!_sync_thread)
                     _sync_thread = new thread(sync_thread, obj);
@@ -115,7 +116,7 @@ namespace pEp {
 
         PEP_SESSION session(session_action action)
         {
-            lock_guard<mutex> lock(mtx());
+            lock_guard<mutex> lock(m);
 
             thread_local static PEP_SESSION _session = nullptr;
             PEP_STATUS status = PEP_STATUS_OK;

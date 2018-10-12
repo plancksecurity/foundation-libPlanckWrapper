@@ -5,10 +5,19 @@
 
 #include "locked_queue.hh"
 #include <thread>
+#include <string>
 #include <pEp/sync_api.h>
+
+using namespace std;
 
 namespace pEp {
     void throw_status(PEP_STATUS status);
+
+    struct RuntimeError : runtime_error {
+        RuntimeError(string _text, PEP_STATUS _status);
+        string text;
+        PEP_STATUS status;
+    };
 
     namespace Adapter {
         void startup(messageToSend_t messageToSend,
