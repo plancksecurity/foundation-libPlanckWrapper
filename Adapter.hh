@@ -32,4 +32,3 @@ namespace pEp {
         void shutdown();
     }
 }
-
