@@ -26,7 +26,7 @@ namespace pEp {
     }
 
     RuntimeError::RuntimeError(string _text, PEP_STATUS _status)
-        : text(_text), runtime_error(text.c_str()), status(_status)
+        : runtime_error(_text.c_str()), text(_text),  status(_status)
     {
 
     }
