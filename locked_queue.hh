@@ -55,7 +55,7 @@ namespace utility
         {
             Lock L(_mtx);
             _cv.wait(L, [&]{ return !_q.empty(); } );
-            T ret{std::move(_q.back())};
+            T r{std::move(_q.back())};
             _q.pop_back();
             return r;
         }
@@ -66,7 +66,7 @@ namespace utility
         {
             Lock L(_mtx);
             _cv.wait(L, [&]{ return !_q.empty(); } );
-            T ret{std::move(_q.front())};
+            T r{std::move(_q.front())};
             _q.pop_front();
             return r;
         }
