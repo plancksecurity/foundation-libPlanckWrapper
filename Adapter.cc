@@ -32,11 +32,12 @@ namespace pEp {
     }
 
     namespace Adapter {
-        static messageToSend_t _messageToSend = nullptr;
-        static notifyHandshake_t _notifyHandshake = nullptr;
-        static std::thread *_sync_thread = nullptr;
-        static ::utility::locked_queue< SYNC_EVENT > q;
-        static std::mutex m;
+        messageToSend_t _messageToSend = nullptr;
+        notifyHandshake_t _notifyHandshake = nullptr;
+        std::thread *_sync_thread = nullptr;
+
+        ::utility::locked_queue< SYNC_EVENT > q;
+        std::mutex m;
 
         static int _inject_sync_event(SYNC_EVENT ev, void *management)
         {
@@ -54,7 +55,7 @@ namespace pEp {
             return 0;
         }
 
-        static SYNC_EVENT _retrieve_next_sync_event(void *management, time_t threshold)
+        SYNC_EVENT _retrieve_next_sync_event(void *management, time_t threshold)
         {
             time_t started = time(nullptr);
             bool timeout = false;
@@ -81,46 +82,6 @@ namespace pEp {
                 return new_sync_timeout_event();
 
             return q.pop_front();
-        }
-
-        template< class T > static void sync_thread(T *obj, function< void (T *) > _startup, function< void (T *) > _shutdown)
-        {
-            PEP_STATUS status = register_sync_callbacks(session(), nullptr,
-                    _notifyHandshake, _retrieve_next_sync_event);
-            throw_status(status);
-
-            if (obj && startup)
-                _startup(obj);
-
-            do_sync_protocol(session(), (void *) obj);
-            unregister_sync_callbacks(session());
-
-            session(release);
-
-            if (obj && _shutdown)
-                _shutdown(obj);
-        }
-
-        template< class T > void startup(messageToSend_t messageToSend,
-                notifyHandshake_t notifyHandshake, T *obj,
-                function< void (T *) > _startup,
-                function< void (T *) > _shutdown
-            )
-        {
-            if (messageToSend)
-                _messageToSend = messageToSend;
-
-            if (notifyHandshake)
-                _notifyHandshake = notifyHandshake;
-
-            session();
-
-            {
-                lock_guard<mutex> lock(m);
-
-                if (!_sync_thread)
-                    _sync_thread = new thread(sync_thread<T>, obj, _startup, _shutdown);
-            }
         }
 
         PEP_SESSION session(session_action action)

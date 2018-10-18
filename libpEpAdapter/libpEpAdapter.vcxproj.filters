@@ -26,5 +26,8 @@
     <ClInclude Include="..\Adapter.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Adapter.hxx">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

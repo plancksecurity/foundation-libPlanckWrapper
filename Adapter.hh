@@ -8,6 +8,7 @@
 #include <functional>
 #include <string>
 #include <pEp/sync_api.h>
+#include "Adapter.hxx"
 
 using namespace std;
 
