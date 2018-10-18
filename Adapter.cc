@@ -39,7 +39,7 @@ namespace pEp {
         ::utility::locked_queue< SYNC_EVENT > q;
         std::mutex m;
 
-        static int _inject_sync_event(SYNC_EVENT ev, void *management)
+        int _inject_sync_event(SYNC_EVENT ev, void *management)
         {
             if (is_sync_thread(session())) {
                 PEP_STATUS status = do_sync_protocol_step(session(), nullptr, ev);
