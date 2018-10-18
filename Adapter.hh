@@ -23,7 +23,8 @@ namespace pEp {
     namespace Adapter {
         template<class T> void startup(messageToSend_t messageToSend,
                 notifyHandshake_t notifyHandshake, T *obj = nullptr,
-                function< int (T::*) > _startup = nullptr
+                function< void (T *) > _startup = nullptr,
+                function< void(T *) > _shutdown = nullptr
             );
 
         enum session_action {

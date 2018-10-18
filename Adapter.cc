@@ -83,25 +83,28 @@ namespace pEp {
             return q.pop_front();
         }
 
-        template< class T > static void sync_thread(T *obj, function< int (T::*) > _startup)
+        template< class T > static void sync_thread(T *obj, function< void(T *) > _startup, function< void(T *) > _shutdown)
         {
             PEP_STATUS status = register_sync_callbacks(session(), nullptr,
                     _notifyHandshake, _retrieve_next_sync_event);
             throw_status(status);
 
-            if (obj && startup) {
+            if (obj && startup)
                 _startup(obj);
-            }
 
             do_sync_protocol(session(), (void *) obj);
             unregister_sync_callbacks(session());
 
             session(release);
+
+            if (obj && _shutdown)
+                _shutdown(obj);
         }
 
         template< class T > void startup(messageToSend_t messageToSend,
                 notifyHandshake_t notifyHandshake, T *obj,
-                function< int ( T::* ) > _startup
+                function< void (T *) > _startup,
+                function< void(T *) > _shutdown
             )
         {
             if (messageToSend)
@@ -116,7 +119,7 @@ namespace pEp {
                 lock_guard<mutex> lock(m);
 
                 if (!_sync_thread)
-                    _sync_thread = new thread(sync_thread<T>, obj, _startup);
+                    _sync_thread = new thread(sync_thread<T>, obj, _startup, _shutdown);
             }
         }
 
