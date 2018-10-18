@@ -83,7 +83,7 @@ namespace pEp {
             return q.pop_front();
         }
 
-        template< class T > static void sync_thread(T *obj, function< void(T *) > _startup, function< void(T *) > _shutdown)
+        template< class T > static void sync_thread(T *obj, function< void (T *) > _startup, function< void (T *) > _shutdown)
         {
             PEP_STATUS status = register_sync_callbacks(session(), nullptr,
                     _notifyHandshake, _retrieve_next_sync_event);
@@ -104,7 +104,7 @@ namespace pEp {
         template< class T > void startup(messageToSend_t messageToSend,
                 notifyHandshake_t notifyHandshake, T *obj,
                 function< void (T *) > _startup,
-                function< void(T *) > _shutdown
+                function< void (T *) > _shutdown
             )
         {
             if (messageToSend)

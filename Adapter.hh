@@ -24,7 +24,7 @@ namespace pEp {
         template<class T> void startup(messageToSend_t messageToSend,
                 notifyHandshake_t notifyHandshake, T *obj = nullptr,
                 function< void (T *) > _startup = nullptr,
-                function< void(T *) > _shutdown = nullptr
+                function< void (T *) > _shutdown = nullptr
             );
 
         enum session_action {
