@@ -34,6 +34,8 @@ namespace pEp {
     namespace Adapter {
         messageToSend_t _messageToSend = nullptr;
         notifyHandshake_t _notifyHandshake = nullptr;
+        messageToSend_t _messageToSend_sync = nullptr;
+        notifyHandshake_t _notifyHandshake_sync = nullptr;
         std::thread *_sync_thread = nullptr;
 
         ::utility::locked_queue< SYNC_EVENT, &free_Sync_event> q;
@@ -87,6 +89,11 @@ namespace pEp {
         PEP_SESSION session(session_action action)
         {
             lock_guard<mutex> lock(m);
+            bool in_sync;
+            if (_sync_thread && _sync_thread->get_id() == this_thread::get_id())
+                in_sync = true;
+            else
+                in_sync = false;
 
             thread_local static PEP_SESSION _session = nullptr;
             PEP_STATUS status = PEP_STATUS_OK;
@@ -100,8 +107,12 @@ namespace pEp {
                     break;
 
                 case init:
-                    if (!_session)
-                        status = ::init(&_session, _messageToSend, _inject_sync_event);
+                    if (!_session) {
+                        if (in_sync && _messageToSend_sync)
+                            status = ::init(&_session, _messageToSend_sync, _inject_sync_event);
+                        else
+                            status = ::init(&_session, _messageToSend, _inject_sync_event);
+                    }
                     break;
 
                 default:
@@ -124,4 +135,3 @@ namespace pEp {
         }
     }
 }
-

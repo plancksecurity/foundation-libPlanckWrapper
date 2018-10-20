@@ -8,6 +8,8 @@ namespace pEp {
     namespace Adapter {
         extern messageToSend_t _messageToSend;
         extern notifyHandshake_t _notifyHandshake;
+        extern messageToSend_t _messageToSend_sync;
+        extern notifyHandshake_t _notifyHandshake_sync;
         extern std::thread *_sync_thread;
 
         extern ::utility::locked_queue< SYNC_EVENT, &free_Sync_event > q;
@@ -33,8 +35,12 @@ namespace pEp {
                 _shutdown(obj);
         }
 
-        template< class T > void startup(messageToSend_t messageToSend,
-            notifyHandshake_t notifyHandshake, T *obj,
+        template< class T > void startup(
+            messageToSend_t messageToSend,
+            notifyHandshake_t notifyHandshake,
+            messageToSend_t messageToSend_sync,
+            notifyHandshake_t notifyHandshake_sync,
+            T *obj,
             function< void(T *) > _startup,
             function< void(T *) > _shutdown
         )
@@ -44,6 +50,12 @@ namespace pEp {
 
             if (notifyHandshake)
                 _notifyHandshake = notifyHandshake;
+
+            if (messageToSend_sync)
+                _messageToSend_sync = messageToSend_sync;
+
+            if (notifyHandshake_sync)
+                _notifyHandshake_sync = notifyHandshake_sync;
 
             session();
 

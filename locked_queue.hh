@@ -1,7 +1,7 @@
 // this file is under GNU GPL 3.0, see LICENSE.txt
 
-
-#pragma once
+#ifndef PEP_LOCKED_QUEUE
+#define PEP_LOCKED_QUEUE
 
 #include <list>
 #include <condition_variable>
@@ -9,7 +9,7 @@
 
 namespace utility
 {
-    template<class T, void(*Deleter)(T) = [](T e) { delete e; } >
+    template<class T, void(*deleter)(T) = [](T e) { delete e; } >
     class locked_queue
     {
         typedef std::recursive_mutex     Mutex;
@@ -30,7 +30,7 @@ namespace utility
             Lock L(_mtx);
             for(auto& element : _q)
             {
-                Deleter(element);
+                deleter(element);
             }
             _q.clear();
         }
@@ -134,4 +134,6 @@ namespace utility
             return _q.empty();
         }
     };
-};
+}
+
+#endif // PEP_LOCKED_QUEUE
