@@ -31,8 +31,8 @@ public:
     
     typedef std::list<PC> Container;
     
-    Container::const_iterator begin() const noexcept { return c.cbegin(); }
-    Container::const_iterator end()   const noexcept { return c.cend();   }
+    typename Container::const_iterator begin() const noexcept { return c.cbegin(); }
+    typename Container::const_iterator end()   const noexcept { return c.cend();   }
     std::size_t size()  const noexcept { return c.size();  }
     bool        empty() const noexcept { return c.empty(); }
 
@@ -48,15 +48,14 @@ public:
     }
     
     // Beware: does not delete *pdata nor *cdata! That's producer's and consumer's task!
-    void erase(Container::const_iterator pos)
+    void erase(typename Container::const_iterator pos)
     {
-//        changed.push_back( *pos );
-        changed.emplace_back(nullptr, pos->cdata);
+        changed.push_back( *pos );
         c.erase(pos);
     }
     
     // notify Consumer about the changed element
-    void change(Container::const_iterator pos)
+    void change(typename Container::const_iterator pos)
     {
         changed.push_back( *pos );
     }
@@ -103,8 +102,8 @@ public:
     }
 
 private:
-    Container c;
-    locked_queue<PC> changed;
+    typename Container c;
+    ::utility::locked_queue< PC > changed;
 };
 
 } // end of namespace pEp

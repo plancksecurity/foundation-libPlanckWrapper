@@ -67,7 +67,6 @@ namespace utility
             return r;
         }
 
-
         // returns true and set a copy of the last element and pop it from queue if there is any
         // returns false and leaves 'out' untouched if queue is empty even after 'end_time'
         bool try_pop_back(T& out, std::chrono::steady_clock::time_point end_time)
@@ -82,7 +81,6 @@ namespace utility
             _q.pop_back();
             return true;
         }
-
  
         // returns true and set a copy of the first element and pop it from queue if there is any
         // returns false and leaves 'out' untouched if queue is empty even after 'end_time'
@@ -108,6 +106,14 @@ namespace utility
             _cv.notify_one();
         }
 
+        void emplace_back(const T& data)
+        {
+            {
+                Lock L(_mtx);
+                _q.emplace_back(data);
+            }
+            _cv.notify_one();
+        }
 
         void push_front(const T& data)
         {
