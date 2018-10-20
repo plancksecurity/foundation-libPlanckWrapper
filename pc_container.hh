@@ -62,7 +62,7 @@ public:
     }
     
     // clear the container. Delete all *pdata via custom deleter functor.
-    void clear(std::function<void(Pdata*)> deleter)
+    void clear(std::function<void(Pdata*)> deleter = [](Pdata *e) { delete e; })
     {
         for(auto q=begin(); q!=end(); ++q)
         {
