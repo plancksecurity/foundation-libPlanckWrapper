@@ -48,10 +48,10 @@ public:
     }
     
     // Beware: does not delete *pdata nor *cdata! That's producer's and consumer's task!
-    // pos->pdata shall already be nullptr, so consumer can detect erasure.
     void erase(Container::const_iterator pos)
     {
-        changed.push_back( *pos );
+//        changed.push_back( *pos );
+        changed.emplace_back(nullptr, pos->cdata);
         c.erase(pos);
     }
     
