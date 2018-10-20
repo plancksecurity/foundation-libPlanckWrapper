@@ -38,7 +38,7 @@ namespace pEp {
         notifyHandshake_t _notifyHandshake_sync = nullptr;
         std::thread *_sync_thread = nullptr;
 
-        ::utility::locked_queue< SYNC_EVENT, &free_Sync_event> q;
+        ::utility::locked_queue< SYNC_EVENT > q;
         std::mutex m;
 
         int _inject_sync_event(SYNC_EVENT ev, void *management)
