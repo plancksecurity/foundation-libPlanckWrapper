@@ -43,7 +43,7 @@ public:
     
     void insert(Pdata* pd)
     {
-        c.emplace_back(pd, nullptr);
+        c.push_back({ pd, nullptr });
         changed.push_back( c.back() );
     }
     
