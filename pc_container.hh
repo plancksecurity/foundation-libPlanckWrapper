@@ -38,31 +38,22 @@ public:
     
     typename Container::const_iterator begin() const noexcept { return c.cbegin(); }
     typename Container::const_iterator end()   const noexcept { return c.cend();   }
+    typename Container::iterator       begin() noexcept { return c.begin(); }
+    typename Container::iterator       end()   noexcept { return c.end();   }
+    
     std::size_t size()  const noexcept { return c.size();  }
     bool        empty() const noexcept { return c.empty(); }
 
 
-    //////////////////////////////////
-    // Producer's API:
-    //////////////////////////////////
-    
     void insert(Pdata* pd)
     {
         c.push_back({ pd, nullptr });
-        changed.push_back( c.back() );
     }
     
     // Beware: does not delete *pdata nor *cdata! That's producer's and consumer's task!
     void erase(typename Container::const_iterator pos)
     {
-        changed.push_back( *pos );
         c.erase(pos);
-    }
-    
-    // notify Consumer about the changed element
-    void change(typename Container::const_iterator pos)
-    {
-        changed.push_back( *pos );
     }
     
     // clear the container. Delete all *pdata via custom deleter functor.
@@ -75,40 +66,9 @@ public:
             erase(q);
         }
     }
-    
-    //////////////////////////////////
-    // Consumer's API:
-    //////////////////////////////////
-
-    std::size_t changed_elements() const { return changed.size(); }
-    bool        has_changed()      const { return !changed.empty(); }
-    
-    // got oldest element in change queue.
-    //
-    // pc.pdata != nullptr && pc.cdata == nullptr : freshly inserted element
-    // pc.pdata != nullptr && pc.cdata != nullptr : changed element
-    // pc.pdata == nullptr && pc.cdata != nullptr : erased element
-    //
-    // Beware: this blocks if changed queue is empty!
-    PC get_changed()
-    {
-        PC pc = changed.pop_front();
-        
-        // does the element still exists?
-        if( pc.pdata && 
-            std::find_if( c.cbegin(), c.cend(), [&pc](const PC& element) { return pc.pdata == element.pdata; } ) == c.cend()
-          )
-        {
-            // No, not anymore. So mark it as erased element for the consumer:
-            pc.pdata = nullptr;
-        }
-        
-        return pc;
-    }
 
 private:
     Container c;
-    ::utility::locked_queue< PC > changed;
 };
 
 } // end of namespace pEp
