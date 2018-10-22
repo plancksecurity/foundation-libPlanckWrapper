@@ -58,6 +58,12 @@ public:
         c.erase(pos);
     }
     
+    // removes all elements with pdata==null && cdata==null
+    void compact()
+    {
+        c.remove_if( [](const PC& elem) { return elem.pdata==nullptr && elem.cdata==nullptr; } );
+    }
+    
     // clear the container. Delete all *pdata via custom deleter functor.
     void clear(std::function<void(Pdata*)> deleter = [](Pdata *e) { delete e; })
     {
