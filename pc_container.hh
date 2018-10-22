@@ -10,6 +10,9 @@
 namespace pEp
 {
 
+enum class PC_State { Illegal = 0, Created = 1, Deleted = 2, Changed = 3 };
+
+
 // Producer/Consumer container.
 // 
 // The "Producer" works on a std::list: inserts, changes, erases elements and 
@@ -27,6 +30,8 @@ public:
     {
         Pdata* pdata; // data of the producer. Will be nullptr for erased elements
         Cdata* cdata; // data of the consumer.
+        
+        PC_State state() const noexcept { return PC_State((pdata!=nullptr) + (cdata!=nullptr)*2); }
     };
     
     typedef std::list<PC> Container;
@@ -91,7 +96,7 @@ public:
         
         // does the element still exists?
         if( pc.pdata && 
-            std::find_if( c.cbegin(), c.cend(), [&pc](PC& element) { return pc.pdata == element.pdata; } ) == c.cend()
+            std::find_if( c.cbegin(), c.cend(), [&pc](const PC& element) { return pc.pdata == element.pdata; } ) == c.cend()
           )
         {
             // No, not anymore. So mark it as erased element for the consumer:
@@ -102,7 +107,7 @@ public:
     }
 
 private:
-    typename Container c;
+    Container c;
     ::utility::locked_queue< PC > changed;
 };
 

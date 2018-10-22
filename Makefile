@@ -27,13 +27,16 @@ clean:
 distclean: clean
 	rm -Rf .gnupg .pEp_management*
 
-test: test_adapter
+test: test_adapter test_library
 ifeq ($(HOME),$(PREFIX))
 	-ln -fs $$HOME/lib
 endif
 	HOME=$$(pwd) ./test_adapter
 
 test_adapter: test_adapter.o $(TARGET)
+	$(CXX) -o $@ -L$(PEP)/lib -lpEpEngine -L. -lpEpAdapter $<
+
+test_library: test_library.o $(TARGET)
 	$(CXX) -o $@ -L$(PEP)/lib -lpEpEngine -L. -lpEpAdapter $<
 
 install: $(TARGET)
