@@ -36,10 +36,12 @@ public:
     
     typedef std::list<PC> Container;
     
-    typename Container::const_iterator begin() const noexcept { return c.cbegin(); }
-    typename Container::const_iterator end()   const noexcept { return c.cend();   }
-    typename Container::iterator       begin() noexcept { return c.begin(); }
-    typename Container::iterator       end()   noexcept { return c.end();   }
+    typename Container::const_iterator cbegin() const noexcept { return c.cbegin(); }
+    typename Container::const_iterator cend()   const noexcept { return c.cend();   }
+    typename Container::const_iterator begin()  const noexcept { return c.cbegin(); }
+    typename Container::const_iterator end()    const noexcept { return c.cend();   }
+    typename Container::iterator       begin()        noexcept { return c.begin(); }
+    typename Container::iterator       end()          noexcept { return c.end();   }
     
     std::size_t size()  const noexcept { return c.size();  }
     bool        empty() const noexcept { return c.empty(); }
