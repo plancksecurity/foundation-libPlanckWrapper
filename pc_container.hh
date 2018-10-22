@@ -53,9 +53,9 @@ public:
     }
     
     // Beware: does not delete *pdata nor *cdata! That's producer's and consumer's task!
-    void erase(typename Container::const_iterator pos)
+    typename Container::iterator erase(typename Container::const_iterator pos)
     {
-        c.erase(pos);
+        return c.erase(pos);
     }
     
     // removes all elements with pdata==null && cdata==null
@@ -67,11 +67,10 @@ public:
     // clear the container. Delete all *pdata via custom deleter functor.
     void clear(std::function<void(Pdata*)> deleter = [](Pdata *e) { delete e; })
     {
-        for(auto q=begin(); q!=end(); ++q)
+        for(auto q=begin(); q!=end(); q=erase(q))
         {
             deleter(q->pdata);
             q->pdata = nullptr;
-            erase(q);
         }
     }
 
