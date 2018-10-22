@@ -26,14 +26,14 @@
     <ClInclude Include="..\Adapter.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Adapter.hxx">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\locked_queue.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\pc_container.hh">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Adapter.hxx">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

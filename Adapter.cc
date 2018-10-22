@@ -86,14 +86,18 @@ namespace pEp {
             return q.pop_front();
         }
 
+        bool on_sync_thread()
+        {
+            if (_sync_thread && _sync_thread->get_id() == this_thread::get_id())
+                return true;
+            else
+                return false;
+        }
+
         PEP_SESSION session(session_action action)
         {
             lock_guard<mutex> lock(m);
-            bool in_sync;
-            if (_sync_thread && _sync_thread->get_id() == this_thread::get_id())
-                in_sync = true;
-            else
-                in_sync = false;
+            bool in_sync = on_sync_thread();
 
             thread_local static PEP_SESSION _session = nullptr;
             PEP_STATUS status = PEP_STATUS_OK;

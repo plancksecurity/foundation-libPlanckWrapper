@@ -24,12 +24,12 @@ namespace pEp {
         template<class T> void startup(
                 messageToSend_t messageToSend,
                 notifyHandshake_t notifyHandshake,
-                messageToSend_t messageToSend_sync = nullptr,
-                notifyHandshake_t notifyHandshake_sync = nullptr,
                 T *obj = nullptr,
                 function< void (T *) > _startup = nullptr,
                 function< void (T *) > _shutdown = nullptr
             );
+
+        bool on_sync_thread();
 
         enum session_action {
             init,
