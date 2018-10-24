@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iomanip>
 #include <assert.h>
+#include "status_to_string.hh"
 
 using namespace std;
 
@@ -20,9 +21,7 @@ namespace pEp {
         if (status == PEP_ILLEGAL_VALUE)
             throw invalid_argument("illegal value");
 
-        stringstream build;
-        build << setfill('0') << "p≡p 0x" << setw(4) << hex << status;
-        throw RuntimeError(build.str(), status);
+        throw RuntimeError(status_to_string(status), status);
     }
 
     RuntimeError::RuntimeError(string _text, PEP_STATUS _status)
