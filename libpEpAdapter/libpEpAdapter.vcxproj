@@ -142,12 +142,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Adapter.cc" />
+    <ClCompile Include="..\status_to_string.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Adapter.hh" />
     <ClInclude Include="..\Adapter.hxx" />
     <ClInclude Include="..\locked_queue.hh" />
     <ClInclude Include="..\pc_container.hh" />
+    <ClInclude Include="..\status_to_string.hh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

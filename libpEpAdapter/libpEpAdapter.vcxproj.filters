@@ -21,6 +21,9 @@
     <ClCompile Include="..\Adapter.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\status_to_string.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Adapter.hh">
@@ -34,6 +37,9 @@
     </ClInclude>
     <ClInclude Include="..\Adapter.hxx">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\status_to_string.hh">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
