@@ -7,7 +7,7 @@ include Makefile.conf
 CXXFLAGS += -I$(HOME)/include -std=c++14 -O0 -g
 
 SOURCE=$(wildcard *.cc)
-HEADERS=$(wildcard *.hh)
+HEADERS=$(wildcard *.hh *.hxx)
 OBJECTS=$(subst .cc,.o,$(SOURCE))
 WITHOUT_TESTS=$(patsubst test%.o,,$(OBJECTS))
 
@@ -40,9 +40,9 @@ test_library: test_library.o $(TARGET)
 	$(CXX) -o $@ -L$(PEP)/lib -lpEpEngine -L. -lpEpAdapter $<
 
 install: $(TARGET)
-	-mkdir -p $(PEP)/include
-	cp $(HEADERS) $(PEP)/include
-	cp $(TARGET) $(PEP)/lib
+	-mkdir -p $(PEP)/include/pEp
+	cp $(HEADERS) $(PEP)/include/pEp/
+	cp $(TARGET) $(PEP)/lib/
 
 uninstall:
 	cd $(PEP)/include && rm -f $(HEADERS)

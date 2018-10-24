@@ -42,11 +42,6 @@ namespace pEp {
 
         int _inject_sync_event(SYNC_EVENT ev, void *management)
         {
-            if (is_sync_thread(session())) {
-                PEP_STATUS status = do_sync_protocol_step(session(), nullptr, ev);
-                return status == PEP_STATUS_OK ? 0 : 1;
-            }
-
             try {
                 q.push_front(ev);
             }
