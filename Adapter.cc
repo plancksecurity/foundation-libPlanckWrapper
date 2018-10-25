@@ -51,33 +51,16 @@ namespace pEp {
             return 0;
         }
 
-        SYNC_EVENT _retrieve_next_sync_event(void *management, time_t threshold)
+        // threshold: max waiting time in seconds
+        SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold)
         {
-            time_t started = time(nullptr);
-            bool timeout = false;
-
-            while (q.empty()) {
-                int i = 0;
-                ++i;
-                if (i > 10) {
-                    if (time(nullptr) > started + threshold) {
-                        timeout = true;
-                        break;
-                    }
-                    i = 0;
-                }
-#ifdef WIN32
-                const xtime xt[] = { { 0, 100000000L } };
-                _Thrd_sleep(xt);
-#else
-                nanosleep((const struct timespec[]){{0, 100000000L}}, NULL);
-#endif
-            }
+            SYNC_EVENT syncEvent = nullptr;
+            const bool timeout = q.try_pop_front(syncEvent, std::chrono::seconds(threshold));
 
             if (timeout)
                 return new_sync_timeout_event();
 
-            return q.pop_front();
+            return syncEvent;
         }
 
         bool on_sync_thread()
