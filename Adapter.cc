@@ -24,8 +24,8 @@ namespace pEp {
         throw RuntimeError(status_to_string(status), status);
     }
 
-    RuntimeError::RuntimeError(string _text, PEP_STATUS _status)
-        : runtime_error(_text.c_str()), text(_text),  status(_status)
+    RuntimeError::RuntimeError(const std::string& _text, PEP_STATUS _status)
+        : std::runtime_error(_text.c_str()), text(_text),  status(_status)
     {
 
     }
@@ -90,7 +90,7 @@ namespace pEp {
 
         PEP_SESSION session(session_action action)
         {
-            lock_guard<mutex> lock(m);
+            std::lock_guard<mutex> lock(m);
             bool in_sync = on_sync_thread();
 
             thread_local static PEP_SESSION _session = nullptr;

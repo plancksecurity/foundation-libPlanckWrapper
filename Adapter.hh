@@ -9,14 +9,17 @@
 #include <string>
 #include <pEp/sync_api.h>
 
-using namespace std;
 
 namespace pEp {
+
+    // throws std::bad_alloc if status==PEP_OUT_OF_MEMORY,
+    // throws std::invalid_argument if status==PEP_ILLEGAL_VALUE,
+    // throws RuntimeError when 'status' represents another exceptional value.
     void throw_status(PEP_STATUS status);
 
-    struct RuntimeError : runtime_error {
-        RuntimeError(string _text, PEP_STATUS _status);
-        string text;
+    struct RuntimeError : std::runtime_error {
+        RuntimeError(const std::string& _text, PEP_STATUS _status);
+        std::string text;
         PEP_STATUS status;
     };
 
@@ -25,10 +28,11 @@ namespace pEp {
                 messageToSend_t messageToSend,
                 notifyHandshake_t notifyHandshake,
                 T *obj = nullptr,
-                function< void (T *) > _startup = nullptr,
-                function< void (T *) > _shutdown = nullptr
+                std::function< void (T *) > _startup = nullptr,
+                std::function< void (T *) > _shutdown = nullptr
             );
 
+        // returns 'true' when called from the "sync" thread, 'false' otherwise.
         bool on_sync_thread();
 
         enum session_action {
@@ -37,6 +41,8 @@ namespace pEp {
         };
         PEP_SESSION session(session_action action = init);
 
+        // injects a NULL event into sync_event_queue to denote sync thread to shutdown,
+        // and joins & removes the sync thread
         void shutdown();
     }
 }
