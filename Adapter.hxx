@@ -1,11 +1,13 @@
 #pragma once
 
-#include <functional>
+#include <thread>
+#include "locked_queue.hh"
 
-using namespace std;
 
 namespace pEp {
     namespace Adapter {
+        using std::function;
+    
         extern messageToSend_t _messageToSend;
         extern notifyHandshake_t _notifyHandshake;
         extern std::thread *_sync_thread;
@@ -50,10 +52,10 @@ namespace pEp {
             session();
 
             {
-                lock_guard<mutex> lock(m);
+                std::lock_guard<std::mutex> lock(m);
 
                 if (!_sync_thread)
-                    _sync_thread = new thread(sync_thread<T>, obj, _startup, _shutdown);
+                    _sync_thread = new std::thread(sync_thread<T>, obj, _startup, _shutdown);
             }
         }
     }

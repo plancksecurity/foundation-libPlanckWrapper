@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include "locked_queue.hh"
-#include <thread>
 #include <functional>
 #include <string>
 #include <pEp/sync_api.h>
