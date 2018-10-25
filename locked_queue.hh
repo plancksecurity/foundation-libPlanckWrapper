@@ -97,6 +97,22 @@ namespace utility
             return true;
         }
 
+        // returns true and set a copy of the first element and pop it from queue if there is any
+        // returns false and leaves 'out' untouched if queue is empty even after 'duration'
+        bool try_pop_front(T& out, std::chrono::seconds duration)
+        {
+            Lock L(_mtx);
+            if(! _cv.wait_for(L, duration, [this]{ return !_q.empty(); } ) )
+            {
+                return false;
+            }
+            
+            out = std::move(_q.front());
+            _q.pop_front();
+            return true;
+        }
+
+
         void push_back(const T& data)
         {
             {
