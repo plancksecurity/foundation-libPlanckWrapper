@@ -15,7 +15,7 @@ namespace pEp {
         extern ::utility::locked_queue< SYNC_EVENT > q;
         extern std::mutex m;
 
-        SYNC_EVENT _retrieve_next_sync_event(void *management, time_t threshold);
+        SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold);
 
         template< class T > void sync_thread(T *obj, function< void(T *) > _startup, function< void(T *) > _shutdown)
         {
