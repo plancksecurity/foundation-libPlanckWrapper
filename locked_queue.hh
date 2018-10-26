@@ -9,7 +9,7 @@
 
 namespace utility
 {
-    template<class T>
+    template<class T, void(*Deleter)(T) = nullptr>
     class locked_queue
     {
         typedef std::recursive_mutex     Mutex;
@@ -28,6 +28,13 @@ namespace utility
         void clear()
         {
             Lock L(_mtx);
+            if(Deleter != nullptr)
+            {
+                for(auto q : _q)
+                {
+                    Deleter(q);
+                }
+            }
             _q.clear();
         }
 

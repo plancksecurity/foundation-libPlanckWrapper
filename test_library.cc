@@ -50,9 +50,10 @@ void consumer_thread()
 	int sum = 0;
 	while(keep_running)
 	{
-		auto q = pc.get_changed(); // might block, that is okay.
-		switch(q.state())
+		for(auto& q : pc)
 		{
+		    switch(q.state())
+		    {
 			case PC_State::Created:
 			{
 				const int value = atoi( q.pdata->data );
@@ -84,6 +85,7 @@ void consumer_thread()
 				break;
 			}
 			default: throw "Illegal state";
+			}
 		}
 	}
 	
