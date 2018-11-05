@@ -55,9 +55,9 @@ namespace pEp {
         SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold)
         {
             SYNC_EVENT syncEvent = nullptr;
-            const bool timeout = q.try_pop_front(syncEvent, std::chrono::seconds(threshold));
+            const bool success = q.try_pop_front(syncEvent, std::chrono::seconds(threshold));
 
-            if (timeout)
+            if (!success)
                 return new_sync_timeout_event();
 
             return syncEvent;
