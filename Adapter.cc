@@ -21,7 +21,8 @@ namespace pEp {
         if (status == PEP_ILLEGAL_VALUE)
             throw invalid_argument("illegal value");
 
-        throw RuntimeError(status_to_string(status), status);
+		string _status = status_to_string(status);
+        throw RuntimeError(_status, status);
     }
 
     RuntimeError::RuntimeError(const std::string& _text, PEP_STATUS _status)
