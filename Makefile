@@ -1,49 +1,77 @@
-# this file is under GNU GPL 3.0, see LICENSE.txt
+# Copyright 2018, pEp Foundation
+# This file is part of lib pEp Adapter
+# This file may be used under the terms of the GNU General Public License version 3
 # see LICENSE.txt
 
 include Makefile.conf
--include local.conf
 
-CXXFLAGS += -I$(HOME)/include -std=c++14 -O0 -g
+ifneq ($(wildcard local.conf),)
+    $(info ================================================)
+    $(info Overrides in \`local.conf\` are used.)
+    $(info ================================================)
+endif
+
+ifdef BUILD_CONFIG
+    $(info ================================================)
+    $(info Overrides in \`$(BUILD_CONFIG)\` are used.)
+    $(info ================================================)
+endif
 
 SOURCE=$(wildcard *.cc)
 HEADERS=$(wildcard *.hh *.hxx)
 OBJECTS=$(subst .cc,.o,$(SOURCE))
 WITHOUT_TESTS=$(patsubst test%.o,,$(OBJECTS))
+TARGET=libpEpAdapter.a
 
+EXTRA_LIB_PATHS=.:
+ifdef ENGINE_LIB
+	EXTRA_LIB_PATHS:=$(EXTRA_LIB_PATHS)$(patsubst -L%,%,$(ENGINE_LIB)):
+endif
+
+# Remove trailing ':'
+EXTRA_LIB_PATHS:=$(EXTRA_LIB_PATHS::=)
+
+ifeq ($(BUILD_FOR),Darwin)
+    LIBPATH=DYLD_LIBRARY_PATH
+else
+    LIBPATH=LD_LIBRARY_PATH
+endif
+
+$(TEST_CMD_PFX)=$(LIBPATH)=$(EXTRA_LIB_PATHS)
+
+
+.PHONY: all
 all: $(TARGET)
 
+# Rule copied from make's built-in rules
 %.o: %.cc %.hh
-	$(CXX) $(CXXFLAGS) -c $<
+	$(COMPILE.cc) $(OUTPUT_OPTION) $<
 
 $(TARGET): $(WITHOUT_TESTS)
 	ar -rc $@ $^
 
-.PHONY: clean distclean test install uninstall
-
+.PHONY: clean
 clean:
-	rm -f $(TARGET) $(OBJECTS) *.a test_adapter lib
+	rm -f $(TARGET) $(OBJECTS) *.a test_adapter test_library lib
 
+.PHONY: distclean
 distclean: clean
 	rm -Rf .gnupg .pEp_management*
 
+# $$(pwd) will return the incorrect directory, if make is run with `make -C ...`.
+.PHONY: test
 test: test_adapter test_library
-ifeq ($(HOME),$(PREFIX))
-	-ln -fs $$HOME/lib
-endif
-	HOME=$$(pwd) ./test_adapter
+	 $(TEST_CMD_PFX) HOME=$$(pwd) ./test_adapter
 
-test_adapter: test_adapter.o $(TARGET)
-	$(CXX) -o $@ -L$(PEP)/lib -lpEpEngine -L. -lpEpAdapter $<
+test_%: test_%.o $(TARGET)
 
-test_library: test_library.o $(TARGET)
-	$(CXX) -o $@ -L$(PEP)/lib -lpEpEngine -L. -lpEpAdapter $<
-
+.PHONY: install
 install: $(TARGET)
-	-mkdir -p $(PEP)/include/pEp
-	cp $(HEADERS) $(PEP)/include/pEp/
-	cp $(TARGET) $(PEP)/lib/
+	-mkdir -p $(PREFIX)/include/pEp
+	cp $(HEADERS) $(PREFIX)/include/pEp/
+	cp $(TARGET) $(PREFIX)/lib/
 
+.PHONY: uninstall
 uninstall:
-	cd $(PEP)/include && rm -f $(HEADERS)
-	cd $(PEP)/lib && rm -f $(TARGET)
+	cd $(PREFIX)/include/pEp && rm -f $(HEADERS)
+	cd $(PREFIX)/lib && rm -f $(TARGET)
