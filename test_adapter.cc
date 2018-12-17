@@ -12,13 +12,13 @@ using namespace pEp::Adapter;
 
 PEP_STATUS messageToSend(struct _message *msg)
 {
-    cout << "calling messageToSend();\n";   
+    cout << "calling messageToSend();\n";
     return PEP_STATUS_OK;
 }
 
-PEP_STATUS notifyHandshake(void *obj, pEp_identity *me, pEp_identity *partner, sync_handshake_signal signal)
+PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handshake_signal signal)
 {
-    cout << "calling notifyHandshake();\n";   
+    cout << "calling notifyHandshake();\n";
     return PEP_STATUS_OK;
 }
 
