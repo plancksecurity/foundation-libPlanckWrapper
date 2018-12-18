@@ -53,6 +53,8 @@ $(TARGET): $(WITHOUT_TESTS)
 .PHONY: clean
 clean:
 	rm -f $(TARGET) $(OBJECTS) *.a test_adapter test_library lib
+	rm -rf test_adapter.dSYM
+	rm -rf test_library.dSYM
 
 .PHONY: distclean
 distclean: clean
