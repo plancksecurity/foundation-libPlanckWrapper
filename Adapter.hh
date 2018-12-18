@@ -22,7 +22,8 @@ namespace pEp {
     };
 
     namespace Adapter {
-        template<class T> void startup(
+        template<class T = void>
+        void startup(
                 messageToSend_t messageToSend,
                 notifyHandshake_t notifyHandshake,
                 T *obj = nullptr,
