@@ -72,6 +72,7 @@ test_%: test_%.o $(TARGET)
 .PHONY: install
 install: $(TARGET)
 	-mkdir -p $(PREFIX)/include/pEp
+	-mkdir -p $(PREFIX)/lib
 	cp $(HEADERS) $(PREFIX)/include/pEp/
 	cp $(TARGET) $(PREFIX)/lib/
 
