@@ -55,6 +55,8 @@ clean:
 	rm -f $(TARGET) $(OBJECTS) *.a test_adapter test_library lib
 	rm -rf test_adapter.dSYM
 	rm -rf test_library.dSYM
+	rm -rf .gnupg/
+	rm -f .pEp_management.db*
 
 .PHONY: distclean
 distclean: clean
