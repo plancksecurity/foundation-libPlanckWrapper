@@ -36,6 +36,10 @@ std::string status_to_string(PEP_STATUS status)
         case PEP_MALFORMED_KEY_RESET_MSG          : status_string = "PEP_MALFORMED_KEY_RESET_MSG"; break;
         case PEP_KEY_NOT_RESET                    : status_string = "PEP_KEY_NOT_RESET"; break;
         
+        case PEP_KEY_IMPORTED                     : status_string = "PEP_KEY_IMPORTED"; break;
+        case PEP_NO_KEY_IMPORTED                  : status_string = "PEP_NO_KEY_IMPORTED"; break;
+        case PEP_KEY_IMPORT_STATUS_UNKNOWN        : status_string = "PEP_KEY_IMPORT_STATUS_UNKNOWN"; break;
+        
         case PEP_CANNOT_FIND_IDENTITY             : status_string = "PEP_CANNOT_FIND_IDENTITY"; break;
         case PEP_CANNOT_SET_PERSON                : status_string = "PEP_CANNOT_SET_PERSON"; break;
         case PEP_CANNOT_SET_PGP_KEYPAIR           : status_string = "PEP_CANNOT_SET_PGP_KEYPAIR"; break;
