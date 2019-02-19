@@ -11,7 +11,7 @@ LOCAL_MODULE    := pEpAdapter
 
 
 LOCAL_CPP_FEATURES += exceptions
-LOCAL_CPPFLAGS += -std=c++17
+LOCAL_CPPFLAGS += -std=c++17 -DANDROID_STL=c++_shared
 
 
 LIB_PEP_ADAPTER_INCLUDE_FILES := $(wildcard $(LOCAL_PATH)/../../*.h*)
