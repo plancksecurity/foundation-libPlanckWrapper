@@ -48,19 +48,19 @@ all: $(TARGET)
 	$(COMPILE.cc) $(OUTPUT_OPTION) $<
 
 $(TARGET): $(WITHOUT_TESTS)
-	ar -rc $@ $^
+	$(AR) -rc $@ $^
 
 .PHONY: clean
 clean:
-	rm -f $(TARGET) $(OBJECTS) *.a test_adapter test_library lib
-	rm -rf test_adapter.dSYM
-	rm -rf test_library.dSYM
-	rm -rf .gnupg/
-	rm -f .pEp_management.db*
+	rm -vf $(TARGET) $(OBJECTS) *.a test_adapter test_library lib
+	rm -rvf test_adapter.dSYM
+	rm -rvf test_library.dSYM
+	rm -rvf .gnupg/
+	rm -vf .pEp_management.db*
 
 .PHONY: distclean
 distclean: clean
-	rm -Rf .gnupg .pEp_management*
+	rm -Rvf .gnupg .pEp_management*
 
 # $$(pwd) will return the incorrect directory, if make is run with `make -C ...`.
 .PHONY: test
@@ -71,12 +71,12 @@ test_%: test_%.o $(TARGET)
 
 .PHONY: install
 install: $(TARGET)
-	-mkdir -p $(PREFIX)/include/pEp
-	-mkdir -p $(PREFIX)/lib
-	cp $(HEADERS) $(PREFIX)/include/pEp/
-	cp $(TARGET) $(PREFIX)/lib/
+	mkdir -p $(PREFIX)/include/pEp
+	mkdir -p $(PREFIX)/lib
+	cp -v $(HEADERS) $(PREFIX)/include/pEp/
+	cp -v $(TARGET) $(PREFIX)/lib/
 
 .PHONY: uninstall
 uninstall:
-	cd $(PREFIX)/include/pEp && rm -f $(HEADERS)
-	cd $(PREFIX)/lib && rm -f $(TARGET)
+	cd $(PREFIX)/include/pEp && rm -vf $(HEADERS)
+	cd $(PREFIX)/lib && rm -vf $(TARGET)
