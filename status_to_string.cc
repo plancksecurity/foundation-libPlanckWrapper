@@ -16,7 +16,7 @@ std::string status_to_string(PEP_STATUS status)
     }else{
         ss << status;
     }
-    return ss.str() + " \"" + pep_status_to_string(status) + '"';
+    return ss.str() + " \"" + pEp_status_to_string(status) + '"';
 }
     
 } // end of namespace pEp

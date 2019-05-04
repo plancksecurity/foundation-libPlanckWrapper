@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pEp/pEpEngine.h>
+#include <pEp/status_to_string.h>
 #include <string>
 
 namespace pEp
