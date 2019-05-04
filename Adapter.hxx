@@ -28,7 +28,7 @@ namespace pEp {
 
             PEP_STATUS status = register_sync_callbacks(session(), nullptr,
                 _notifyHandshake, _retrieve_next_sync_event);
-//            throw_status(status);
+            throw_status(status);
 
             do_sync_protocol(session(), (void *)obj);
             unregister_sync_callbacks(session());
