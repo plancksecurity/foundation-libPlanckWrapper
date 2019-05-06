@@ -2,6 +2,7 @@
 
 #include <thread>
 #include "locked_queue.hh"
+#include <cassert>
 
 
 namespace pEp {
