@@ -4,11 +4,10 @@
 #include "locked_queue.hh"
 #include <cassert>
 
-
 namespace pEp {
     namespace Adapter {
         using std::function;
-    
+
         extern messageToSend_t _messageToSend;
         extern notifyHandshake_t _notifyHandshake;
         extern std::thread *_sync_thread;
