@@ -2,13 +2,20 @@
 
 #include <thread>
 #include "locked_queue.hh"
+#include <pEp/keymanagement.h>
 #include <cassert>
 
 
 namespace pEp {
     namespace Adapter {
         using std::function;
-    
+ 
+        struct CannotStartSync : std::runtime_error {
+            CannotStartSync()
+                : std::runtime_error("cannot start sync: no own identities available")
+            { }
+        };
+
         extern messageToSend_t _messageToSend;
         extern notifyHandshake_t _notifyHandshake;
         extern std::thread *_sync_thread;
@@ -59,8 +66,18 @@ namespace pEp {
             {
                 std::lock_guard<std::mutex> lock(m);
 
-                if (!_sync_thread)
-                    _sync_thread = new std::thread(sync_thread<T>, obj, _startup, _shutdown);
+                if (!_sync_thread) {
+                    identity_list *il = nullptr;
+                    PEP_STATUS status = ::own_identities_retrieve(session(), &il);
+                    throw_status(status);
+                    bool own_identities_exist = il && il->ident;
+                    ::free_identity_list(il);
+
+                    if (own_identities_exist)
+                        _sync_thread = new std::thread(sync_thread<T>, obj, _startup, _shutdown);
+                    else
+                        throw CannotStartSync();
+                }
             }
         }
     }
