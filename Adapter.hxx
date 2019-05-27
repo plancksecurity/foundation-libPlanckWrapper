@@ -17,6 +17,9 @@ namespace pEp {
 
         SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold);
 
+        std::exception_ptr _ex;
+        bool register_done = false;
+
         template< class T > void sync_thread(T *obj, function< void(T *) > _startup, function< void(T *) > _shutdown)
         {
             assert(_messageToSend);
@@ -26,9 +29,19 @@ namespace pEp {
 
             session();
 
-            PEP_STATUS status = register_sync_callbacks(session(), nullptr,
-                _notifyHandshake, _retrieve_next_sync_event);
-            throw_status(status);
+            {
+                PEP_STATUS status = register_sync_callbacks(session(), nullptr,
+                    _notifyHandshake, _retrieve_next_sync_event);
+                try {
+                    throw_status(status);
+                    register_done = true;
+                }
+                catch (...) {
+                    _ex = std::current_exception();
+                    register_done = true;
+                    return;
+                }
+            }
 
             do_sync_protocol(session(), (void *)obj);
             unregister_sync_callbacks(session());
@@ -60,12 +73,13 @@ namespace pEp {
                 std::lock_guard<std::mutex> lock(m);
 
                 if (!_sync_thread) {
-                    try {
-                        _sync_thread = new std::thread(sync_thread<T>, obj, _startup, _shutdown);
-                    }
-                    catch (RuntimeError& ex) {
+                    _sync_thread = new std::thread(sync_thread<T>, obj, _startup, _shutdown);
+                    while (!register_done)
+                        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+                    if (_ex) {
                         _sync_thread = nullptr;
-                        throw ex;
+                        std::rethrow_exception(_ex);
                     }
                 }
             }
