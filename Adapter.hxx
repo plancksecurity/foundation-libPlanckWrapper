@@ -47,6 +47,7 @@ namespace pEp {
             function< void(T *) > _startup,
             function< void(T *) > _shutdown
         )
+            throw (RuntimeError)
         {
             if (messageToSend)
                 _messageToSend = messageToSend;
@@ -59,8 +60,15 @@ namespace pEp {
             {
                 std::lock_guard<std::mutex> lock(m);
 
-                if (!_sync_thread)
-                    _sync_thread = new std::thread(sync_thread<T>, obj, _startup, _shutdown);
+                if (!_sync_thread) {
+                    try {
+                        _sync_thread = new std::thread(sync_thread<T>, obj, _startup, _shutdown);
+                    }
+                    catch (RuntimeError& ex) {
+                        _sync_thread = nullptr;
+                        throw ex;
+                    }
+                }
             }
         }
     }
