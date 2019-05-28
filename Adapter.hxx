@@ -73,6 +73,7 @@ namespace pEp {
                 std::lock_guard<std::mutex> lock(m);
 
                 if (!_sync_thread) {
+                    register_done = false;
                     _sync_thread = new std::thread(sync_thread<T>, obj, _startup, _shutdown);
                     while (!register_done)
                         std::this_thread::sleep_for(std::chrono::milliseconds(100));
