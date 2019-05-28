@@ -17,8 +17,8 @@ namespace pEp {
 
         SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold);
 
-        std::exception_ptr _ex;
-        bool register_done = false;
+        static std::exception_ptr _ex;
+        static bool register_done = false;
 
         template< class T > void sync_thread(T *obj, function< void(T *) > _startup, function< void(T *) > _shutdown)
         {
