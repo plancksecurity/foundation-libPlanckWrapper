@@ -17,8 +17,8 @@ namespace pEp {
 
         SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold);
 
-        static std::exception_ptr _ex;
-        static bool register_done = false;
+        std::exception_ptr _ex;
+        bool lpa_register_done = false;
 
         template< class T > void sync_thread(T *obj, function< void(T *) > _startup, function< void(T *) > _shutdown)
         {
@@ -34,11 +34,11 @@ namespace pEp {
                     _notifyHandshake, _retrieve_next_sync_event);
                 try {
                     throw_status(status);
-                    register_done = true;
+                    lpa_register_done = true;
                 }
                 catch (...) {
                     _ex = std::current_exception();
-                    register_done = true;
+                    lpa_register_done = true;
                     return;
                 }
             }
@@ -73,9 +73,9 @@ namespace pEp {
                 std::lock_guard<std::mutex> lock(m);
 
                 if (!_sync_thread) {
-                    register_done = false;
+                    lpa_register_done = false;
                     _sync_thread = new std::thread(sync_thread<T>, obj, _startup, _shutdown);
-                    while (!register_done)
+                    while (!lpa_register_done)
                         std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
                     if (_ex) {
