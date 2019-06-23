@@ -11,7 +11,7 @@ LOCAL_MODULE    := pEpAdapter
 
 
 LOCAL_CPP_FEATURES += exceptions
-LOCAL_CPPFLAGS += -std=c++17 -DANDROID_STL=c++_shared
+LOCAL_CPPFLAGS += -std=c++14 -DANDROID_STL=c++_shared
 
 
 LIB_PEP_ADAPTER_INCLUDE_FILES := $(wildcard $(LOCAL_PATH)/../../*.h*)
@@ -24,6 +24,7 @@ LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)../include
 
 LOCAL_SRC_FILES += $(LOCAL_PATH)/../../Adapter.cc \
         $(LOCAL_PATH)/../../slurp.cc \
+        $(LOCAL_PATH)/../../call_with_lock.cc \
         $(LOCAL_PATH)/../../status_to_string.cc
 
 
