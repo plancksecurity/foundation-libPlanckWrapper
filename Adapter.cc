@@ -36,16 +36,24 @@ namespace pEp {
         notifyHandshake_t _notifyHandshake = nullptr;
         std::thread *_sync_thread = nullptr;
 
-        ::utility::locked_queue< SYNC_EVENT > q;
+        ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > q;
         std::mutex m;
 
         int _inject_sync_event(SYNC_EVENT ev, void *management)
         {
             try {
-                q.push_front(ev);
+                if (ev == nullptr)
+                    q.push_back(ev);
+                else
+                    q.push_front(ev);
             }
             catch (exception&) {
                 return 1;
+            }
+            if (ev == nullptr) {
+                if (_sync_thread)
+                    _sync_thread->join();
+                q.clear();
             }
             return 0;
         }
@@ -103,7 +111,6 @@ namespace pEp {
         {
             if (_sync_thread) {
                 _inject_sync_event(nullptr, nullptr);
-                _sync_thread->join();
                 delete _sync_thread;
                 _sync_thread = nullptr;
             }
