@@ -116,5 +116,10 @@ namespace pEp {
             }
             session(release);
         }
+
+        bool is_sync_running()
+        {
+            return _sync_thread != nullptr;
+        }
     }
 }

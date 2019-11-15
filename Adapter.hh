@@ -43,6 +43,8 @@ namespace pEp {
         // injects a NULL event into sync_event_queue to denote sync thread to shutdown,
         // and joins & removes the sync thread
         void shutdown();
+
+        bool is_sync_running();
     }
 }
 
