@@ -1,7 +1,7 @@
-// this file is under GNU GPL 3.0, see LICENSE.txt
+// This file is under GNU General Public License 3.0
+// see LICENSE.txt
 
-#ifndef PEP_LOCKED_QUEUE
-#define PEP_LOCKED_QUEUE
+#pragma once
 
 #include <list>
 #include <condition_variable>
@@ -161,4 +161,3 @@ namespace utility
     };
 }
 
-#endif // PEP_LOCKED_QUEUE

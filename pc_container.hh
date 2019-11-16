@@ -1,5 +1,7 @@
-#ifndef PEP_LIB_PC_CONTAINER
-#define PEP_LIB_PC_CONTAINER
+// This file is under GNU General Public License 3.0
+// see LICENSE.txt
+
+#pragma once
 
 // Conainer adapter that contains a container and a producer/consume queue
 // that holds references to all changed elements
@@ -80,4 +82,3 @@ private:
 
 } // end of namespace pEp
 
-#endif // PEP_LIB_PC_CONTAINER
