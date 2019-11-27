@@ -51,10 +51,12 @@ namespace pEp {
                 return 1;
             }
             if (ev == nullptr) {
-                if (_sync_thread) {
-                    _sync_thread->join();
-                    delete _sync_thread;
-                    _sync_thread = nullptr;
+                if (!on_sync_thread()) {
+                    if (_sync_thread) {
+                        _sync_thread->join();
+                        delete _sync_thread;
+                        _sync_thread = nullptr;
+                    }
                 }
                 q.clear();
             }
