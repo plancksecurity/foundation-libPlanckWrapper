@@ -25,6 +25,7 @@ namespace pEp {
 
         template< class T > void sync_thread(T *obj, function< void(T *) > _startup, function< void(T *) > _shutdown)
         {
+            _ex = nullptr;
             assert(_messageToSend);
             assert(_notifyHandshake);
             if (obj && _startup)
@@ -53,6 +54,12 @@ namespace pEp {
 
             if (obj && _shutdown)
                 _shutdown(obj);
+
+            if (_sync_thread) {
+                _sync_thread->detach();
+                delete _sync_thread;
+                _sync_thread = nullptr;
+            }
         }
 
         template< class T > void startup(
@@ -79,6 +86,7 @@ namespace pEp {
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
                 if (_ex) {
+                    delete _sync_thread;
                     _sync_thread = nullptr;
                     std::rethrow_exception(_ex);
                 }
@@ -86,3 +94,4 @@ namespace pEp {
         }
     }
 }
+

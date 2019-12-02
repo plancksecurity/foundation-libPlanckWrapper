@@ -51,13 +51,8 @@ namespace pEp {
                 return 1;
             }
             if (ev == nullptr) {
-                if (!on_sync_thread()) {
-                    if (_sync_thread) {
-                        _sync_thread->join();
-                        delete _sync_thread;
-                        _sync_thread = nullptr;
-                    }
-                }
+                if (!on_sync_thread())
+                    _sync_thread->join();
                 q.clear();
             }
             return 0;
@@ -114,10 +109,8 @@ namespace pEp {
 
         void shutdown()
         {
-            if (_sync_thread) {
+            if (_sync_thread)
                 _inject_sync_event(nullptr, nullptr);
-            }
-            session(release);
         }
 
         bool is_sync_running()
@@ -126,3 +119,4 @@ namespace pEp {
         }
     }
 }
+
