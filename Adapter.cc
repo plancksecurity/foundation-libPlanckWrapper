@@ -42,18 +42,22 @@ namespace pEp {
         int _inject_sync_event(SYNC_EVENT ev, void *management)
         {
             try {
-                if (ev == nullptr)
+                if (ev == nullptr) {
+                    q.clear;
                     q.push_back(ev);
-                else
+                }
+                else {
                     q.push_front(ev);
+                }
             }
             catch (exception&) {
                 return 1;
             }
             if (ev == nullptr) {
-                if (!on_sync_thread())
+                if (!on_sync_thread()) {
                     _sync_thread->join();
-                q.clear();
+                    q.clear();
+                }
             }
             return 0;
         }
