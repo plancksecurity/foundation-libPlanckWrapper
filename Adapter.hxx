@@ -56,8 +56,7 @@ namespace pEp {
                 _shutdown(obj);
 
             if (_sync_thread) {
-                _sync_thread->detach();
-                delete _sync_thread;
+                // FIXME: small memory leak, because thread object is not released
                 _sync_thread = nullptr;
             }
         }

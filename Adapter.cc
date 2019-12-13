@@ -43,7 +43,7 @@ namespace pEp {
         {
             try {
                 if (ev == nullptr) {
-                    q.clear;
+                    q.clear();
                     q.push_back(ev);
                 }
                 else {
