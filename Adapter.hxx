@@ -54,11 +54,6 @@ namespace pEp {
 
             if (obj && _shutdown)
                 _shutdown(obj);
-
-            if (_sync_thread) {
-                // FIXME: small memory leak, because thread object is not released
-                _sync_thread = nullptr;
-            }
         }
 
         template< class T > void startup(
