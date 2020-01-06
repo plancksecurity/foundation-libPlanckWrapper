@@ -22,23 +22,20 @@ endif
 SOURCE=$(wildcard *.cc)
 HEADERS=$(wildcard *.hh *.hxx)
 OBJECTS=$(subst .cc,.o,$(SOURCE))
-WITHOUT_TESTS=$(patsubst test%.o,,$(OBJECTS))
 TARGET=libpEpAdapter.a
 
 all: $(TARGET)
 
-$(TARGET): $(WITHOUT_TESTS)
+$(TARGET): $(OBJECTS)
 	$(AR) -rc $@ $^
 
 clean:
-	rm -vf $(TARGET) $(OBJECTS) *.a test_adapter test_library lib
-	rm -rvf test_adapter.dSYM
-	rm -rvf test_library.dSYM
-	rm -rvf .gnupg/
-	rm -vf .pEp_management.db*
+	rm -vf $(TARGET) $(OBJECTS)
+#	rm -rvf .gnupg/
+# rm -vf .pEp_management.db*
 
-distclean: clean
-	rm -Rvf .gnupg .pEp_management*
+# distclean: clean
+# 	rm -Rvf .gnupg .pEp_management*
 
 install: $(TARGET)
 	mkdir -p $(PREFIX)/include/pEp
