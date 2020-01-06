@@ -17,25 +17,26 @@ ifdef BUILD_CONFIG
     $(info ================================================)
 endif
 
-.PHONY: all, clean, distclean, test, install, uninstall
+.PHONY: all, lib, test, install, uninstall, clean
 
 SOURCE=$(wildcard *.cc)
 HEADERS=$(wildcard *.hh *.hxx)
 OBJECTS=$(subst .cc,.o,$(SOURCE))
 TARGET=libpEpAdapter.a
 
-all: $(TARGET)
+lib: $(TARGET)
+
+all: lib test
+
+test: lib
+	$(MAKE) -C test all
 
 $(TARGET): $(OBJECTS)
 	$(AR) -rc $@ $^
 
 clean:
 	rm -vf $(TARGET) $(OBJECTS)
-#	rm -rvf .gnupg/
-# rm -vf .pEp_management.db*
-
-# distclean: clean
-# 	rm -Rvf .gnupg .pEp_management*
+	$(MAKE) -C test clean
 
 install: $(TARGET)
 	mkdir -p $(PREFIX)/include/pEp
