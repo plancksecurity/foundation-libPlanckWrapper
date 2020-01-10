@@ -24,6 +24,7 @@ PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handsha
 
 int main()
 {
+    // Create new identity
     pEpLog("updating or creating identity for me");
     pEp_identity *me = new_identity("alice@peptest.ch", NULL, "23", "Who the F* is Alice");
     assert(me);
@@ -31,10 +32,18 @@ int main()
     free_identity(me);
     pEp::throw_status(status);
 
-    pEpLog("starting the adapter including sync");
-    startup(messageToSend, notifyHandshake);
-    sleep(3);
-    shutdown();
-
+    // start and stop sync repeatedly
+    useconds_t sleepuSec = 1000 * 100;
+    unsigned long long int nrIters = 1000 * 1000 * 1000;
+    for (int i = 0; i < nrIters; i++) {
+        pEpLog("RUN NR: ");
+        pEpLog(i);
+        pEpLog("SYNC START");
+        pEpLog("starting the adapter including sync");
+        startup(messageToSend, notifyHandshake);
+        pEpLog("SYNC STOP");
+        usleep(sleepuSec);
+        shutdown();
+    }
     return 0;
 }
