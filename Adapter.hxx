@@ -47,7 +47,9 @@ namespace pEp {
                 }
             }
 
+            pEpLog("sync protocol loop started");
             do_sync_protocol(session(), (void *)obj);
+            pEpLog("sync protocol loop ended");
             unregister_sync_callbacks(session());
 
             session(release);
@@ -88,4 +90,3 @@ namespace pEp {
         }
     }
 }
-

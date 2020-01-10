@@ -113,8 +113,11 @@ namespace pEp {
 
         void shutdown()
         {
-            if (_sync_thread)
+        	pEpLog("called");
+            if (_sync_thread) {
+            	pEpLog("sync_is_running - injecting null event");
                 _inject_sync_event(nullptr, nullptr);
+            }
         }
 
         bool is_sync_running()
@@ -123,4 +126,3 @@ namespace pEp {
         }
     }
 }
-
