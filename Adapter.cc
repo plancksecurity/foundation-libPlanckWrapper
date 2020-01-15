@@ -55,8 +55,17 @@ namespace pEp {
             }
             if (ev == nullptr) {
                 if (!on_sync_thread()) {
-                    _sync_thread->join();
-                    q.clear();
+                    if(_sync_thread->joinable()) {
+                        pEpLog("Waiting for Sync thread to join...");
+                        _sync_thread->join();
+                        delete _sync_thread;
+                        _sync_thread = nullptr;
+                        pEpLog("...thread joined");
+                        q.clear();
+                    } else  {
+                        //FATAL
+                        pEpLog("FATAL: sync thread not joinable/detached");
+                    }
                 }
             }
             return 0;
