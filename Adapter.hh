@@ -6,6 +6,7 @@
 #include <functional>
 #include <string>
 #include <pEp/sync_api.h>
+#include <stdexcept>
 
 // TODO: put into not yet existing libpEpAdapter_utils.h, to be across whole libpEpAdapter
 #ifdef NDEBUG
