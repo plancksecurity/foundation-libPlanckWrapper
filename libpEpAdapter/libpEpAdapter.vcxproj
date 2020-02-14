@@ -99,6 +99,8 @@ xcopy /i/y "$(ProjectDir)..\status_to_string.hh" "$(SolutionDir)pEp\"
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Adapter.cc" />
+    <ClCompile Include="..\call_with_lock.cc" />
+    <ClCompile Include="..\slurp.cc" />
     <ClCompile Include="..\status_to_string.cc" />
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +108,7 @@ xcopy /i/y "$(ProjectDir)..\status_to_string.hh" "$(SolutionDir)pEp\"
     <ClInclude Include="..\Adapter.hxx" />
     <ClInclude Include="..\locked_queue.hh" />
     <ClInclude Include="..\pc_container.hh" />
+    <ClInclude Include="..\slurp.hh" />
     <ClInclude Include="..\status_to_string.hh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
