@@ -1,10 +1,10 @@
 #!/bin/sh
 
+echo "Install script"
 set -e
-dir="$1"
-echo "$dir/build-android/include/pEp"
-mkdir -p "$dir/build-android/include/pEp"
-cd "."
-echo `pwd`
-cp ../../*.h* "$dir/build-android/include/pEp"
+engine_dir="$1"
+adapter_dir="$2"
+
+mkdir -p "$engine_dir/build-android/include/pEp"
+cp $2/*.h* "$engine_dir/build-android/include/pEp"
 

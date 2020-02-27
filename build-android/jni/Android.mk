@@ -5,6 +5,7 @@
  
 LOCAL_PATH := $(call my-dir)
 
+
 include $(CLEAR_VARS)
 
 LOCAL_MODULE    := pEpAdapter
@@ -13,12 +14,14 @@ LOCAL_MODULE    := pEpAdapter
 LOCAL_CPP_FEATURES += exceptions
 LOCAL_CPPFLAGS += -std=c++14 -DANDROID_STL=c++_shared
 
+#FIXME: WORKARROUND 
+STUB = $(shell sh $(LOCAL_PATH)/../takeOutHeaderFiles.sh $(LOCAL_PATH)/../../../pEpEngine/ $(LOCAL_PATH)/../../)
+$(info $(STUB))
 
 LIB_PEP_ADAPTER_INCLUDE_FILES := $(wildcard $(LOCAL_PATH)/../../*.h*)
+
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../pEpEngine/build-android/include \
             $(LIB_PEP_ADAPTER_INCLUDE_FILES:%=%)
-
-#$(shell sh $(LOCAL_PATH)/../takeOutHeaderFiles.sh $(LOCAL_PATH)/../../../pEpEngine)
 
 LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)../include
 
