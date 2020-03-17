@@ -30,6 +30,8 @@ namespace pEp {
     };
 
     namespace Adapter {
+        int _inject_sync_event(SYNC_EVENT ev, void *management);
+
         template<class T = void>
         void startup(
                 messageToSend_t messageToSend,
