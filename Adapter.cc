@@ -12,6 +12,7 @@ using namespace std;
 namespace pEp {
     void throw_status(PEP_STATUS status)
     {
+        pEpLog("called");
         if (status == PEP_STATUS_OK)
             return;
         if (status >= 0x400 && status <= 0x4ff)
@@ -28,7 +29,7 @@ namespace pEp {
     RuntimeError::RuntimeError(const std::string& _text, PEP_STATUS _status)
         : std::runtime_error(_text.c_str()), text(_text),  status(_status)
     {
-
+        pEpLog("called");
     }
 
     namespace Adapter {
@@ -36,18 +37,19 @@ namespace pEp {
         notifyHandshake_t _notifyHandshake = nullptr;
         std::thread *_sync_thread = nullptr;
 
-        ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > q;
+        ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > sync_q;
         std::mutex m;
 
         int _inject_sync_event(SYNC_EVENT ev, void *management)
         {
+            pEpLog("called");
             try {
                 if (ev == nullptr) {
-                    q.clear();
-                    q.push_back(ev);
+                    sync_q.clear();
+                    sync_q.push_back(ev);
                 }
                 else {
-                    q.push_front(ev);
+                    sync_q.push_front(ev);
                 }
             }
             catch (exception&) {
@@ -61,7 +63,7 @@ namespace pEp {
                         delete _sync_thread;
                         _sync_thread = nullptr;
                         pEpLog("...thread joined");
-                        q.clear();
+                        sync_q.clear();
                     } else  {
                         //FATAL
                         pEpLog("FATAL: sync thread not joinable/detached");
@@ -74,8 +76,9 @@ namespace pEp {
         // threshold: max waiting time in seconds
         SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold)
         {
+            pEpLog("called");
             SYNC_EVENT syncEvent = nullptr;
-            const bool success = q.try_pop_front(syncEvent, std::chrono::seconds(threshold));
+            const bool success = sync_q.try_pop_front(syncEvent, std::chrono::seconds(threshold));
 
             if (!success)
                 return new_sync_timeout_event();
@@ -85,6 +88,7 @@ namespace pEp {
 
         bool on_sync_thread()
         {
+            pEpLog("called");
             if (_sync_thread && _sync_thread->get_id() == this_thread::get_id())
                 return true;
             else
@@ -93,6 +97,7 @@ namespace pEp {
 
         PEP_SESSION session(session_action action)
         {
+            pEpLog("called");
             std::lock_guard<mutex> lock(m);
             bool in_sync = on_sync_thread();
 
@@ -131,6 +136,7 @@ namespace pEp {
 
         bool is_sync_running()
         {
+            pEpLog("called");
             return _sync_thread != nullptr;
         }
     }

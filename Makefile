@@ -17,7 +17,7 @@ ifdef BUILD_CONFIG
     $(info ================================================)
 endif
 
-.PHONY: all, lib, test, install, uninstall, clean
+.PHONY: all lib test install uninstall clean
 
 SOURCE=$(wildcard *.cc)
 HEADERS=$(wildcard *.hh *.hxx)
