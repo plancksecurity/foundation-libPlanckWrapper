@@ -1,24 +1,25 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
-#include "Adapter.hh"
 #include <iostream>
 #include <assert.h>
 #include <unistd.h>
 #include <pEp/keymanagement.h>
+#include "Adapter.hh"
+#include "../utils.hh"
 
 using namespace std;
 using namespace pEp::Adapter;
 
 PEP_STATUS messageToSend(struct _message *msg)
 {
-    pEpLog("called()");
+    pEpLog("called");
     return PEP_STATUS_OK;
 }
 
 PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handshake_signal signal)
 {
-    pEpLog("called()");
+    pEpLog("called");
     return PEP_STATUS_OK;
 }
 
@@ -33,17 +34,16 @@ int main()
     pEp::throw_status(status);
 
     // start and stop sync repeatedly
-    useconds_t sleepuSec = 1000 * 100;
-    unsigned long long int nrIters = 1000 * 1000 * 1000;
+    useconds_t sleepuSec = 1000 * 1000;
+    unsigned long long int nrIters = 3;//1000 * 1000 * 1000;
     for (int i = 0; i < nrIters; i++) {
-        pEpLog("RUN NR: ");
-        pEpLog(i);
+        pEpLog("RUN NR: " << i);
         pEpLog("SYNC START");
-        pEpLog("starting the adapter including sync");
         startup(messageToSend, notifyHandshake);
         pEpLog("SYNC STOP");
         usleep(sleepuSec);
         shutdown();
+        usleep(sleepuSec);
     }
     return 0;
 }

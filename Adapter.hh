@@ -7,7 +7,6 @@
 #include <string>
 #include <pEp/sync_api.h>
 #include <stdexcept>
-#include "utils.hh"
 
 namespace pEp {
 

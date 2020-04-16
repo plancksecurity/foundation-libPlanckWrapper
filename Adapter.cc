@@ -6,13 +6,15 @@
 #include <iomanip>
 #include <assert.h>
 #include "status_to_string.hh"
+#include "utils.hh"
+
 
 using namespace std;
 
 namespace pEp {
     void throw_status(PEP_STATUS status)
     {
-        pEpLog("called");
+        //pEpLog("called");
         if (status == PEP_STATUS_OK)
             return;
         if (status >= 0x400 && status <= 0x4ff)
@@ -38,21 +40,24 @@ namespace pEp {
         std::thread *_sync_thread = nullptr;
 
         ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > sync_q;
-        std::mutex m;
+        std::mutex mutex_global;
 
         int _inject_sync_event(SYNC_EVENT ev, void *management)
         {
             pEpLog("called");
             try {
                 if (ev == nullptr) {
+                    pEpLog("SYNC_EVENT: NULL");
                     sync_q.clear();
                     sync_q.push_back(ev);
                 }
                 else {
+                    pEpLog("SYNC_EVENT:" << ev);
                     sync_q.push_front(ev);
                 }
             }
             catch (exception&) {
+                pEpErr("Exception");
                 return 1;
             }
             if (ev == nullptr) {
@@ -80,15 +85,18 @@ namespace pEp {
             SYNC_EVENT syncEvent = nullptr;
             const bool success = sync_q.try_pop_front(syncEvent, std::chrono::seconds(threshold));
 
-            if (!success)
+            if (!success) {
+                pEpLog("timeout after [sec]: " << threshold);
                 return new_sync_timeout_event();
+            }
 
+            pEpLog("returning SYNC_EVENT: "  << syncEvent);
             return syncEvent;
         }
 
         bool on_sync_thread()
         {
-            pEpLog("called");
+            //pEpLog("called");
             if (_sync_thread && _sync_thread->get_id() == this_thread::get_id())
                 return true;
             else
@@ -98,7 +106,7 @@ namespace pEp {
         PEP_SESSION session(session_action action)
         {
             pEpLog("called");
-            std::lock_guard<mutex> lock(m);
+            std::lock_guard<mutex> lock(mutex_global);
             bool in_sync = on_sync_thread();
 
             thread_local static PEP_SESSION _session = nullptr;
@@ -107,14 +115,19 @@ namespace pEp {
             switch (action) {
                 case release:
                     if (_session) {
+                        pEpLog("action = release: releasing session: " << _session);
                         ::release(_session);
                         _session = nullptr;
+                    } else {
+                        pEpLog("action = release: No session to release");
                     }
                     break;
 
                 case init:
-                    if (!_session)
+                    if (!_session) {
+                        pEpLog("action = init: creating new session");
                         status = ::init(&_session, _messageToSend, _inject_sync_event);
+                    }
                     break;
 
                 default:
@@ -122,6 +135,7 @@ namespace pEp {
             }
 
             throw_status(status);
+            pEpLog("returning session: " << _session);
             return _session;
         }
 
