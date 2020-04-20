@@ -37,6 +37,6 @@ inline std::string timestamp_usec() {
 #ifdef NDEBUG
 #define pEpLog(msg) do{}while(0)
 #else
-#define pEpLog(msg) do{ std::cout << timestamp_usec() << " Thread:" << std::this_thread::get_id() << ' ' <<__FILE__ << "::" << __FUNCTION__ << " - " << msg << '\n';} while(0)
+#define pEpLog(msg) do{ std::cout << std::unitbuf; std::cout << timestamp_usec() << " Thread:" << std::this_thread::get_id() << ' ' <<__FILE__ << "::" << __FUNCTION__ << " - " << msg << std::endl;} while(0)
 #endif
-#define pEpErr(msg) do{ std::cout << timestamp_usec() << " Thread:" << std::this_thread::get_id() << ' ' <<__FILE__ << "::" << __FUNCTION__ << " - " << msg << '\n';} while(0)
+#define pEpErr(msg) do{ std::cerr << std::unitbuf; std::cerr << timestamp_usec() << " Thread:" << std::this_thread::get_id() << ' ' <<__FILE__ << "::" << __FUNCTION__ << " - " << msg << std::endl;} while(0)
