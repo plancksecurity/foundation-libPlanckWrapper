@@ -6,13 +6,16 @@ CXXFLAGS+=-I../
 
 .PHONY=all, test_adapter, test_adapter_cxx, test_library
 
-all: test_adapter test_adapter_cxx test_library
+all: test_adapter test_adapter_cxx test_library test_peplog
 
 test_adapter: test_adapter.cc ../libpEpAdapter.a
 
 test_adapter_cxx: test_adapter_cxx.cc ../libpEpAdapter.a
 
 test_library: test_library.cc ../libpEpAdapter.a
+
+test_peplog: test_peplog.cc
+
 
 clean:	
 	rm -vf test_adapter
