@@ -1,11 +1,12 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
-#include "Adapter.hh"
 #include <iostream>
 #include <assert.h>
 #include <unistd.h>
 #include <pEp/keymanagement.h>
+#include "Adapter.hh"
+#include "../utils.hh"
 
 using namespace pEp::Adapter;
 
