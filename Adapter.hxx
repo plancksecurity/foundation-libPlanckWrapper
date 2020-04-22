@@ -6,7 +6,6 @@
 #include <thread>
 #include "locked_queue.hh"
 #include <cassert>
-#include "utils.hh"
 
 namespace pEp {
     namespace Adapter {
@@ -17,7 +16,7 @@ namespace pEp {
         extern std::thread *_sync_thread;
 
         extern ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > q;
-        extern std::mutex mutex_global;
+        extern std::mutex m;
 
         SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold);
 
@@ -26,7 +25,6 @@ namespace pEp {
 
         template< class T > void sync_thread(T *obj, function< void(T *) > _startup, function< void(T *) > _shutdown)
         {
-            pEpLog("called");
             _ex = nullptr;
             assert(_messageToSend);
             assert(_notifyHandshake);
@@ -69,8 +67,6 @@ namespace pEp {
         )
             throw (RuntimeError)
         {
-            pEpLog("called");
-
             if (messageToSend)
                 _messageToSend = messageToSend;
 
