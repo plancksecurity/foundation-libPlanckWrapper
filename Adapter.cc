@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <assert.h>
 #include "status_to_string.hh"
+#include "pEpLog.hh"
 
 using namespace std;
 

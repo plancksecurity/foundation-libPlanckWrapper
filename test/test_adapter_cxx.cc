@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <unistd.h>
 #include <pEp/keymanagement.h>
+#include "pEpLog.hh"
 
 using namespace pEp::Adapter;
 

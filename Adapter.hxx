@@ -6,6 +6,7 @@
 #include <thread>
 #include "locked_queue.hh"
 #include <cassert>
+#include "pEpLog.hh"
 
 namespace pEp {
     namespace Adapter {
