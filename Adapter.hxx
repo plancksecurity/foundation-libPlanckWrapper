@@ -66,7 +66,6 @@ namespace pEp {
             function< void(T *) > _startup,
             function< void(T *) > _shutdown
         )
-            throw (RuntimeError)
         {
             if (messageToSend)
                 _messageToSend = messageToSend;

@@ -31,7 +31,7 @@ namespace pEp {
                 T *obj = nullptr,
                 std::function< void (T *) > _startup = nullptr,
                 std::function< void (T *) > _shutdown = nullptr
-            ) throw (RuntimeError);
+            );
 
         // returns 'true' when called from the "sync" thread, 'false' otherwise.
         bool on_sync_thread();
