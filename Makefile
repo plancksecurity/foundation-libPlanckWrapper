@@ -5,6 +5,8 @@
 
 include Makefile.conf
 
+TARGET=libpEpAdapter.a
+
 ifneq ($(wildcard local.conf),)
     $(info ================================================)
     $(info Overrides in `local.conf` are used.)
@@ -22,11 +24,25 @@ endif
 SOURCE=$(wildcard *.cc)
 HEADERS=$(wildcard *.hh *.hxx)
 OBJECTS=$(subst .cc,.o,$(SOURCE))
-TARGET=libpEpAdapter.a
+DEPENDS=$(subst .cc,.d,$(SOURCE))
+
+all: $(TARGET)
+
+-include Makefile.protocols
+
+%.d: %.cc
+	@set -e; rm -f $@; \
+	$(CXX) -MM $(CPPFLAGS) $(CXXFLAGS) $< > $@.$$$$; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
+	rm -f $@.$$$$
+
+ifneq ($(MAKECMDGOALS),clean)
+    -include $(DEPENDS)
+endif
 
 lib: $(TARGET)
 
-all: lib test
+all: lib
 
 test: lib
 	$(MAKE) -C test all
@@ -35,7 +51,7 @@ $(TARGET): $(OBJECTS)
 	$(AR) -rc $@ $^
 
 clean:
-	rm -vf $(TARGET) $(OBJECTS)
+	rm -vf $(TARGET) $(OBJECTS) $(DEPENDS)
 	$(MAKE) -C test clean
 
 install: $(TARGET)
