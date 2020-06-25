@@ -1,6 +1,7 @@
 syntax: glob
 *.o
 *.a
+*.d
 *.swp
 ws
 test_adapter
