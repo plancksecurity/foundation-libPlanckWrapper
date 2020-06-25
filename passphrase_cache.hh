@@ -22,7 +22,8 @@ namespace pEp {
         duration _timeout;
 
     public:
-        PassphraseCache() : _timeout(std::chrono::minutes(10)) { }
+        PassphraseCache(duration timeout = std::chrono::minutes(10)) :
+            _timeout(timeout) { }
         ~PassphraseCache() { }
         PassphraseCache(const PassphraseCache& second) :
             _cache(second._cache), _timeout(second._timeout) { }
