@@ -44,7 +44,7 @@ int main()
     std::cout << "expected: two passphrases but reverse order\n";
     cache.for_each_passphrase([&](std::string passphrase){std::cout << "'" << passphrase << "'\n"; return false;});
 
-    status = cache.api(api_test1, session, str, bytes, n, sl);
+    status = cache.api(api_test1, session, "23", bytes, n, (::stringlist_t *) NULL);
     assert(status == PEP_WRONG_PASSPHRASE);
     status = cache.api(api_test2, session, str, bytes, n, sl);
     assert(status == PEP_STATUS_OK);

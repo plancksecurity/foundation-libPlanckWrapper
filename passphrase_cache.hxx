@@ -1,4 +1,5 @@
 #pragma once
+#include <cassert>
 #include "passphrase_cache.hh"
 
 namespace pEp {
@@ -8,7 +9,10 @@ namespace pEp {
         PEP_STATUS status;
 
         for_each_passphrase([&](std::string passphrase) {
-            ::config_passphrase(session, passphrase.c_str());
+            status = ::config_passphrase(session, passphrase.c_str());
+            if (status)
+                return true;
+
             status = f(session, a...);
             return status != PEP_PASSPHRASE_REQUIRED &&
                     status != PEP_WRONG_PASSPHRASE;
