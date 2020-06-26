@@ -4,6 +4,8 @@ namespace pEp {
     void PassphraseCache::add(std::string passphrase)
     {
         std::lock_guard<std::mutex> lock(_mtx);
+        while (_cache.size() >= _max_size)
+            _cache.pop_front();
         _cache.push_back({passphrase, clock::now()});
     }
 
@@ -25,8 +27,6 @@ namespace pEp {
     void PassphraseCache::cleanup()
     {
         while (!_cache.empty() && _cache.front().tp < clock::now() - _timeout)
-            _cache.pop_front();
-        while (_cache.size() > _max_size)
             _cache.pop_front();
     }
 
