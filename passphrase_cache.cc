@@ -4,11 +4,10 @@ namespace pEp {
     void PassphraseCache::add(std::string passphrase)
     {
         std::lock_guard<std::mutex> lock(_mtx);
-        cleanup();
         _cache.push_back({passphrase, clock::now()});
     }
 
-    bool PassphraseCache::for_each_passphrase(passphrase_callee& callee)
+    bool PassphraseCache::for_each_passphrase(const passphrase_callee& callee)
     {
         std::lock_guard<std::mutex> lock(_mtx);
         cleanup();
@@ -23,12 +22,8 @@ namespace pEp {
 
     void PassphraseCache::cleanup()
     {
-        for (auto entry = _cache.begin(); entry != _cache.end(); ) {
-            if (entry->tp < clock::now() - _timeout)
-                _cache.erase(entry);
-            else
-                break;
-        }
+        while (!_cache.empty() && _cache.front().tp < clock::now() - _timeout)
+            _cache.pop_front();
     }
 };
 
