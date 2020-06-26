@@ -19,11 +19,12 @@ namespace pEp {
 
         std::list<cache_entry> _cache;   
         std::mutex _mtx;
+        int _max_size;
         duration _timeout;
 
     public:
-        PassphraseCache(duration timeout = std::chrono::minutes(10)) :
-            _timeout(timeout) { }
+        PassphraseCache(int max_size=20, duration timeout = std::chrono::minutes(10)) :
+            _max_size(max_size), _timeout(timeout) { }
         ~PassphraseCache() { }
         PassphraseCache(const PassphraseCache& second) :
             _cache(second._cache), _timeout(second._timeout) { }

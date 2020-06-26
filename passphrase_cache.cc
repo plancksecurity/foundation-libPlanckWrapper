@@ -24,6 +24,8 @@ namespace pEp {
     {
         while (!_cache.empty() && _cache.front().tp < clock::now() - _timeout)
             _cache.pop_front();
+        while (_cache.size() > _max_size)
+            _cache.pop_front();
     }
 };
 

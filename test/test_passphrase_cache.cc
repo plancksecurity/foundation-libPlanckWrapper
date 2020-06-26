@@ -6,7 +6,8 @@
 
 int main()
 {
-    pEp::PassphraseCache cache{std::chrono::seconds(1)};
+    pEp::PassphraseCache cache{2, std::chrono::seconds(1)};
+    cache.add("say");
     cache.add("hello");
     cache.add("world");
 
