@@ -6,7 +6,7 @@ namespace pEp {
         std::lock_guard<std::mutex> lock(_mtx);
         while (_cache.size() >= _max_size)
             _cache.pop_front();
-        _cache.push_back({passphrase, clock::now()});
+        _cache.emplace_back(cache_entry(passphrase, clock::now()));
     }
 
     bool PassphraseCache::for_each_passphrase(const passphrase_callee& callee)

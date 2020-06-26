@@ -13,6 +13,10 @@ namespace pEp {
         using duration = clock::duration;
 
         struct cache_entry {
+            static const size_t max_len = 250 * 4;
+            cache_entry(std::string p, time_point t) :
+                passphrase(p, 0, max_len), tp(t) { }
+
             std::string passphrase;
             time_point tp;
         };
