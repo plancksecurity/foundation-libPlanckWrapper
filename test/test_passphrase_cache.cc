@@ -42,16 +42,16 @@ int main()
     std::cout << "expected: two passphrases but reverse order\n";
     cache.for_each_passphrase([&](std::string passphrase){std::cout << "'" << passphrase << "'\n"; return false;});
 
-    cache.api(api_test1, session, str, bytes, n, sl);
-    cache.api(api_test2, session, str, bytes, n, sl);
+    status = cache.api(api_test1, session, str, bytes, n, sl);
+    status = cache.api(api_test2, session, str, bytes, n, sl);
 
     sleep(2);
 
     std::cout << "expected: no passphrase\n";
     cache.for_each_passphrase([&](std::string passphrase){std::cout << "'" << passphrase << "'\n"; return false;});
 
-    cache.api(api_test1, session, str, bytes, n, sl);
-    cache.api(api_test2, session, str, bytes, n, sl);
+    status = cache.api(api_test1, session, str, bytes, n, sl);
+    status = cache.api(api_test2, session, str, bytes, n, sl);
 
     ::release(session);
     return 0;
