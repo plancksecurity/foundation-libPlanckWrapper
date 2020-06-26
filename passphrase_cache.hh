@@ -28,7 +28,7 @@ namespace pEp {
             _max_size(max_size), _timeout(timeout) { }
         ~PassphraseCache() { }
         PassphraseCache(const PassphraseCache& second) :
-            _cache(second._cache), _timeout(second._timeout) { }
+            _cache(second._cache), _max_size(second._max_size), _timeout(second._timeout) { }
 
         // adding a passphrase to the cache, which will timeout
         void add(std::string passphrase);
