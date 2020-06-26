@@ -22,6 +22,8 @@ int main()
 {
     PEP_SESSION session;
     PEP_STATUS status = ::init(&session, NULL, NULL);
+    assert(status == PEP_STATUS_OK);
+    assert(session);
 
     const char *str = "23";
     char *bytes = NULL;
@@ -43,7 +45,9 @@ int main()
     cache.for_each_passphrase([&](std::string passphrase){std::cout << "'" << passphrase << "'\n"; return false;});
 
     status = cache.api(api_test1, session, str, bytes, n, sl);
+    assert(status == PEP_WRONG_PASSPHRASE);
     status = cache.api(api_test2, session, str, bytes, n, sl);
+    assert(status == PEP_STATUS_OK);
 
     sleep(2);
 
@@ -51,7 +55,9 @@ int main()
     cache.for_each_passphrase([&](std::string passphrase){std::cout << "'" << passphrase << "'\n"; return false;});
 
     status = cache.api(api_test1, session, str, bytes, n, sl);
+    assert(status == PEP_WRONG_PASSPHRASE);
     status = cache.api(api_test2, session, str, bytes, n, sl);
+    assert(status == PEP_STATUS_OK);
 
     ::release(session);
     return 0;
