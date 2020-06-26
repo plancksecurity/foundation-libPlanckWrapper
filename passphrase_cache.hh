@@ -5,6 +5,7 @@
 #include <chrono>
 #include <mutex>
 #include <functional>
+#include <pEp/message_api.h>
 
 namespace pEp {
     class PassphraseCache {
@@ -28,25 +29,40 @@ namespace pEp {
         duration _timeout;
 
     public:
-        PassphraseCache(int max_size=20, duration timeout = std::chrono::minutes(10)) :
-            _max_size(max_size), _timeout(timeout) { }
+        PassphraseCache(int max_size=20, duration timeout =
+                std::chrono::minutes(10)) : _max_size(max_size),
+        _timeout(timeout) { }
         ~PassphraseCache() { }
-        PassphraseCache(const PassphraseCache& second) :
-            _cache(second._cache), _max_size(second._max_size), _timeout(second._timeout) { }
+        PassphraseCache(const PassphraseCache& second) : _cache(second._cache),
+                _max_size(second._max_size), _timeout(second._timeout) { }
 
         // adding a passphrase to the cache, which will timeout
+
         void add(std::string passphrase);
 
         // for each passphrase call the callee until it returns true for a
         // matching passphrase or no passphrases are left
         // always tests empty passphrase first
         // returns true if a passphrase was matching, false otherwise
+
         using passphrase_callee = std::function<bool(std::string)>;
         bool for_each_passphrase(const passphrase_callee& callee);
+
+        // convenience functions
+        // i.e.
+        // status = cache.api(::encrypt_message, session, src, extra, dst, enc_format, flags)
+        // will call
+        // status = ::encrypt_message(session, src, extra, dst, enc_format, flags)
+        // using for_each_passphrase()
+
+        template<typename... A> PEP_STATUS api(PEP_STATUS f(PEP_SESSION, A...),
+                PEP_SESSION session, A... a);
 
     protected:
         void cleanup();
         void refresh(cache::iterator entry);
     };
 };
+
+#include "passphrase_cache.hxx"
 
