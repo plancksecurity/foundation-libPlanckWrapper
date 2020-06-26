@@ -14,6 +14,9 @@ namespace pEp {
         std::lock_guard<std::mutex> lock(_mtx);
         cleanup();
 
+        if (callee(""))
+            return true;
+
         for (auto entry=_cache.begin(); entry!=_cache.end(); ++entry) {
             if (callee(entry->passphrase)) {
                 refresh(entry);

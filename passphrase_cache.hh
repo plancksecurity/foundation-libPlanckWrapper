@@ -35,6 +35,7 @@ namespace pEp {
 
         // for each passphrase call the callee until it returns true for a
         // matching passphrase or no passphrases are left
+        // always tests empty passphrase first
         // returns true if a passphrase was matching, false otherwise
         using passphrase_callee = std::function<bool(std::string)>;
         bool for_each_passphrase(const passphrase_callee& callee);

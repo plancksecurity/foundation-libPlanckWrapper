@@ -12,18 +12,18 @@ int main()
     cache.add("world");
 
     std::cout << "expected: two passphrases\n";
-    cache.for_each_passphrase([&](std::string passphrase){std::cout << passphrase << "\n"; return false;});
+    cache.for_each_passphrase([&](std::string passphrase){std::cout << "'" << passphrase << "'\n"; return false;});
 
     std::cout << "expected: one passphrase\n";
-    cache.for_each_passphrase([&](std::string passphrase){std::cout << passphrase << "\n"; return true;});
+    cache.for_each_passphrase([&](std::string passphrase){std::cout << "'" << passphrase << "'\n"; return passphrase != "";});
 
     std::cout << "expected: two passphrases but reverse order\n";
-    cache.for_each_passphrase([&](std::string passphrase){std::cout << passphrase << "\n"; return false;});
+    cache.for_each_passphrase([&](std::string passphrase){std::cout << "'" << passphrase << "'\n"; return false;});
 
     sleep(2);
 
     std::cout << "expected: no passphrase\n";
-    cache.for_each_passphrase([&](std::string passphrase){std::cout << passphrase << "\n"; return false;});
+    cache.for_each_passphrase([&](std::string passphrase){std::cout << "'" << passphrase << "'\n"; return false;});
 
     return 0;
 }
