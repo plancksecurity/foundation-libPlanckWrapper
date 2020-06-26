@@ -16,8 +16,9 @@ namespace pEp {
             std::string passphrase;
             time_point tp;
         };
+        using cache = std::list<cache_entry>;
 
-        std::list<cache_entry> _cache;   
+        cache _cache;   
         std::mutex _mtx;
         int _max_size;
         duration _timeout;
@@ -40,6 +41,7 @@ namespace pEp {
 
     protected:
         void cleanup();
+        void refresh(cache::iterator entry);
     };
 };
 
