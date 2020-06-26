@@ -11,7 +11,7 @@ extern "C" {
         return PEP_WRONG_PASSPHRASE;
     }
 
-    PEP_STATUS api_test2(PEP_SESSION session, const char *str, char *bytes, int n, ::stringlist_t *sl)
+    PEP_STATUS api_test2(PEP_SESSION session, int n, const char *str, char *bytes, ::stringlist_t *sl)
     {
         std::cout << "called api_test2\n";
         return PEP_STATUS_OK;
@@ -46,7 +46,7 @@ int main()
 
     status = cache.api(api_test1, session, "23", bytes, n, (::stringlist_t *) NULL);
     assert(status == PEP_WRONG_PASSPHRASE);
-    status = cache.api(api_test2, session, str, bytes, n, sl);
+    status = cache.api(api_test2, session, n, str, bytes, sl);
     assert(status == PEP_STATUS_OK);
 
     sleep(2);
@@ -56,7 +56,7 @@ int main()
 
     status = cache.api(api_test1, session, str, bytes, n, sl);
     assert(status == PEP_WRONG_PASSPHRASE);
-    status = cache.api(api_test2, session, str, bytes, n, sl);
+    status = cache.api(api_test2, session, 23, str, bytes, sl);
     assert(status == PEP_STATUS_OK);
 
     ::release(session);
