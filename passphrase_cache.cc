@@ -1,17 +1,17 @@
 #include "passphrase_cache.hh"
 
 namespace pEp {
-    void PassphraseCache::add(std::string passphrase)
+    const char *PassphraseCache::add(std::string passphrase)
     {
         std::lock_guard<std::mutex> lock(_mtx);
 
-        if (passphrase == "")
-            return;
+        if (passphrase != "") {
+            while (_cache.size() >= _max_size)
+                _cache.pop_front();
+            _cache.emplace_back(cache_entry(passphrase, clock::now()));
+        }
 
-        while (_cache.size() >= _max_size)
-            _cache.pop_front();
-
-        _cache.emplace_back(cache_entry(passphrase, clock::now()));
+        return passphrase.c_str();
     }
 
     bool PassphraseCache::for_each_passphrase(const passphrase_callee& callee)
