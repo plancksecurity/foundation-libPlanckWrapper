@@ -4,8 +4,13 @@ namespace pEp {
     void PassphraseCache::add(std::string passphrase)
     {
         std::lock_guard<std::mutex> lock(_mtx);
+
+        if (passphrase == "")
+            return;
+
         while (_cache.size() >= _max_size)
             _cache.pop_front();
+
         _cache.emplace_back(cache_entry(passphrase, clock::now()));
     }
 
