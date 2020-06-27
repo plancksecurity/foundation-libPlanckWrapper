@@ -38,7 +38,7 @@ namespace pEp {
 
         // adding a passphrase to the cache, which will timeout
 
-        const char *add(std::string passphrase);
+        const char *add(std::string&& passphrase);
 
         // for each passphrase call the callee until it returns true for a
         // matching passphrase or no passphrases are left
