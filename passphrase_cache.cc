@@ -97,7 +97,6 @@ namespace pEp {
         static bool new_copy = true;
         if (new_copy) {
             _copy = cache;
-            assert(_copy._cache.size() == cache._cache.size());
             new_copy = false;
         }
         try {
