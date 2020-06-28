@@ -1,6 +1,22 @@
 #include "passphrase_cache.hh"
 
 namespace pEp {
+    PassphraseCache::PassphraseCache(int max_size, duration timeout) :
+            _max_size(max_size), _timeout(timeout), _which(_cache.end())
+    { }
+
+    PassphraseCache::PassphraseCache(const PassphraseCache& second) :
+            _cache(second._cache), _max_size(second._max_size),
+            _timeout(second._timeout), _which(_cache.end())
+    {
+        cleanup();
+    }
+
+    PassphraseCache PassphraseCache::operator=(const PassphraseCache& second)
+    {
+        return second;
+    }
+
     const char *PassphraseCache::add(std::string passphrase)
     {
         std::lock_guard<std::mutex> lock(_mtx);
