@@ -101,7 +101,7 @@ namespace pEp {
             new_copy = false;
         }
         try {
-            ::config_passphrase(session, cache.latest_passphrase());
+            ::config_passphrase(session, _copy.latest_passphrase());
             return PEP_STATUS_OK;
         }
         catch (pEp::PassphraseCache::Empty&) {
