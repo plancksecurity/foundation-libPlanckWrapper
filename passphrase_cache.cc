@@ -81,5 +81,27 @@ namespace pEp {
         --_which;
         return _which->passphrase.c_str();
     }
+
+	PEP_STATUS PassphraseCache::messageToSend(PassphraseCache&& cache, PEP_SESSION session)
+	{
+        static pEp::PassphraseCache _copy;
+        static bool new_copy = true;
+        if (new_copy) {
+            _copy = cache;
+            new_copy = false;
+        }
+        try {
+            ::config_passphrase(session, _copy.latest_passphrase());
+            return PEP_STATUS_OK;
+        }
+        catch (pEp::PassphraseCache::Empty&) {
+            new_copy = true;
+            return PEP_PASSPHRASE_REQUIRED;
+        }
+        catch (pEp::PassphraseCache::Exhausted&) {
+            new_copy = true;
+            return PEP_WRONG_PASSPHRASE;
+        }
+	}
 };
 
