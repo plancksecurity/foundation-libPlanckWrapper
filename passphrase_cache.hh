@@ -61,8 +61,9 @@ namespace pEp {
         bool for_each_passphrase(const passphrase_callee& callee);
 
         // get all passphrases in cache from latest to oldest
-        // this function is throwing std::underflow_error when no passphrases
-        // are left
+        // this function is throwing PassphraseCache::Empty when cache is empty
+        // and PassphraseCache::Exhausted when no passphrases are left, then
+        // starts over
 
         const char *latest_passphrase();
 
