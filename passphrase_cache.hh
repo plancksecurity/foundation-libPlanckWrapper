@@ -33,10 +33,11 @@ namespace pEp {
     public:
         PassphraseCache(int max_size=20, duration timeout =
                 std::chrono::minutes(10)) : _max_size(max_size),
-                    _timeout(timeout) { }
+                    _timeout(timeout), _which(_cache.end()) { }
         ~PassphraseCache() { }
         PassphraseCache(const PassphraseCache& second) : _cache(second._cache),
-                _max_size(second._max_size), _timeout(second._timeout) { }
+                _max_size(second._max_size), _timeout(second._timeout),
+                _which(_cache.end()) { }
         PassphraseCache operator=(const PassphraseCache& second) { return second; }
 
         // adding a passphrase to the cache, which will timeout
@@ -52,13 +53,10 @@ namespace pEp {
         bool for_each_passphrase(const passphrase_callee& callee);
 
         // get all passphrases in cache from latest to oldest
-        // always returns ""
+        // this function is throwing std::underflow_error when no passphrases
+        // are left
 
         std::string latest_passphrase();
-
-        // get next passphrase; returns "" when no passphrases are left
-
-        std::string next_passphrase();
 
         // convenience functions
         // i.e.

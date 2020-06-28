@@ -1,4 +1,5 @@
 #include <iostream>
+#include <exception>
 #include <unistd.h>
 #include <assert.h>
 
@@ -52,11 +53,12 @@ int main()
     std::cout << "expected: two passphrases in order\n";
 
     pEp::PassphraseCache _cache = cache;
-    _cache.latest_passphrase();
-    for (std::string passphrase = _cache.next_passphrase(); passphrase != "" ;
-            passphrase = _cache.next_passphrase()) {
-        std::cout << passphrase << "\n";
+    try {
+        while (1) {
+            std::cout << "'" << _cache.latest_passphrase() << "'\n";
+        }
     }
+    catch (std::underflow_error&) { }
 
     sleep(2);
 

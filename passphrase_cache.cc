@@ -1,3 +1,4 @@
+#include <exception>
 #include "passphrase_cache.hh"
 
 namespace pEp {
@@ -47,22 +48,17 @@ namespace pEp {
     std::string PassphraseCache::latest_passphrase()
     {
         std::lock_guard<std::mutex> lock(_mtx);
-        cleanup();
-        _which = _cache.end();
-        return "";
-    }
+        
+        if (_cache.empty())
+            throw std::underflow_error("empty passphrase cache");
 
-    std::string PassphraseCache::next_passphrase()
-    {
-        std::lock_guard<std::mutex> lock(_mtx);
+        if (_which == _cache.begin()) {
+            _which = _cache.end();
+            throw std::underflow_error("out of passphrases");
+        }
 
-        if (_cache.empty() || _which == _cache.begin()) {
-            return "";
-        }
-        else {
-            --_which;
-            return _which->passphrase;
-        }
+        --_which;
+        return _which->passphrase;
     }
 };
 
