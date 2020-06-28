@@ -39,8 +39,7 @@ namespace pEp {
             Exhausted() : std::underflow_error("out of passphrases") { }
         };
 
-        PassphraseCache(int max_size=20, duration timeout =
-                std::chrono::minutes(10));
+        PassphraseCache(int max_size=20, duration timeout = std::chrono::minutes(10));
         ~PassphraseCache() { }
         PassphraseCache(const PassphraseCache& second);
         PassphraseCache operator=(const PassphraseCache& second);
