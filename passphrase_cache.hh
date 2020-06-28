@@ -35,6 +35,7 @@ namespace pEp {
         ~PassphraseCache() { }
         PassphraseCache(const PassphraseCache& second) : _cache(second._cache),
                 _max_size(second._max_size), _timeout(second._timeout) { }
+        PassphraseCache operator=(const PassphraseCache& second) { return second; }
 
         // adding a passphrase to the cache, which will timeout
 

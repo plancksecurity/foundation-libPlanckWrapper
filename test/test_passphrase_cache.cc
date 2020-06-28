@@ -59,6 +59,8 @@ int main()
     status = cache.api(api_test2, session, 23, str, bytes, sl);
     assert(status == PEP_STATUS_OK);
 
+    pEp::PassphraseCache _cache = cache;
+
     ::release(session);
     return 0;
 }
