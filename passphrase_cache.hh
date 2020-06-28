@@ -22,8 +22,6 @@ namespace pEp {
             time_point tp;
         };
         using cache = std::list<cache_entry>;
-        using interator = cache::iterator;
-        using const_iterator = cache::const_iterator;
 
         cache _cache;   
         std::mutex _mtx;
