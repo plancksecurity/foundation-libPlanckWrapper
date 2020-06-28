@@ -2,20 +2,29 @@
 #include "passphrase_cache.hh"
 
 namespace pEp {
+    PassphraseCache::cache_entry::cache_entry(std::string p, time_point t) :
+            passphrase{p, 0, PassphraseCache::cache_entry::max_len}, tp{t}
+    { }
+
     PassphraseCache::PassphraseCache(int max_size, duration timeout) :
-            _max_size(max_size), _timeout(timeout), _which(_cache.end())
+            _max_size{max_size}, _timeout{timeout}, _which{_cache.end()}
     { }
 
     PassphraseCache::PassphraseCache(const PassphraseCache& second) :
-            _cache(second._cache), _max_size(second._max_size),
-            _timeout(second._timeout), _which(_cache.end())
+            _cache{second._cache}, _max_size{second._max_size},
+            _timeout{second._timeout}, _which{_cache.end()}
     {
         cleanup();
     }
 
-    PassphraseCache PassphraseCache::operator=(const PassphraseCache& second)
+    PassphraseCache& PassphraseCache::operator=(const PassphraseCache& second)
     {
-        return second;
+        _cache = second._cache;
+        _max_size = second._max_size;
+        _timeout = second._timeout;
+        _which = _cache.end();
+        cleanup();
+        return *this;
     }
 
     const char *PassphraseCache::add(std::string passphrase)
@@ -88,10 +97,11 @@ namespace pEp {
         static bool new_copy = true;
         if (new_copy) {
             _copy = cache;
+            assert(_copy._cache.size() == cache._cache.size());
             new_copy = false;
         }
         try {
-            ::config_passphrase(session, _copy.latest_passphrase());
+            ::config_passphrase(session, cache.latest_passphrase());
             return PEP_STATUS_OK;
         }
         catch (pEp::PassphraseCache::Empty&) {

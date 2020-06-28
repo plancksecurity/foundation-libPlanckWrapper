@@ -49,8 +49,9 @@ int main()
     status = cache.api(api_test2, session, n, str, bytes, sl);
     assert(status == PEP_STATUS_OK);
 
-    std::cout << "expected: two passphrases in order\n";
-
+    cache.add("hello");
+    cache.add("world");
+    std::cout << "expected: two passphrases in reverse order\n";
     pEp::PassphraseCache _cache = cache;
     try {
         while (1) {
@@ -58,6 +59,12 @@ int main()
         }
     }
     catch (std::underflow_error&) { }
+
+    std::cout << "two times PEP_STATUS_OK (0), one time PEP_WRONG_PASSPHRASE (2561) \n";
+    do {
+        status = pEp::PassphraseCache::messageToSend(cache, session);
+        std::cout << status << "\n";
+    } while (status == PEP_STATUS_OK);
 
     sleep(2);
 

@@ -16,8 +16,7 @@ namespace pEp {
 
         struct cache_entry {
             static const size_t max_len = 250 * 4;
-            cache_entry(std::string p, time_point t) :
-                passphrase(p, 0, max_len), tp(t) { }
+            cache_entry(std::string p, time_point t);
 
             std::string passphrase;
             time_point tp;
@@ -42,7 +41,7 @@ namespace pEp {
         PassphraseCache(int max_size=20, duration timeout = std::chrono::minutes(10));
         ~PassphraseCache() { }
         PassphraseCache(const PassphraseCache& second);
-        PassphraseCache operator=(const PassphraseCache& second);
+        PassphraseCache& operator=(const PassphraseCache& second);
 
         // adding a passphrase to the cache, which will timeout
 
