@@ -1,4 +1,3 @@
-#include <exception>
 #include "passphrase_cache.hh"
 
 namespace pEp {

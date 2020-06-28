@@ -1,5 +1,4 @@
 #include <iostream>
-#include <exception>
 #include <unistd.h>
 #include <assert.h>
 

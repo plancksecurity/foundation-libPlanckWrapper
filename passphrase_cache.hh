@@ -5,6 +5,7 @@
 #include <chrono>
 #include <mutex>
 #include <functional>
+#include <exception>
 #include <pEp/message_api.h>
 
 namespace pEp {
