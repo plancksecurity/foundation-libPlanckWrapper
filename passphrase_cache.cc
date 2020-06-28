@@ -51,12 +51,12 @@ namespace pEp {
         
         if (_cache.empty()) {
             _which = _cache.end();
-            throw std::underflow_error("empty passphrase cache");
+            throw Empty();
         }
 
         if (_which == _cache.begin()) {
             _which = _cache.end();
-            throw std::underflow_error("out of passphrases");
+            throw Exhausted();
         }
 
         --_which;

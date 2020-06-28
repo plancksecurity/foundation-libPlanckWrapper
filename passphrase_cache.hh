@@ -31,6 +31,11 @@ namespace pEp {
         cache::iterator _which;
 
     public:
+        struct Empty : public std::underflow_error {
+            Empty() : std::underflow_error("passphrase cache empty") { }
+        struct Exhausted : public std::underflow_error {
+            Exhausted() : std::underflow_error("out of passphrases") { }
+
         PassphraseCache(int max_size=20, duration timeout =
                 std::chrono::minutes(10)) : _max_size(max_size),
                     _timeout(timeout), _which(_cache.end()) { }
