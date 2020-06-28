@@ -59,7 +59,7 @@ namespace pEp {
         // this function is using latest_passphrase() to test one passphrase after the
         // other until the cache is exhausted
 
-        static PEP_STATUS messageToSend(PassphraseCache&& cache, PEP_SESSION session);
+        static PEP_STATUS messageToSend(PassphraseCache& cache, PEP_SESSION session);
 
         // for each passphrase call the callee until it returns true for a
         // matching passphrase or no passphrases are left

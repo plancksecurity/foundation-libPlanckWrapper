@@ -82,7 +82,7 @@ namespace pEp {
         return _which->passphrase.c_str();
     }
 
-	PEP_STATUS PassphraseCache::messageToSend(PassphraseCache&& cache, PEP_SESSION session)
+	PEP_STATUS PassphraseCache::messageToSend(PassphraseCache& cache, PEP_SESSION session)
 	{
         static pEp::PassphraseCache _copy;
         static bool new_copy = true;
