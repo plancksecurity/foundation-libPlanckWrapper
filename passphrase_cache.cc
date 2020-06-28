@@ -1,7 +1,7 @@
 #include "passphrase_cache.hh"
 
 namespace pEp {
-    const char *PassphraseCache::add(std::string&& passphrase)
+    const char *PassphraseCache::add(std::string passphrase)
     {
         std::lock_guard<std::mutex> lock(_mtx);
 
