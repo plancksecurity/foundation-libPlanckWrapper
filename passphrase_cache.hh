@@ -60,7 +60,7 @@ namespace pEp {
         using passphrase_callee = std::function<bool(std::string)>;
         bool for_each_passphrase(const passphrase_callee& callee);
 
-        // get all passphrases in cache from latest to oldest
+        // get all passphrases in cache from latest to oldest one by each call
         // this function is throwing PassphraseCache::Empty when cache is empty
         // and PassphraseCache::Exhausted when no passphrases are left, then
         // starts over
