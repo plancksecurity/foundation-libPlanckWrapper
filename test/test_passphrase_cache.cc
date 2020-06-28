@@ -49,6 +49,15 @@ int main()
     status = cache.api(api_test2, session, n, str, bytes, sl);
     assert(status == PEP_STATUS_OK);
 
+    std::cout << "expected: two passphrases in order\n";
+
+    pEp::PassphraseCache _cache = cache;
+    _cache.latest_passphrase();
+    for (std::string passphrase = _cache.next_passphrase(); passphrase != "" ;
+            passphrase = _cache.next_passphrase()) {
+        std::cout << passphrase << "\n";
+    }
+
     sleep(2);
 
     std::cout << "expected: no passphrase\n";
@@ -58,8 +67,6 @@ int main()
     assert(status == PEP_WRONG_PASSPHRASE);
     status = cache.api(api_test2, session, 23, str, bytes, sl);
     assert(status == PEP_STATUS_OK);
-
-    pEp::PassphraseCache _cache = cache;
 
     ::release(session);
     return 0;

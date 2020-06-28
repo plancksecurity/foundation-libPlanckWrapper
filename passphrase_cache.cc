@@ -43,5 +43,26 @@ namespace pEp {
         entry->tp = clock::now();
         _cache.splice(_cache.end(), _cache, entry);
     }
+
+    std::string PassphraseCache::latest_passphrase()
+    {
+        std::lock_guard<std::mutex> lock(_mtx);
+        cleanup();
+        _which = _cache.end();
+        return "";
+    }
+
+    std::string PassphraseCache::next_passphrase()
+    {
+        std::lock_guard<std::mutex> lock(_mtx);
+
+        if (_cache.empty() || _which == _cache.begin()) {
+            return "";
+        }
+        else {
+            --_which;
+            return _which->passphrase;
+        }
+    }
 };
 

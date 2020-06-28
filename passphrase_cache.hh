@@ -28,6 +28,8 @@ namespace pEp {
         int _max_size;
         duration _timeout;
 
+        cache::iterator _which;
+
     public:
         PassphraseCache(int max_size=20, duration timeout =
                 std::chrono::minutes(10)) : _max_size(max_size),
@@ -48,6 +50,15 @@ namespace pEp {
 
         using passphrase_callee = std::function<bool(std::string)>;
         bool for_each_passphrase(const passphrase_callee& callee);
+
+        // get all passphrases in cache from latest to oldest
+        // always returns ""
+
+        std::string latest_passphrase();
+
+        // get next passphrase; returns "" when no passphrases are left
+
+        std::string next_passphrase();
 
         // convenience functions
         // i.e.
