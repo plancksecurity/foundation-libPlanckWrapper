@@ -30,6 +30,9 @@
     <ClCompile Include="..\slurp.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\passphrase_cache.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Adapter.hh">
@@ -48,6 +51,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\slurp.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\passphrase_cache.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\passphrase_cache.hxx">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
