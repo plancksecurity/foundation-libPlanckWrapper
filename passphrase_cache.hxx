@@ -1,5 +1,4 @@
 #pragma once
-#include <cassert>
 #include "passphrase_cache.hh"
 
 namespace pEp {

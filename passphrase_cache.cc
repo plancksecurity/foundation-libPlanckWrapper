@@ -1,3 +1,4 @@
+#include <cassert>
 #include "passphrase_cache.hh"
 
 namespace pEp {
@@ -19,6 +20,7 @@ namespace pEp {
 
     const char *PassphraseCache::add(std::string passphrase)
     {
+        assert(_which == _cache.end()); // never modify while iterating
         std::lock_guard<std::mutex> lock(_mtx);
 
         if (passphrase != "") {
@@ -50,12 +52,14 @@ namespace pEp {
 
     void PassphraseCache::cleanup()
     {
+        assert(_which == _cache.end()); // never modify while iterating
         while (!_cache.empty() && _cache.front().tp < clock::now() - _timeout)
             _cache.pop_front();
     }
 
     void PassphraseCache::refresh(cache::iterator entry)
     {
+        assert(_which == _cache.end()); // never modify while iterating
         entry->tp = clock::now();
         _cache.splice(_cache.end(), _cache, entry);
     }
