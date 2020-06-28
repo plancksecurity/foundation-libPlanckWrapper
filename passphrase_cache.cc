@@ -45,7 +45,7 @@ namespace pEp {
         _cache.splice(_cache.end(), _cache, entry);
     }
 
-    std::string PassphraseCache::latest_passphrase()
+    const char *PassphraseCache::latest_passphrase()
     {
         std::lock_guard<std::mutex> lock(_mtx);
         
@@ -58,7 +58,7 @@ namespace pEp {
         }
 
         --_which;
-        return _which->passphrase;
+        return _which->passphrase.c_str();
     }
 };
 

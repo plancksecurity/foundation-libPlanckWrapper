@@ -56,7 +56,7 @@ namespace pEp {
         // this function is throwing std::underflow_error when no passphrases
         // are left
 
-        std::string latest_passphrase();
+        const char *latest_passphrase();
 
         // convenience functions
         // i.e.
