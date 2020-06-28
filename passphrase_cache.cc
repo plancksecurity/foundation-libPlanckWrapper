@@ -49,8 +49,10 @@ namespace pEp {
     {
         std::lock_guard<std::mutex> lock(_mtx);
         
-        if (_cache.empty())
+        if (_cache.empty()) {
+            _which = _cache.end();
             throw std::underflow_error("empty passphrase cache");
+        }
 
         if (_which == _cache.begin()) {
             _which = _cache.end();
