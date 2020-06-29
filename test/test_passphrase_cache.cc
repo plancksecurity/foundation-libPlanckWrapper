@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include "passphrase_cache.hh"
+#include "status_to_string.hh"
 
 extern "C" {
     PEP_STATUS api_test1(PEP_SESSION session, const char *str, char *bytes, int n, ::stringlist_t *sl)
@@ -60,10 +61,10 @@ int main()
     }
     catch (std::underflow_error&) { }
 
-    std::cout << "two times PEP_STATUS_OK (0), one time PEP_WRONG_PASSPHRASE (2561) \n";
+    std::cout << "two times PEP_STATUS_OK (0), one time PEP_WRONG_PASSPHRASE (2561)\n";
     do {
         status = pEp::PassphraseCache::messageToSend(cache, session);
-        std::cout << status << "\n";
+        std::cout << pEp::status_to_string(status) << " (" << status << ")\n";
     } while (status == PEP_STATUS_OK);
 
     sleep(2);
