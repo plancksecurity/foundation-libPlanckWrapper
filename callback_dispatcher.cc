@@ -15,13 +15,13 @@ namespace pEp {
 
     PEP_STATUS CallbackDispatcher::messageToSend(::message *msg)
     {
-        return dispatcher._messageToSend(msg);
+        return callback_dispatcher._messageToSend(msg);
     }
 
     PEP_STATUS CallbackDispatcher::notifyHandshake(::pEp_identity *me,
             ::pEp_identity *partner, ::sync_handshake_signal signal)
     {
-        return dispatcher._notifyHandshake(me, partner, signal);
+        return callback_dispatcher._notifyHandshake(me, partner, signal);
     }
 
     void CallbackDispatcher::add(::messageToSend_t messageToSend,
