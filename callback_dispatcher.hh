@@ -30,6 +30,6 @@ namespace pEp {
                 ::pEp_identity *partner, ::sync_handshake_signal signal);
     };
 
-    extern CallbackDispatcher dispatcher;
+    extern CallbackDispatcher callback_dispatcher;
 };
 

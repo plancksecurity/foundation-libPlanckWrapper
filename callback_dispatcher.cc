@@ -4,7 +4,7 @@
 
 namespace pEp {
     bool CallbackDispatcher::once = true;
-    CallbackDispatcher dispatcher;
+    CallbackDispatcher callback_dispatcher;
 
     CallbackDispatcher::CallbackDispatcher()
     {
