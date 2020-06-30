@@ -9,10 +9,13 @@ namespace pEp {
             ::messageToSend_t messageToSend;
             ::notifyHandshake_t notifyHandshake;
         };
-
         std::vector<callbacks> targets;
 
+        static bool once;
+
     public:
+        CallbackDispatcher();
+
         static PEP_STATUS messageToSend(::message *msg);
         static PEP_STATUS notifyHandshake(::pEp_identity *me,
                 ::pEp_identity *partner, ::sync_handshake_signal signal);

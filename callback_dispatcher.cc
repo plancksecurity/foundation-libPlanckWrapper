@@ -3,7 +3,15 @@
 #include <cassert>
 
 namespace pEp {
+    bool CallbackDispatcher::once = true;
     CallbackDispatcher dispatcher;
+
+    CallbackDispatcher::CallbackDispatcher()
+    {
+        if (!once)
+            throw std::out_of_range("CallbackDispatcher is a singleton");
+        once = false;
+    }
 
     PEP_STATUS CallbackDispatcher::messageToSend(::message *msg)
     {
