@@ -24,10 +24,14 @@ namespace pEp {
         return callback_dispatcher._notifyHandshake(me, partner, signal);
     }
 
-    void CallbackDispatcher::add(::messageToSend_t messageToSend,
-            ::notifyHandshake_t notifyHandshake)
+    void CallbackDispatcher::add(
+            ::messageToSend_t messageToSend,
+            ::notifyHandshake_t notifyHandshake,
+            proc on_startup,
+            proc shutdown
+        )
     {
-        targets.push_back({messageToSend, notifyHandshake});
+        targets.push_back({messageToSend, notifyHandshake, on_startup, shutdown});
     }
 
     void CallbackDispatcher::remove(::messageToSend_t messageToSend)
@@ -38,6 +42,31 @@ namespace pEp {
                 break;
             }
         }
+    }
+
+    void CallbackDispatcher::on_startup()
+    {
+        for (auto target : targets)
+            target.on_startup();
+    }
+
+    void CallbackDispatcher::on_shutdown()
+    {
+        for (auto target : targets)
+            target.on_shutdown();
+    }
+
+    void CallbackDispatcher::start_sync()
+    {
+        pEp::Adapter::startup<CallbackDispatcher>(CallbackDispatcher::messageToSend,
+                CallbackDispatcher::notifyHandshake, this,
+                &CallbackDispatcher::on_startup,
+                &CallbackDispatcher::on_shutdown);
+    }
+
+    void CallbackDispatcher::stop_sync()
+    {
+        pEp::Adapter::shutdown();
     }
 
     PEP_STATUS CallbackDispatcher::_messageToSend(::message *msg)
