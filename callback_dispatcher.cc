@@ -62,11 +62,17 @@ namespace pEp {
                 CallbackDispatcher::notifyHandshake, this,
                 &CallbackDispatcher::on_startup,
                 &CallbackDispatcher::on_shutdown);
+
+        for (auto target : targets)
+            target.notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_START);
     }
 
     void CallbackDispatcher::stop_sync()
     {
         pEp::Adapter::shutdown();
+
+        for (auto target : targets)
+            target.notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_STOP);
     }
 
     PEP_STATUS CallbackDispatcher::_messageToSend(::message *msg)
