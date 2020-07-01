@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <cassert>
 
-pEp::CallbackDispatcher callback_dispatcher;
+pEp::CallbackDispatcher pEp::callback_dispatcher;
 
 namespace pEp {
     bool CallbackDispatcher::once = true;
