@@ -99,6 +99,7 @@ xcopy /i/y "$(ProjectDir)..\status_to_string.hh" "$(SolutionDir)pEp\"
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Adapter.cc" />
+    <ClCompile Include="..\callback_dispatcher.cc" />
     <ClCompile Include="..\call_with_lock.cc" />
     <ClCompile Include="..\passphrase_cache.cc" />
     <ClCompile Include="..\slurp.cc" />
@@ -107,6 +108,7 @@ xcopy /i/y "$(ProjectDir)..\status_to_string.hh" "$(SolutionDir)pEp\"
   <ItemGroup>
     <ClInclude Include="..\Adapter.hh" />
     <ClInclude Include="..\Adapter.hxx" />
+    <ClInclude Include="..\callback_dispatcher.hh" />
     <ClInclude Include="..\locked_queue.hh" />
     <ClInclude Include="..\passphrase_cache.hh" />
     <ClInclude Include="..\passphrase_cache.hxx" />

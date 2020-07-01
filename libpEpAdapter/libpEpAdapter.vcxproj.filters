@@ -33,6 +33,9 @@
     <ClCompile Include="..\passphrase_cache.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\callback_dispatcher.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Adapter.hh">
@@ -57,6 +60,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\passphrase_cache.hxx">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\callback_dispatcher.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
