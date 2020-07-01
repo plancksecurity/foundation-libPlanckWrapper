@@ -32,11 +32,19 @@ namespace pEp {
             proc shutdown
         )
     {
+        assert(messageToSend);
+        if (!messageToSend)
+            throw std::invalid_argument("messageToSend must be set");
+
         targets.push_back({messageToSend, notifyHandshake, on_startup, shutdown});
     }
 
     void CallbackDispatcher::remove(::messageToSend_t messageToSend)
     {
+        assert(messageToSend);
+        if (!messageToSend)
+            throw std::invalid_argument("messageToSend argument needed");
+
         for (auto target = targets.begin(); target != targets.end(); ++target) {
             if (target->messageToSend == messageToSend) {
                 targets.erase(target);
@@ -49,14 +57,18 @@ namespace pEp {
 
     void CallbackDispatcher::on_startup()
     {
-        for (auto target : targets)
-            target.on_startup();
+        for (auto target : targets) {
+            if (target.on_startup)
+                target.on_startup();
+        }
     }
 
     void CallbackDispatcher::on_shutdown()
     {
-        for (auto target : targets)
-            target.on_shutdown();
+        for (auto target : targets) {
+            if (target.on_shutdown)
+                target.on_shutdown();
+        }
     }
 
     void CallbackDispatcher::start_sync()
@@ -66,16 +78,20 @@ namespace pEp {
                 &CallbackDispatcher::on_startup,
                 &CallbackDispatcher::on_shutdown);
 
-        for (auto target : callback_dispatcher.targets)
-            target.notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_START);
+        for (auto target : callback_dispatcher.targets) {
+            if (target.notifyHandshake)
+                target.notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_START);
+        }
     }
 
     void CallbackDispatcher::stop_sync()
     {
         pEp::Adapter::shutdown();
 
-        for (auto target : callback_dispatcher.targets)
-            target.notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_STOP);
+        for (auto target : callback_dispatcher.targets) {
+            if (target.notifyHandshake)
+                target.notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_STOP);
+        }
     }
 
     PEP_STATUS CallbackDispatcher::_messageToSend(::message *msg)
@@ -85,6 +101,7 @@ namespace pEp {
             if (!_msg)
                 return PEP_OUT_OF_MEMORY;
 
+            assert(target.messageToSend);
             target.messageToSend(_msg);
         }
 
@@ -95,17 +112,19 @@ namespace pEp {
             ::pEp_identity *partner, ::sync_handshake_signal signal)
     {
         for (auto target : targets) {
-            auto _me = ::identity_dup(me);
-            if (!_me)
-                return PEP_OUT_OF_MEMORY;
+            if (target.notifyHandshake) {
+                auto _me = ::identity_dup(me);
+                if (!_me)
+                    return PEP_OUT_OF_MEMORY;
 
-            auto _partner = ::identity_dup(partner);
-            if (!_partner) {
-                free_identity(_me);
-                return PEP_OUT_OF_MEMORY;
+                auto _partner = ::identity_dup(partner);
+                if (!_partner) {
+                    free_identity(_me);
+                    return PEP_OUT_OF_MEMORY;
+                }
+
+                target.notifyHandshake(_me, _partner, signal);
             }
-
-            target.notifyHandshake(_me, _partner, signal);
         }
 
         return PEP_STATUS_OK;
