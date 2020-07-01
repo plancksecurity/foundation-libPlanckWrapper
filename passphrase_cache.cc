@@ -1,8 +1,13 @@
 #include <cassert>
 #include "passphrase_cache.hh"
 
+namespace
+{
+    const char* const empty_string = "";
+}
+
 namespace pEp {
-    PassphraseCache::cache_entry::cache_entry(std::string p, time_point t) :
+    PassphraseCache::cache_entry::cache_entry(const std::string& p, time_point t) :
             passphrase{p, 0, PassphraseCache::cache_entry::max_len}, tp{t}
     { }
 
@@ -27,18 +32,21 @@ namespace pEp {
         return *this;
     }
 
-    const char *PassphraseCache::add(std::string passphrase)
+    const char *PassphraseCache::add(const std::string& passphrase)
     {
         assert(_which == _cache.end()); // never modify while iterating
         std::lock_guard<std::mutex> lock(_mtx);
 
-        if (passphrase != "") {
+        if (!passphrase.empty()) {
             while (_cache.size() >= _max_size)
                 _cache.pop_front();
-            _cache.emplace_back(cache_entry(passphrase, clock::now()));
+            
+            _cache.emplace_back(passphrase, clock::now());
+            auto back = _cache.back(); // FIXME: In C++17 list::emplace_back() returns the just inserted element already.
+            return back.passphrase.c_str();
         }
 
-        return passphrase.c_str();
+        return empty_string;
     }
 
     bool PassphraseCache::for_each_passphrase(const passphrase_callee& callee)

@@ -16,7 +16,7 @@ namespace pEp {
 
         struct cache_entry {
             static const size_t max_len = 250 * 4;
-            cache_entry(std::string p, time_point t);
+            cache_entry(const std::string&  p, time_point t);
 
             std::string passphrase;
             time_point tp;
@@ -43,9 +43,9 @@ namespace pEp {
         PassphraseCache(const PassphraseCache& second);
         PassphraseCache& operator=(const PassphraseCache& second);
 
-        // adding a passphrase to the cache, which will timeout
-
-        const char *add(std::string passphrase);
+        // adds the passphrase to the cache, which will timeout
+        // returns a ptr to the passsword entry in the cache. Don't free() it!
+        const char *add(const std::string& passphrase);
 
         // get all passphrases in cache from latest to oldest one by each call
         // this function is throwing PassphraseCache::Empty when cache is empty
