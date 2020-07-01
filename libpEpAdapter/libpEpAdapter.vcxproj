@@ -65,10 +65,8 @@
       <SubSystem>Windows</SubSystem>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /i/y "$(ProjectDir)..\slurp.hh" "$(SolutionDir)pEp\"
-xcopy /i/y "$(ProjectDir)..\locked_queue.hh" "$(SolutionDir)pEp\"
-xcopy /i/y "$(ProjectDir)..\status_to_string.hh" "$(SolutionDir)pEp\"
-xcopy /i/y "$(ProjectDir)..\call_with_lock.hh" "$(SolutionDir)pEp\"</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
