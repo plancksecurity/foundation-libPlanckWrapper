@@ -37,13 +37,13 @@ namespace pEp {
         void start_sync();
         void stop_sync();
 
-    protected:
-        void on_startup();
-        void on_shutdown();
-
         static PEP_STATUS messageToSend(::message *msg);
         static PEP_STATUS notifyHandshake(::pEp_identity *me,
                 ::pEp_identity *partner, ::sync_handshake_signal signal);
+
+    protected:
+        void on_startup();
+        void on_shutdown();
 
         PEP_STATUS _messageToSend(::message *msg);
         PEP_STATUS _notifyHandshake(::pEp_identity *me,
