@@ -6,7 +6,7 @@
 // Conainer adapter that contains a container and a producer/consume queue
 // that holds references to all changed elements
 
-
+#include <functional>
 #include "locked_queue.hh"
 
 namespace pEp
