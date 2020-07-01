@@ -42,6 +42,8 @@ namespace pEp {
                 break;
             }
         }
+        if (targets.empty())
+            stop_sync();
     }
 
     void CallbackDispatcher::on_startup()
