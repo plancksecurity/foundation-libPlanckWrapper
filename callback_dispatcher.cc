@@ -2,9 +2,10 @@
 #include <stdexcept>
 #include <cassert>
 
+pEp::CallbackDispatcher callback_dispatcher;
+
 namespace pEp {
     bool CallbackDispatcher::once = true;
-    CallbackDispatcher callback_dispatcher;
 
     CallbackDispatcher::CallbackDispatcher()
     {
