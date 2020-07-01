@@ -21,11 +21,7 @@ namespace pEp {
         };
         std::vector<callbacks> targets;
 
-        static bool once;
-
     public:
-        CallbackDispatcher();
-
         void add(
                 ::messageToSend_t messageToSend,
                 ::notifyHandshake_t notifyHandshake,

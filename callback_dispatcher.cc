@@ -5,15 +5,6 @@
 pEp::CallbackDispatcher pEp::callback_dispatcher;
 
 namespace pEp {
-    bool CallbackDispatcher::once = true;
-
-    CallbackDispatcher::CallbackDispatcher()
-    {
-        if (!once)
-            throw std::out_of_range("CallbackDispatcher is a singleton");
-        once = false;
-    }
-
     PEP_STATUS CallbackDispatcher::messageToSend(::message *msg)
     {
         return callback_dispatcher._messageToSend(msg);
