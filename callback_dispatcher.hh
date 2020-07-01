@@ -34,8 +34,8 @@ namespace pEp {
             );
         void remove(::messageToSend_t messageToSend);
 
-        void start_sync();
-        void stop_sync();
+        static void start_sync();
+        static void stop_sync();
 
         static PEP_STATUS messageToSend(::message *msg);
         static PEP_STATUS notifyHandshake(::pEp_identity *me,
@@ -50,6 +50,6 @@ namespace pEp {
                 ::pEp_identity *partner, ::sync_handshake_signal signal);
     };
 
+    extern CallbackDispatcher callback_dispatcher;
 };
 
-extern pEp::CallbackDispatcher callback_dispatcher;
