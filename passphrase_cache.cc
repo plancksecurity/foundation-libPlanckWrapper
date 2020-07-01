@@ -6,7 +6,7 @@ namespace pEp {
             passphrase{p, 0, PassphraseCache::cache_entry::max_len}, tp{t}
     { }
 
-    PassphraseCache::PassphraseCache(int max_size, duration timeout) :
+    PassphraseCache::PassphraseCache(size_t max_size, duration timeout) :
             _max_size{max_size}, _timeout{timeout}, _which{_cache.end()}
     { }
 

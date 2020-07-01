@@ -25,7 +25,7 @@ namespace pEp {
 
         cache _cache;   
         std::mutex _mtx;
-        int _max_size;
+        size_t _max_size;
         duration _timeout;
 
         cache::iterator _which;
@@ -38,7 +38,7 @@ namespace pEp {
             Exhausted() : std::underflow_error("out of passphrases") { }
         };
 
-        PassphraseCache(int max_size=20, duration timeout = std::chrono::minutes(10));
+        PassphraseCache(size_t max_size=20, duration timeout = std::chrono::minutes(10));
         ~PassphraseCache() { }
         PassphraseCache(const PassphraseCache& second);
         PassphraseCache& operator=(const PassphraseCache& second);
