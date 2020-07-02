@@ -48,7 +48,7 @@ namespace pEp {
 
     const char *PassphraseCache::add_stored(const std::string& passphrase)
     {
-        std::lock_guard<std::mutex> lock(_shared_mtx);
+        std::lock_guard<std::mutex> lock(_stored_mtx);
         _stored = passphrase;
         return _stored.c_str();
     }
@@ -59,7 +59,7 @@ namespace pEp {
             return true;
 
         {
-            std::lock_guard<std::mutex> lock(_shared_mtx);
+            std::lock_guard<std::mutex> lock(_stored_mtx);
             if (!_stored.empty() && callee(_stored))
                 return true;
         }

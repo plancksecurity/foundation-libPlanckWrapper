@@ -26,7 +26,7 @@ namespace pEp {
         cache _cache;
         std::string _stored;
         std::mutex _mtx;
-        std::mutex _shared_mtx;
+        std::mutex _stored_mtx;
         size_t _max_size;
         duration _timeout;
 
