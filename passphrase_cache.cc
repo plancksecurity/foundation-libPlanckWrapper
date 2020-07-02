@@ -60,7 +60,7 @@ namespace pEp {
         if (callee(""))
             return true;
 
-        if (callee(_stored))
+        if (!_stored.empty() && callee(_stored))
             return true;
 
         for (auto entry=_cache.begin(); entry!=_cache.end(); ++entry) {
