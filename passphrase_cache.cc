@@ -55,19 +55,24 @@ namespace pEp {
 
     bool PassphraseCache::for_each_passphrase(const passphrase_callee& callee)
     {
-        std::lock_guard<std::mutex> lock(_mtx);
-        cleanup();
-
         if (callee(""))
             return true;
 
-        if (!_stored.empty() && callee(_stored))
-            return true;
-
-        for (auto entry=_cache.begin(); entry!=_cache.end(); ++entry) {
-            if (callee(entry->passphrase)) {
-                refresh(entry);
+        {
+            std::lock_guard<std::mutex> lock(_shared_mtx);
+            if (!_stored.empty() && callee(_stored))
                 return true;
+        }
+
+        {
+            std::lock_guard<std::mutex> lock(_mtx);
+            cleanup();
+
+            for (auto entry=_cache.begin(); entry!=_cache.end(); ++entry) {
+                if (callee(entry->passphrase)) {
+                    refresh(entry);
+                    return true;
+                }
             }
         }
 
