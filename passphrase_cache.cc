@@ -46,12 +46,21 @@ namespace pEp {
         return "";
     }
 
+    const char *PassphraseCache::add_stored(const std::string& passphrase)
+    {
+        _stored = passphrase;
+        return _stored.c_str();
+    }
+
     bool PassphraseCache::for_each_passphrase(const passphrase_callee& callee)
     {
         std::lock_guard<std::mutex> lock(_mtx);
         cleanup();
 
         if (callee(""))
+            return true;
+
+        if (callee(_stored))
             return true;
 
         for (auto entry=_cache.begin(); entry!=_cache.end(); ++entry) {

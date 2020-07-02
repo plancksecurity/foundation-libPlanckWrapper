@@ -23,7 +23,8 @@ namespace pEp {
         };
         using cache = std::list<cache_entry>;
 
-        cache _cache;   
+        cache _cache;
+        std::string _stored;
         std::mutex _mtx;
         size_t _max_size;
         duration _timeout;
@@ -46,6 +47,9 @@ namespace pEp {
         // adds the passphrase to the cache, which will timeout
         // returns a ptr to the passsword entry in the cache. Don't free() it!
         const char *add(const std::string& passphrase);
+
+        // adds the stored passphrase to the cache, which will not timeout
+        const char *add_stored(const std::string& passphrase);
 
         // get all passphrases in cache from latest to oldest one by each call
         // this function is throwing PassphraseCache::Empty when cache is empty
