@@ -88,10 +88,12 @@ namespace pEp {
     PEP_STATUS CallbackDispatcher::_messageToSend(::message *msg)
     {
         for (auto target : targets) {
-            auto _msg = ::message_dup(msg);
-            if (!_msg)
-                return PEP_OUT_OF_MEMORY;
-
+            ::message *_msg = nullptr;
+            if (msg) {
+                _msg = ::message_dup(msg);
+                if (!_msg)
+                    return PEP_OUT_OF_MEMORY;
+            }
             assert(target.messageToSend);
             target.messageToSend(_msg);
         }
@@ -104,16 +106,20 @@ namespace pEp {
     {
         for (auto target : targets) {
             if (target.notifyHandshake) {
-                auto _me = ::identity_dup(me);
-                if (!_me)
-                    return PEP_OUT_OF_MEMORY;
-
-                auto _partner = ::identity_dup(partner);
-                if (!_partner) {
-                    free_identity(_me);
-                    return PEP_OUT_OF_MEMORY;
+                ::pEp_identity *_me = nullptr;
+                if (me) {
+                    _me = ::identity_dup(me);
+                    if (!_me)
+                        return PEP_OUT_OF_MEMORY;
                 }
-
+                ::pEp_identity *_partner = nullptr;
+                if (partner) {
+                    _partner = ::identity_dup(partner);
+                    if (!_partner) {
+                        free_identity(_me);
+                        return PEP_OUT_OF_MEMORY;
+                    }
+                }
                 target.notifyHandshake(_me, _partner, signal);
             }
         }
