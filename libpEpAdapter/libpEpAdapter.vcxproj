@@ -87,7 +87,9 @@ XCOPY "$(SolutionDir)libpEpAdapter\*.hxx" "$(SolutionDir)pEp\" /I/F/Y
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>XCOPY "$(SolutionDir)libpEpAdapter\*.hh" "$(SolutionDir)pEp\" /I/F/Y</Command>
+      <Command>XCOPY "$(SolutionDir)libpEpAdapter\*.hh" "$(SolutionDir)pEp\" /I/F/Y
+XCOPY "$(SolutionDir)libpEpAdapter\*.hxx" "$(SolutionDir)pEp\" /I/F/Y
+</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
