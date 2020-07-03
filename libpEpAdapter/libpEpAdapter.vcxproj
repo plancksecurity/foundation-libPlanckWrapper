@@ -87,10 +87,7 @@ XCOPY "$(SolutionDir)libpEpAdapter\*.hxx" "$(SolutionDir)pEp\" /I/F/Y
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /i/y "$(ProjectDir)..\slurp.hh" "$(SolutionDir)pEp\"
-xcopy /i/y "$(ProjectDir)..\locked_queue.hh" "$(SolutionDir)pEp\"
-xcopy /i/y "$(ProjectDir)..\status_to_string.hh" "$(SolutionDir)pEp\"
-</Command>
+      <Command>XCOPY "$(SolutionDir)libpEpAdapter\*.hh" "$(SolutionDir)pEp\" /I/F/Y</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
