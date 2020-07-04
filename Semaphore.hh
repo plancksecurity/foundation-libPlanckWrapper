@@ -4,7 +4,7 @@
 namespace pEp {
     class Semaphore {
     public:
-        Semaphore() : _stop(false) {}
+        Semaphore() : _stop(false) { }
 
         void stop()
         {
@@ -18,9 +18,8 @@ namespace pEp {
             if (!_stop)
                 return;
 
-            while(_stop){
+            while(_stop)
                 cv.wait(lock);
-            }
         }
 
         void go()
