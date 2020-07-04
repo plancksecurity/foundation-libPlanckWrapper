@@ -111,6 +111,7 @@ XCOPY "$(SolutionDir)libpEpAdapter\*.hxx" "$(SolutionDir)pEp\" /I/F/Y
     <ClInclude Include="..\passphrase_cache.hh" />
     <ClInclude Include="..\passphrase_cache.hxx" />
     <ClInclude Include="..\pc_container.hh" />
+    <ClInclude Include="..\Semaphore.hh" />
     <ClInclude Include="..\slurp.hh" />
     <ClInclude Include="..\status_to_string.hh" />
   </ItemGroup>
