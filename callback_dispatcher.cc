@@ -30,9 +30,11 @@ namespace pEp {
 
         targets.push_back({messageToSend, notifyHandshake, on_startup, shutdown});
 
-        // try_unlock() possibly waiting messageToSend
-        sync_mtx.try_lock();
-        sync_mtx.unlock();
+        if (!Adapter::on_sync_thread()) {
+            // try_unlock() possibly waiting messageToSend
+            sync_mtx.try_lock();
+            sync_mtx.unlock();
+        }
     }
 
     void CallbackDispatcher::remove(::messageToSend_t messageToSend)
