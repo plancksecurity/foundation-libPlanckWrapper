@@ -17,7 +17,7 @@ int main()
             semaphore.try_wait();
             cout << "1: and on go again\n";
             semaphore.try_wait();
-            cout << "1: keeping going\n";
+            cout << "1: keep going\n";
         });
 
     sleep(1);
