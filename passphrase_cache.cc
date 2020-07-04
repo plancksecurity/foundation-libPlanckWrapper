@@ -14,7 +14,8 @@ namespace pEp {
 
     PassphraseCache::PassphraseCache(const PassphraseCache& second) :
             _cache{second._cache}, _max_size{second._max_size},
-            _timeout{second._timeout}, first_time(true)
+            _timeout{second._timeout}, _stored{second._stored},
+            first_time(true)
     {
         cleanup();
     }
@@ -98,7 +99,8 @@ namespace pEp {
             cleanup();
             _which = _cache.end();
             first_time = false;
-            return _stored.c_str();
+            if (!_stored.empty())
+                return _stored.c_str();
         }
 
         if (_cache.empty()) {
