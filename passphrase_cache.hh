@@ -31,6 +31,7 @@ namespace pEp {
         duration _timeout;
 
         cache::iterator _which;
+        bool first_time;
 
     public:
         struct Empty : public std::underflow_error {

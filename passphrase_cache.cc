@@ -9,12 +9,12 @@ namespace pEp {
     { }
 
     PassphraseCache::PassphraseCache(size_t max_size, duration timeout) :
-            _max_size{max_size}, _timeout{timeout}, _which{_cache.end()}
+            _max_size{max_size}, _timeout{timeout}, first_time(true)
     { }
 
     PassphraseCache::PassphraseCache(const PassphraseCache& second) :
             _cache{second._cache}, _max_size{second._max_size},
-            _timeout{second._timeout}, _which{_cache.end()}
+            _timeout{second._timeout}, first_time(true)
     {
         cleanup();
     }
@@ -31,7 +31,6 @@ namespace pEp {
 
     const char *PassphraseCache::add(const std::string& passphrase)
     {
-        assert(_which == _cache.end()); // never modify while iterating
         std::lock_guard<std::mutex> lock(_mtx);
 
         if (!passphrase.empty()) {
@@ -83,29 +82,32 @@ namespace pEp {
 
     void PassphraseCache::cleanup()
     {
-        assert(_which == _cache.end()); // never modify while iterating
         while (!_cache.empty() && _cache.front().tp < clock::now() - _timeout)
             _cache.pop_front();
     }
 
     void PassphraseCache::refresh(cache::iterator entry)
     {
-        assert(_which == _cache.end()); // never modify while iterating
         entry->tp = clock::now();
         _cache.splice(_cache.end(), _cache, entry);
     }
 
     const char *PassphraseCache::latest_passphrase()
     {
-        std::lock_guard<std::mutex> lock(_mtx);
-        
-        if (_cache.empty()) {
+        if (first_time) {
+            cleanup();
             _which = _cache.end();
+            first_time = false;
+            return _stored.c_str();
+        }
+
+        if (_cache.empty()) {
+            first_time = true;
             throw Empty();
         }
 
         if (_which == _cache.begin()) {
-            _which = _cache.end();
+            first_time = true;
             throw Exhausted();
         }
 
