@@ -36,7 +36,6 @@ namespace pEp {
         static PEP_STATUS messageToSend(::message *msg);
         static PEP_STATUS notifyHandshake(::pEp_identity *me,
                 ::pEp_identity *partner, ::sync_handshake_signal signal);
-
     protected:
         void on_startup();
         void on_shutdown();

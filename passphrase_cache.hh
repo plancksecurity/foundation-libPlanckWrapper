@@ -87,6 +87,8 @@ namespace pEp {
         void cleanup();
         void refresh(cache::iterator entry);
     };
+
+    extern PassphraseCache passphrase_cache;
 };
 
 #include "passphrase_cache.hxx"

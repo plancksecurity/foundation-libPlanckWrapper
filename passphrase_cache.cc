@@ -1,6 +1,8 @@
 #include <cassert>
 #include "passphrase_cache.hh"
 
+pEp::PassphraseCache pEp::passphrase_cache;
+
 namespace pEp {
     PassphraseCache::cache_entry::cache_entry(const std::string& p, time_point t) :
             passphrase{p, 0, PassphraseCache::cache_entry::max_len}, tp{t}
