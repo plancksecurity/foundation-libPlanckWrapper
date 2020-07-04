@@ -3,6 +3,10 @@
 
 namespace pEp {
     class Semaphore {
+        std::mutex mtx;
+        std::condition_variable cv;
+        bool _stop;
+
     public:
         Semaphore() : _stop(false) { }
 
@@ -28,11 +32,6 @@ namespace pEp {
             _stop = false;
             cv.notify_all();
         }
-
-    private:
-        std::mutex mtx;
-        std::condition_variable cv;
-        bool _stop;
     };
 }
 
