@@ -65,5 +65,8 @@
     <ClInclude Include="..\callback_dispatcher.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Semaphore.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
