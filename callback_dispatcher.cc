@@ -8,9 +8,6 @@ pEp::CallbackDispatcher pEp::callback_dispatcher;
 namespace pEp {
     PEP_STATUS CallbackDispatcher::messageToSend(::message *msg)
     {
-        if (Adapter::on_sync_thread() && !msg)
-            return PassphraseCache::messageToSend(passphrase_cache, Adapter::session());
-
         return callback_dispatcher._messageToSend(msg);
     }
 
@@ -32,6 +29,10 @@ namespace pEp {
             throw std::invalid_argument("messageToSend must be set");
 
         targets.push_back({messageToSend, notifyHandshake, on_startup, shutdown});
+
+        // try_unlock possibly waiting messageToSend
+        sync_mtx.try_lock();
+        sync_mtx.unlock();
     }
 
     void CallbackDispatcher::remove(::messageToSend_t messageToSend)
@@ -91,6 +92,24 @@ namespace pEp {
 
     PEP_STATUS CallbackDispatcher::_messageToSend(::message *msg)
     {
+        if (Adapter::on_sync_thread() && !msg) {
+            PEP_STATUS status = PassphraseCache::messageToSend(passphrase_cache, Adapter::session());
+
+            // if the cache has no valid passphrase ask the app
+            if (status == PEP_PASSPHRASE_REQUIRED || status == PEP_WRONG_PASSPHRASE) {
+                // lock mutex and call async
+                sync_mtx.lock();
+                notifyHandshake(nullptr, nullptr, SYNC_PASSPHRASE_REQUIRED);
+
+                // sync_mtx.wait() until mutex was unlocked by add()
+                sync_mtx.lock();
+                sync_mtx.unlock();
+            }
+
+            // the pEp engine must try again
+            return PEP_STATUS_OK;
+        }
+
         for (auto target : targets) {
             ::message *_msg = nullptr;
             if (msg) {

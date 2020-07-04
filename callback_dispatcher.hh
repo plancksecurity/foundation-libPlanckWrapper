@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <functional>
+#include <mutex>
 #include "Adapter.hh"
 
 namespace pEp {
@@ -20,6 +21,8 @@ namespace pEp {
             proc on_shutdown;
         };
         std::vector<callbacks> targets;
+
+        std::mutex sync_mtx;
 
     public:
         void add(
