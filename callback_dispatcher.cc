@@ -8,6 +8,9 @@ pEp::CallbackDispatcher pEp::callback_dispatcher;
 namespace pEp {
     PEP_STATUS CallbackDispatcher::messageToSend(::message *msg)
     {
+        if (Adapter::on_sync_thread() && !msg)
+            return PassphraseCache::messageToSend(passphrase_cache, Adapter::session());
+
         return callback_dispatcher._messageToSend(msg);
     }
 
@@ -88,9 +91,6 @@ namespace pEp {
 
     PEP_STATUS CallbackDispatcher::_messageToSend(::message *msg)
     {
-        if (Adapter::on_sync_thread() && !msg)
-            return PassphraseCache::messageToSend(passphrase_cache, Adapter::session());
-
         for (auto target : targets) {
             ::message *_msg = nullptr;
             if (msg) {
