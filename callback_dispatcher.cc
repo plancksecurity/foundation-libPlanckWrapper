@@ -29,9 +29,7 @@ namespace pEp {
             throw std::invalid_argument("messageToSend must be set");
 
         targets.push_back({messageToSend, notifyHandshake, on_startup, shutdown});
-
-        if (!Adapter::on_sync_thread())
-            semaphore.go();
+        semaphore.go();
     }
 
     void CallbackDispatcher::remove(::messageToSend_t messageToSend)
