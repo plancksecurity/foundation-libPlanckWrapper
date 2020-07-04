@@ -30,7 +30,7 @@ namespace pEp {
 
         targets.push_back({messageToSend, notifyHandshake, on_startup, shutdown});
 
-        // try_unlock possibly waiting messageToSend
+        // try_unlock() possibly waiting messageToSend
         sync_mtx.try_lock();
         sync_mtx.unlock();
     }
@@ -101,7 +101,7 @@ namespace pEp {
                 sync_mtx.lock();
                 notifyHandshake(nullptr, nullptr, SYNC_PASSPHRASE_REQUIRED);
 
-                // sync_mtx.wait() until mutex was unlocked by add()
+                // wait() until mutex was unlocked by add()
                 sync_mtx.lock();
                 sync_mtx.unlock();
             }
