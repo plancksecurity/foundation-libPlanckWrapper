@@ -71,6 +71,10 @@ namespace pEp {
 
     void CallbackDispatcher::start_sync()
     {
+        // try_unlock()
+        callback_dispatcher.sync_mtx.try_lock();
+        callback_dispatcher.sync_mtx.unlock();
+
         pEp::Adapter::startup<CallbackDispatcher>(CallbackDispatcher::messageToSend,
                 CallbackDispatcher::notifyHandshake, &callback_dispatcher,
                 &CallbackDispatcher::on_startup,
@@ -84,6 +88,10 @@ namespace pEp {
 
     void CallbackDispatcher::stop_sync()
     {
+        // try_unlock()
+        callback_dispatcher.sync_mtx.try_lock();
+        callback_dispatcher.sync_mtx.unlock();
+
         pEp::Adapter::shutdown();
 
         for (auto target : callback_dispatcher.targets) {
