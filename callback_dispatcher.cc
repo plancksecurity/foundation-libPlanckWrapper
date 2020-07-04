@@ -95,7 +95,7 @@ namespace pEp {
         if (Adapter::on_sync_thread() && !msg) {
             semaphore.try_wait();
 
-            PEP_STATUS status = PassphraseCache::messageToSend(passphrase_cache, Adapter::session());
+            PEP_STATUS status = PassphraseCache::config_next_passphrase();
 
             // if the cache has no valid passphrase ask the app
             if (status == PEP_PASSPHRASE_REQUIRED || status == PEP_WRONG_PASSPHRASE)
@@ -103,6 +103,11 @@ namespace pEp {
 
             // the pEp engine must try again
             return status;
+        }
+
+        if (Adapter::on_sync_thread()) {
+            // a passphrase worked, reset passphrase_cache iterator
+            PassphraseCache::config_next_passphrase(true);
         }
 
         for (auto target : targets) {

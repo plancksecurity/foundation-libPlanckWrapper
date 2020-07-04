@@ -53,26 +53,12 @@ namespace pEp {
         // adds the stored passphrase to the cache, which will not timeout
         const char *add_stored(const std::string& passphrase);
 
-        // get all passphrases in cache from latest to oldest one by each call
-        // this function is throwing PassphraseCache::Empty when cache is empty
-        // and PassphraseCache::Exhausted when no passphrases are left, then
-        // starts over
-
-        const char *latest_passphrase();
-
         // call this function inside the messageToSend() implementation of the adapter
         // this function is using latest_passphrase() to test one passphrase after the
         // other until the cache is exhausted
+        // call with reset = true to reset the iterator
 
-        static PEP_STATUS messageToSend(PassphraseCache& cache, PEP_SESSION session);
-
-        // for each passphrase call the callee until it returns true for a
-        // matching passphrase or no passphrases are left
-        // always tests empty passphrase first
-        // returns true if a passphrase was matching, false otherwise
-
-        using passphrase_callee = std::function<bool(std::string)>;
-        bool for_each_passphrase(const passphrase_callee& callee);
+        static PEP_STATUS config_next_passphrase(bool reset=false);
 
         // convenience functions
         // i.e.
@@ -87,6 +73,9 @@ namespace pEp {
     protected:
         void cleanup();
         void refresh(cache::iterator entry);
+        const char *latest_passphrase();
+        using passphrase_callee = std::function<bool(std::string)>;
+        bool for_each_passphrase(const passphrase_callee& callee);
     };
 
     extern PassphraseCache passphrase_cache;

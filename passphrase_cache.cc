@@ -1,4 +1,5 @@
 #include <cassert>
+#include "Adapter.hh"
 #include "passphrase_cache.hh"
 
 pEp::PassphraseCache pEp::passphrase_cache;
@@ -117,16 +118,23 @@ namespace pEp {
         return _which->passphrase.c_str();
     }
 
-	PEP_STATUS PassphraseCache::messageToSend(PassphraseCache& cache, PEP_SESSION session)
+	PEP_STATUS PassphraseCache::config_next_passphrase(bool reset)
 	{
         static pEp::PassphraseCache _copy;
         static bool new_copy = true;
+
+        if (reset) {
+            new_copy = true;
+            return PEP_STATUS_OK;
+        }
+
         if (new_copy) {
-            _copy = cache;
+            _copy = passphrase_cache;
             new_copy = false;
         }
+
         try {
-            ::config_passphrase(session, _copy.latest_passphrase());
+            ::config_passphrase(Adapter::session(), _copy.latest_passphrase());
             return PEP_STATUS_OK;
         }
         catch (pEp::PassphraseCache::Empty&) {
