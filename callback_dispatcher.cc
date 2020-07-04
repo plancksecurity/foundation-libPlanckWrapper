@@ -100,9 +100,8 @@ namespace pEp {
             PEP_STATUS status = PassphraseCache::messageToSend(passphrase_cache, Adapter::session());
 
             // if the cache has no valid passphrase ask the app
-            if (status == PEP_PASSPHRASE_REQUIRED || status == PEP_WRONG_PASSPHRASE) {
+            if (status == PEP_PASSPHRASE_REQUIRED || status == PEP_WRONG_PASSPHRASE)
                 semaphore.stop();
-            }
 
             // the pEp engine must try again
             return status;
