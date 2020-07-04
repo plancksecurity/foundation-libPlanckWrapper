@@ -30,11 +30,8 @@ namespace pEp {
 
         targets.push_back({messageToSend, notifyHandshake, on_startup, shutdown});
 
-        if (!Adapter::on_sync_thread()) {
-            // try_unlock() possibly waiting messageToSend
-            sync_mtx.try_lock();
-            sync_mtx.unlock();
-        }
+        if (!Adapter::on_sync_thread())
+            semaphore.go();
     }
 
     void CallbackDispatcher::remove(::messageToSend_t messageToSend)
@@ -71,9 +68,7 @@ namespace pEp {
 
     void CallbackDispatcher::start_sync()
     {
-        // try_unlock()
-        callback_dispatcher.sync_mtx.try_lock();
-        callback_dispatcher.sync_mtx.unlock();
+        callback_dispatcher.semaphore.go();
 
         pEp::Adapter::startup<CallbackDispatcher>(CallbackDispatcher::messageToSend,
                 CallbackDispatcher::notifyHandshake, &callback_dispatcher,
@@ -88,10 +83,7 @@ namespace pEp {
 
     void CallbackDispatcher::stop_sync()
     {
-        // try_unlock()
-        callback_dispatcher.sync_mtx.try_lock();
-        callback_dispatcher.sync_mtx.unlock();
-
+        callback_dispatcher.semaphore.go();
         pEp::Adapter::shutdown();
 
         for (auto target : callback_dispatcher.targets) {
@@ -103,21 +95,17 @@ namespace pEp {
     PEP_STATUS CallbackDispatcher::_messageToSend(::message *msg)
     {
         if (Adapter::on_sync_thread() && !msg) {
+            semaphore.try_wait();
+
             PEP_STATUS status = PassphraseCache::messageToSend(passphrase_cache, Adapter::session());
 
             // if the cache has no valid passphrase ask the app
             if (status == PEP_PASSPHRASE_REQUIRED || status == PEP_WRONG_PASSPHRASE) {
-                // lock mutex and call async
-                sync_mtx.lock();
-                notifyHandshake(nullptr, nullptr, SYNC_PASSPHRASE_REQUIRED);
-
-                // wait() until mutex was unlocked by add()
-                sync_mtx.lock();
-                sync_mtx.unlock();
+                semaphore.stop();
             }
 
             // the pEp engine must try again
-            return PEP_STATUS_OK;
+            return status;
         }
 
         for (auto target : targets) {

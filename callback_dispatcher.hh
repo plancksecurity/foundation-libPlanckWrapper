@@ -4,6 +4,7 @@
 #include <functional>
 #include <mutex>
 #include "Adapter.hh"
+#include "Semaphore.hh"
 
 namespace pEp {
     // use this class when implementing a desktop adapter
@@ -21,8 +22,7 @@ namespace pEp {
             proc on_shutdown;
         };
         std::vector<callbacks> targets;
-
-        std::mutex sync_mtx;
+        Semaphore semaphore;
 
     public:
         void add(
