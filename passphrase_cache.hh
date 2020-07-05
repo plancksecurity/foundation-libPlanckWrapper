@@ -70,12 +70,13 @@ namespace pEp {
         template<typename... A> PEP_STATUS api(PEP_STATUS f(PEP_SESSION, A...),
                 PEP_SESSION session, A... a);
 
+        static const char *latest_passphrase(PassphraseCache& _cache);
+        using passphrase_callee = std::function<bool(std::string)>;
+        bool for_each_passphrase(const passphrase_callee& callee);
+
     protected:
         void cleanup();
         void refresh(cache::iterator entry);
-        const char *latest_passphrase();
-        using passphrase_callee = std::function<bool(std::string)>;
-        bool for_each_passphrase(const passphrase_callee& callee);
     };
 
     extern PassphraseCache passphrase_cache;

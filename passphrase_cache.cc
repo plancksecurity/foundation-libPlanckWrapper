@@ -10,13 +10,14 @@ namespace pEp {
     { }
 
     PassphraseCache::PassphraseCache(size_t max_size, duration timeout) :
-            _max_size{max_size}, _timeout{timeout}, first_time(true)
+            _max_size{max_size}, _timeout{timeout}, _which(_cache.end()),
+            first_time(true)
     { }
 
     PassphraseCache::PassphraseCache(const PassphraseCache& second) :
             _cache{second._cache}, _max_size{second._max_size},
             _timeout{second._timeout}, _stored{second._stored},
-            first_time(true)
+            _which(_cache.end()), first_time(true)
     {
         cleanup();
     }
@@ -94,28 +95,28 @@ namespace pEp {
         _cache.splice(_cache.end(), _cache, entry);
     }
 
-    const char *PassphraseCache::latest_passphrase()
+    const char *PassphraseCache::latest_passphrase(PassphraseCache& c)
     {
-        if (first_time) {
-            cleanup();
-            _which = _cache.end();
-            first_time = false;
-            if (!_stored.empty())
-                return _stored.c_str();
+        if (c.first_time) {
+            c.cleanup();
+            c._which = c._cache.end();
+            c.first_time = false;
+            if (!c._stored.empty())
+                return c._stored.c_str();
         }
 
-        if (_cache.empty()) {
-            first_time = true;
+        if (c._cache.empty()) {
+            c.first_time = true;
             throw Empty();
         }
 
-        if (_which == _cache.begin()) {
-            first_time = true;
+        if (c._which == c._cache.begin()) {
+            c.first_time = true;
             throw Exhausted();
         }
 
-        --_which;
-        return _which->passphrase.c_str();
+        --c._which;
+        return c._which->passphrase.c_str();
     }
 
 	PEP_STATUS PassphraseCache::config_next_passphrase(bool reset)
@@ -134,7 +135,7 @@ namespace pEp {
         }
 
         try {
-            ::config_passphrase(Adapter::session(), _copy.latest_passphrase());
+            ::config_passphrase(Adapter::session(), latest_passphrase(_copy));
             return PEP_STATUS_OK;
         }
         catch (pEp::PassphraseCache::Empty&) {

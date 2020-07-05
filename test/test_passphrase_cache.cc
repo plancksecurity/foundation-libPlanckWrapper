@@ -56,14 +56,16 @@ int main()
     pEp::PassphraseCache _cache = cache;
     try {
         while (1) {
-            std::cout << "'" << _cache.latest_passphrase() << "'\n";
+            std::cout << "'" << _cache.latest_passphrase(_cache) << "'\n";
         }
     }
     catch (std::underflow_error&) { }
 
+    pEp::passphrase_cache.add("hello");
+    pEp::passphrase_cache.add("world");
     std::cout << "two times PEP_STATUS_OK (0), one time PEP_WRONG_PASSPHRASE (2561)\n";
     do {
-        status = pEp::PassphraseCache::messageToSend(cache, session);
+        status = pEp::PassphraseCache::config_next_passphrase();
         std::cout << pEp::status_to_string(status) << " (" << status << ")\n";
     } while (status == PEP_STATUS_OK);
 
