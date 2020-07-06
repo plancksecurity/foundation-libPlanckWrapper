@@ -59,7 +59,7 @@ namespace pEp {
 
     bool PassphraseCache::for_each_passphrase(const passphrase_callee& callee)
     {
-        if (callee(""))
+        if (callee(std::string()))
             return true;
 
         {
