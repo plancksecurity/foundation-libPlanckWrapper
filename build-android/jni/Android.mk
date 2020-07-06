@@ -29,6 +29,7 @@ LOCAL_SRC_FILES += $(LOCAL_PATH)/../../Adapter.cc \
         $(LOCAL_PATH)/../../slurp.cc \
         $(LOCAL_PATH)/../../call_with_lock.cc \
         $(LOCAL_PATH)/../../passphrase_cache.cc  \
+        $(LOCAL_PATH)/../../callback_dispatcher.cc  \
         $(LOCAL_PATH)/../../status_to_string.cc
 
 
