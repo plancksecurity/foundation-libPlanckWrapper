@@ -40,10 +40,9 @@ namespace pEp {
             while (_cache.size() >= _max_size)
                 _cache.pop_front();
             
-            _cache.emplace_back(passphrase, clock::now());
-            auto back = _cache.back();  // FIXME: In C++17 list::emplace_back()
-                                        // returns the just inserted element
-                                        // already.
+            _cache.push_back({passphrase, clock::now()});
+            auto back = _cache.back();
+            assert(!_cache.empty());
             return back.passphrase.c_str();
         }
 
