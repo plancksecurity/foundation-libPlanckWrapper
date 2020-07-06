@@ -41,9 +41,10 @@ namespace pEp {
                 _cache.pop_front();
             
             _cache.push_back({passphrase, clock::now()});
-            auto back = _cache.back();
+            auto back = _cache.end();
             assert(!_cache.empty());
-            return back.passphrase.c_str();
+            auto result = (--back)->passphrase.c_str();
+            return result;
         }
 
         static const char *empty = "";
