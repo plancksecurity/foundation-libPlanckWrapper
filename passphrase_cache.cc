@@ -47,7 +47,8 @@ namespace pEp {
             return back.passphrase.c_str();
         }
 
-        return "";
+        static const char *empty = "";
+        return empty;
     }
 
     const char *PassphraseCache::add_stored(const std::string& passphrase)
