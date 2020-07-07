@@ -1,6 +1,7 @@
 #include <cassert>
 #include "Adapter.hh"
 #include "passphrase_cache.hh"
+#include "callback_dispatcher.hh"
 
 pEp::PassphraseCache pEp::passphrase_cache;
 
@@ -35,15 +36,19 @@ namespace pEp {
     const char *PassphraseCache::add(const std::string& passphrase)
     {
         if (!passphrase.empty()) {
-            std::lock_guard<std::mutex> lock(_mtx);
+            const char *result = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(_mtx);
 
-            while (_cache.size() >= _max_size)
-                _cache.pop_front();
-            
-            _cache.push_back({passphrase, clock::now()});
-            auto back = _cache.end();
-            assert(!_cache.empty());
-            auto result = (--back)->passphrase.c_str();
+                while (_cache.size() >= _max_size)
+                    _cache.pop_front();
+                
+                _cache.push_back({passphrase, clock::now()});
+                auto back = _cache.end();
+                assert(!_cache.empty());
+                result = (--back)->passphrase.c_str();
+            }
+            callback_dispatcher.semaphore.go();
             return result;
         }
 

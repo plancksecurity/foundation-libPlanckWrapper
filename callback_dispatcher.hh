@@ -5,6 +5,7 @@
 #include <mutex>
 #include "Adapter.hh"
 #include "Semaphore.hh"
+#include "passphrase_cache.hh"
 
 namespace pEp {
     // use this class when implementing a desktop adapter
@@ -46,6 +47,8 @@ namespace pEp {
         PEP_STATUS _messageToSend(::message *msg);
         PEP_STATUS _notifyHandshake(::pEp_identity *me,
                 ::pEp_identity *partner, ::sync_handshake_signal signal);
+
+        friend const char *PassphraseCache::add(const std::string& passphrase);
     };
 
     extern CallbackDispatcher callback_dispatcher;
