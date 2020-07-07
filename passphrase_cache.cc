@@ -34,9 +34,9 @@ namespace pEp {
 
     const char *PassphraseCache::add(const std::string& passphrase)
     {
-        std::lock_guard<std::mutex> lock(_mtx);
-
         if (!passphrase.empty()) {
+            std::lock_guard<std::mutex> lock(_mtx);
+
             while (_cache.size() >= _max_size)
                 _cache.pop_front();
             
