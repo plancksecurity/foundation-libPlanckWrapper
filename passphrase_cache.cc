@@ -1,9 +1,6 @@
 #include <cassert>
 #include "Adapter.hh"
 #include "passphrase_cache.hh"
-#include "callback_dispatcher.hh"
-
-pEp::PassphraseCache pEp::passphrase_cache;
 
 namespace pEp {
     PassphraseCache::cache_entry::cache_entry(const std::string& p, time_point t) :
@@ -12,13 +9,13 @@ namespace pEp {
 
     PassphraseCache::PassphraseCache(size_t max_size, duration timeout) :
             _max_size{max_size}, _timeout{timeout}, _which(_cache.end()),
-            first_time(true)
+            first_time(true), synchronous(false)
     { }
 
     PassphraseCache::PassphraseCache(const PassphraseCache& second) :
             _cache{second._cache}, _max_size{second._max_size},
             _timeout{second._timeout}, _stored{second._stored},
-            _which(_cache.end()), first_time(true)
+            _which(_cache.end()), first_time(true), synchronous(false)
     {
         cleanup();
     }

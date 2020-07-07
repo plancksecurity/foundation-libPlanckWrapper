@@ -8,6 +8,8 @@
 #include <exception>
 #include <pEp/message_api.h>
 
+#include "callback_dispatcher.hh"
+
 namespace pEp {
     class PassphraseCache {
         using clock = std::chrono::system_clock;
@@ -33,6 +35,8 @@ namespace pEp {
         cache::iterator _which;
         bool first_time;
 
+        bool synchronous;
+
     public:
         struct Empty : public std::underflow_error {
             Empty() : std::underflow_error("passphrase cache empty") { }
@@ -45,6 +49,9 @@ namespace pEp {
         ~PassphraseCache() { }
         PassphraseCache(const PassphraseCache& second);
         PassphraseCache& operator=(const PassphraseCache& second);
+
+        // switch this on for synchronous API
+        void config_synchronous_api(bool enable = true) { synchronous = enable; }
 
         // adds the passphrase to the cache, which will timeout
         // returns a ptr to the passsword entry in the cache. Don't free() it!
