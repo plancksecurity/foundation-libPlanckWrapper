@@ -42,6 +42,14 @@ namespace pEp {
         ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > q;
         std::mutex m;
 
+        std::thread::id sync_thread_id()
+        {
+            if (_sync_thread)
+                return _sync_thread->get_id();
+            else
+                return std::thread::id();
+        }
+
         int _inject_sync_event(SYNC_EVENT ev, void *management)
         {
             try {

@@ -5,8 +5,9 @@
 
 #include <functional>
 #include <string>
-#include <pEp/sync_api.h>
+#include <thread>
 #include <stdexcept>
+#include <pEp/sync_api.h>
 
 namespace pEp {
 
@@ -35,6 +36,9 @@ namespace pEp {
 
         // returns 'true' when called from the "sync" thread, 'false' otherwise.
         bool on_sync_thread();
+
+        // returns the thread id of the sync thread
+        std::thread::id sync_thread_id();
 
         enum session_action {
             init,
