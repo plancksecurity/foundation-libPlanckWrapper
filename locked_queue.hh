@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include <list>
+#include <deque>
 #include <condition_variable>
 #include <mutex>
 
@@ -17,7 +17,7 @@ namespace utility
         
         Mutex  _mtx;
         std::condition_variable_any  _cv;
-        std::list<T> _q;
+        std::deque<T> _q;
 
     public:
         ~locked_queue()
@@ -39,14 +39,14 @@ namespace utility
         }
 
         // undefined behavior when queue empty
-        T& back()
+        T back()
         {
             Lock lg(_mtx);
             return _q.back();
         }
 
         // undefined behavior when queue empty
-        T& front()
+        T front()
         {
             Lock lg(_mtx);
             return _q.front();

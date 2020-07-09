@@ -144,5 +144,14 @@ namespace pEp {
         {
             return _sync_thread != nullptr;
         }
+
+        bool in_shutdown()
+        {
+            SYNC_EVENT ev = q.back();
+            if (ev)
+                return false;
+            else
+                return true;
+        }
     }
 }

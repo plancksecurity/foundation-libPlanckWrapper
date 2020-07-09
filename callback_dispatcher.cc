@@ -94,6 +94,9 @@ namespace pEp {
         if (Adapter::on_sync_thread() && !msg) {
             semaphore.try_wait();
 
+            if (Adapter::in_shutdown())
+                return PEP_SYNC_NO_CHANNEL;
+
             PEP_STATUS status = PassphraseCache::config_next_passphrase();
 
             // if the cache has no valid passphrase ask the app

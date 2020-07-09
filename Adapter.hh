@@ -51,6 +51,7 @@ namespace pEp {
         void shutdown();
 
         bool is_sync_running();
+        bool in_shutdown();
     }
 }
 
