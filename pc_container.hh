@@ -7,6 +7,7 @@
 // that holds references to all changed elements
 
 #include <functional>
+#include <list>
 #include "locked_queue.hh"
 
 namespace pEp
@@ -17,7 +18,7 @@ enum class PC_State { Illegal = 0, Created = 1, Deleted = 2, Changed = 3 };
 
 // Producer/Consumer container.
 // 
-// The "Producer" works on a std::deque: inserts, changes, erases elements and 
+// The "Producer" works on a std::list: inserts, changes, erases elements and 
 // informs a "Consumer" via a queue about the changes.
 //
 // The "Consumer" can poll for changes and process them asynchronously.
@@ -36,7 +37,7 @@ public:
         PC_State state() const noexcept { return PC_State((pdata!=nullptr) + (cdata!=nullptr)*2); }
     };
     
-    typedef std::deque<PC> Container;
+    typedef std::list<PC> Container;
     
     typename Container::const_iterator cbegin() const noexcept { return c.cbegin(); }
     typename Container::const_iterator cend()   const noexcept { return c.cend();   }

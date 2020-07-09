@@ -152,6 +152,6 @@ namespace pEp {
                 return false;
             else
                 return true;
-        }
+       }
     }
 }
