@@ -80,8 +80,8 @@ namespace pEp {
 
     void CallbackDispatcher::stop_sync()
     {
-        callback_dispatcher.semaphore.go();
         pEp::Adapter::shutdown();
+        callback_dispatcher.semaphore.go();
 
         for (auto target : callback_dispatcher.targets) {
             if (target.notifyHandshake)
