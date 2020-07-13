@@ -38,17 +38,21 @@ namespace utility
             _q.clear();
         }
 
-        // undefined behavior when queue empty
+        // defined behavior when queue empty
         T back()
         {
             Lock lg(_mtx);
+            if (_q.empty())
+                throw std::underflow_error("queue empty");
             return _q.back();
         }
 
-        // undefined behavior when queue empty
+        // defined behavior when queue empty
         T front()
         {
             Lock lg(_mtx);
+            if (_q.empty())
+                throw std::underflow_error("queue empty");
             return _q.front();
         }
 

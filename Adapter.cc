@@ -147,7 +147,13 @@ namespace pEp {
 
         bool in_shutdown()
         {
-            SYNC_EVENT ev = q.back();
+            SYNC_EVENT ev;
+            try {
+                ev = q.back();
+            }
+            catch (std::underflow_error&) {
+                return false;
+            }
             if (ev)
                 return false;
             else
