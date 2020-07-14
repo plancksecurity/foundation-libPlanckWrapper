@@ -80,7 +80,9 @@ namespace pEp {
 
     void CallbackDispatcher::stop_sync()
     {
-        pEp::Adapter::shutdown();
+        callback_dispatcher.semaphore.stop();
+        Adapter::q.clear();
+        Adapter::q.push_back(nullptr);
         callback_dispatcher.semaphore.go();
 
         for (auto target : callback_dispatcher.targets) {
