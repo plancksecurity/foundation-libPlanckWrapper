@@ -125,7 +125,7 @@ namespace pEp {
         return c._which->passphrase.c_str();
     }
 
-	PEP_STATUS PassphraseCache::config_next_passphrase(bool reset)
+	PEP_STATUS PassphraseCache::config_next_passphrase(bool reset, PEP_SESSION session)
 	{
         static pEp::PassphraseCache _copy;
         static bool new_copy = true;
@@ -141,7 +141,7 @@ namespace pEp {
         }
 
         try {
-            ::config_passphrase(Adapter::session(), latest_passphrase(_copy));
+            ::config_passphrase(session ? session : Adapter::session(), latest_passphrase(_copy));
             return PEP_STATUS_OK;
         }
         catch (pEp::PassphraseCache::Empty&) {

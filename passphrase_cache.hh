@@ -58,7 +58,7 @@ namespace pEp {
         // other until the cache is exhausted
         // call with reset = true to reset the iterator
 
-        static PEP_STATUS config_next_passphrase(bool reset=false);
+        static PEP_STATUS config_next_passphrase(bool reset=false, PEP_SESSION session = NULL);
 
         // convenience functions
         // i.e.
