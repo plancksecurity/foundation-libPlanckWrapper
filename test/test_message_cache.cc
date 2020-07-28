@@ -53,8 +53,12 @@ int main()
 
     // remove from cache
 
-    cout << status << endl;
+    char *mime = nullptr;
+    status = MessageCache::cache_mime_encode_message(MessageCache::msg_src, src, false, &mime, false);
 
+    cout << mime << endl;
+
+    free(mime);
     ::free_message(src);
     ::free_message(dst);
     ::free_identity(bob);
