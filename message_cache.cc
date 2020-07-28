@@ -1,4 +1,6 @@
 #include "message_cache.hh"
+#include <cassert>
+#include <cstring>
 
 pEp::MessageCache pEp::message_cache;
 
