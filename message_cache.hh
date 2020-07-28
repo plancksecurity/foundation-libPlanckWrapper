@@ -11,10 +11,6 @@ namespace pEp {
         struct cache_entry {
             cache_entry(::message *s, ::message *d)
                 : src(s), dst(d) { }
-            ~cache_entry() {
-                ::free_message(src);
-                ::free_message(dst);
-            };
 
             ::message *src;
             ::message *dst;

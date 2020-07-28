@@ -1,6 +1,6 @@
 #include "message_cache.hh"
 
-pEp::MessageCache message_cache;
+pEp::MessageCache pEp::message_cache;
 
 namespace pEp {
     DYNAMIC_API PEP_STATUS MessageCache::cache_decrypt_message(
@@ -144,6 +144,7 @@ namespace pEp {
             throw std::bad_alloc();
 
         dst->id = dup(src->id);
+
         dst->shortmsg = dup(src->shortmsg);
 
         if (!emptystr(src->longmsg))
@@ -198,7 +199,7 @@ namespace pEp {
 
         ::message *_cpy = empty_message_copy(src);
 
-        ::message *_src;
+        ::message *_src = (::message *) malloc(sizeof(::message));
         ::memcpy(_src, src, sizeof(::message));
         ::memcpy(src, _cpy, sizeof(::message));
 

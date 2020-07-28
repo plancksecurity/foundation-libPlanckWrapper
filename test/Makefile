@@ -6,7 +6,7 @@ CXXFLAGS+=-I../
 
 .PHONY=all, test_adapter, test_adapter_cxx, test_library
 
-all: test_adapter test_adapter_cxx test_library test_passphrase_cache test_semaphore
+all: test_adapter test_adapter_cxx test_library test_passphrase_cache test_semaphore test_message_cache
 
 test_adapter: test_adapter.cc ../libpEpAdapter.a
 
@@ -17,6 +17,8 @@ test_library: test_library.cc ../libpEpAdapter.a
 test_passphrase_cache: test_passphrase_cache.cc ../libpEpAdapter.a
 
 test_semaphore: test_semaphore.cc ../libpEpAdapter.a
+
+test_message_cache: test_message_cache.cc ../libpEpAdapter.a
 
 clean:	
 	rm -vf test_adapter
