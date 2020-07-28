@@ -33,6 +33,8 @@ int main()
     src->attachments = new_bloblist(strdup("blobdata"), 8, "application/octet-stream", "blob.data");
     assert(src->attachments && src->attachments->value);
 
+    // add to cache
+
     ::message *dst = nullptr;
     PEP_rating rating;
     PEP_decrypt_flags_t flags = 0;
@@ -48,6 +50,8 @@ int main()
 
     assert(string(src->longmsg) == "pEp");
     assert(src->attachments == nullptr);
+
+    // remove from cache
 
     cout << status << endl;
 

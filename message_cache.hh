@@ -33,13 +33,15 @@ namespace pEp {
 
         enum which { msg_src, msg_dst };;
 
-        static PEP_STATUS cached_mime_encode_message(
+        static PEP_STATUS cache_mime_encode_message(
                 which one,
                 const message * msg,
                 bool omit_fields,
                 char **mimetext,
                 bool has_pEp_msg_attachment     
             );
+
+        static void cache_release(std::string id);
 
     protected:
         DYNAMIC_API PEP_STATUS decrypt_message(

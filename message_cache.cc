@@ -16,7 +16,7 @@ namespace pEp {
                 rating, flags);
     }
 
-    PEP_STATUS MessageCache::cached_mime_encode_message(
+    PEP_STATUS MessageCache::cache_mime_encode_message(
             which one,
             const message * msg,
             bool omit_fields,
@@ -26,6 +26,14 @@ namespace pEp {
     {
         return message_cache.mime_encode_message(one, msg, omit_fields,
                 mimetext, has_pEp_msg_attachment);
+    }
+
+    void MessageCache::cache_release(std::string id)
+    {
+        try {
+            message_cache._cache.erase(id);
+        }
+        catch (...) { }
     }
 
     static char *dup(const char *src)
