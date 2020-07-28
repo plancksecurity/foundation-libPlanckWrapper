@@ -224,14 +224,42 @@ namespace pEp {
         if (one != msg_src && one != msg_dst)
             return PEP_ILLEGAL_VALUE;
 
-        ::message *_msg;
+        ::message *_msg = ::message_dup(msg);
         if (one == msg_src) {
-            _msg = _cache.at(std::string(msg->id)).src;
+            ::message _src = _cache.at(std::string(msg->id)).src;
             ::free_message(_cache.at(msg->id).dst);
+
+            free(_msg->longmsg);
+            _msg->longmsg = _src->longmsg;
+            _src->longmsg = nullptr;
+
+            free(_msg->longmsg_formatted);
+            _msg->longmsg_formatted = _src->longmsg_formatted;
+            _src->longmsg_formatted = nullptr;
+
+            free_bloblist(_msg->attachments);
+            _msg->attachments = _src->attachments;
+            _src->attachments = nullptr;
+
+            free_message(_src);
         }
         else /* msg_dst */ {
-            _msg = _cache.at(std::string(msg->id)).dst;
+            ::message *_dst = _cache.at(std::string(msg->id)).dst;
             ::free_message(_cache.at(msg->id).src);
+
+            free(_msg->longmsg);
+            _msg->longmsg = _dst->longmsg;
+            _dst->longmsg = nullptr;
+
+            free(_msg->longmsg_formatted);
+            _msg->longmsg_formatted = _dst->longmsg_formatted;
+            _dst->longmsg_formatted = nullptr;
+
+            free_bloblist(_msg->attachments);
+            _msg->attachments = _dst->attachments;
+            _dst->attachments = nullptr;
+
+            free_message(_dst);
         }
 
         PEP_STATUS status = ::mime_encode_message(_msg, omit_fields, mimetext,
