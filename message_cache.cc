@@ -17,23 +17,49 @@ namespace pEp {
     }
 
     PEP_STATUS MessageCache::cache_mime_encode_message(
-            which one,
+            int one,
             const message * msg,
             bool omit_fields,
             char **mimetext,
             bool has_pEp_msg_attachment     
         )
     {
-        return message_cache.mime_encode_message(one, msg, omit_fields,
+        which _one = (which) one;
+        return message_cache.mime_encode_message(_one, msg, omit_fields,
                 mimetext, has_pEp_msg_attachment);
     }
 
-    void MessageCache::cache_release(std::string id)
+    PEP_STATUS MessageCache::cache_mime_decode_message(
+            const char *mimetext,
+            size_t size,
+            message **msg,
+            bool* has_possible_pEp_msg
+        )
+    {
+        return message_cache.mime_decode_message(mimetext, size, msg,
+                has_possible_pEp_msg);
+    }
+
+    PEP_STATUS MessageCache::cache_encrypt_message(
+            PEP_SESSION session,
+            message *src,
+            stringlist_t *extra,
+            message **dst,
+            PEP_enc_format enc_format,
+            PEP_encrypt_flags_t flags
+        )
+    {
+        return message_cache.encrypt_message(session, src, extra, dst,
+                enc_format, flags);
+    }
+
+    PEP_STATUS MessageCache::cache_release(const char *id)
     {
         try {
-            message_cache._cache.erase(id);
+            message_cache._cache.erase(std::string(id));
         }
         catch (...) { }
+        return PEP_STATUS_OK;
     }
 
     static char *dup(const char *src)
@@ -153,12 +179,11 @@ namespace pEp {
 
         dst->id = dup(src->id);
 
-        dst->shortmsg = dup(src->shortmsg);
-
-        if (!emptystr(src->longmsg))
+        if (!emptystr(src->shortmsg))
+            dst->shortmsg = dup(src->shortmsg);
+        else if (!emptystr(src->longmsg))
             dst->longmsg = dup("pEp");
-
-        if (!emptystr(src->longmsg_formatted))
+        else if (!emptystr(src->longmsg_formatted))
             dst->longmsg_formatted = dup("<pEp/>");
         
         // attachments are never copied
@@ -214,8 +239,6 @@ namespace pEp {
         ::message *_dst = *dst;
         *dst = empty_message_copy(_dst);
 
-        message_cache._cache.emplace(std::make_pair(std::string(_src->id),
-                    cache_entry(_src, _dst)));
         return status;
     }
 
@@ -276,6 +299,70 @@ namespace pEp {
 
         ::free_message(_msg);
         _cache.erase(msg->id);
+
+        return status;
+    }
+
+    PEP_STATUS MessageCache::mime_decode_message(
+            const char *mimetext,
+            size_t size,
+            message **msg,
+            bool* has_possible_pEp_msg
+        )
+    {
+        ::message *_msg = nullptr;
+        PEP_STATUS status = ::mime_decode_message(mimetext, size, &_msg,
+                has_possible_pEp_msg);
+        if (status)
+            return status;
+
+        *msg = empty_message_copy(_msg);
+
+        message_cache._cache.emplace(std::make_pair(std::string(_msg->id),
+                    cache_entry(_msg, nullptr)));
+
+        return status;
+    }
+
+    PEP_STATUS MessageCache::encrypt_message(
+            PEP_SESSION session,
+            message *src,
+            stringlist_t *extra,
+            message **dst,
+            PEP_enc_format enc_format,
+            PEP_encrypt_flags_t flags
+        )
+    {
+        ::message *_msg = message_cache._cache.at(src->id).src;
+        
+        free(src->longmsg);
+        src->longmsg = _msg->longmsg;
+        _msg->longmsg = nullptr;
+
+        free(src->longmsg_formatted);
+        src->longmsg_formatted = _msg->longmsg_formatted;
+        _msg->longmsg_formatted = nullptr;
+
+        free_bloblist(src->attachments);
+        src->attachments = _msg->attachments;
+        _msg->attachments = nullptr;
+
+        ::message *_dst = nullptr;
+        PEP_STATUS status = ::encrypt_message(session, src, extra, &_dst,
+                enc_format, flags);
+
+        _msg->longmsg = src->longmsg;
+        src->longmsg = nullptr;
+
+        _msg->longmsg_formatted = src->longmsg_formatted;
+        src->longmsg_formatted = nullptr;
+
+        _msg->attachments = src->attachments;
+        src->attachments = nullptr;
+ 
+        *dst = empty_message_copy(_dst);
+        ::free_message(message_cache._cache.at(src->id).dst);
+        message_cache._cache.at(src->id).dst = _dst;
 
         return status;
     }

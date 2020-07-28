@@ -22,6 +22,23 @@ namespace pEp {
         std::mutex _mtx;
 
     public:
+        enum which { msg_src, msg_dst };
+
+		static PEP_STATUS cache_mime_decode_message(
+				const char *mimetext,
+				size_t size,
+				message **msg,
+				bool* has_possible_pEp_msg
+			);
+
+        static PEP_STATUS cache_mime_encode_message(
+                int one,
+                const message * msg,
+                bool omit_fields,
+                char **mimetext,
+                bool has_pEp_msg_attachment     
+            );
+
         static PEP_STATUS cache_decrypt_message(
                 PEP_SESSION session,
                 message *src,
@@ -31,20 +48,34 @@ namespace pEp {
                 PEP_decrypt_flags_t *flags
         );
 
-        enum which { msg_src, msg_dst };;
+		static PEP_STATUS cache_encrypt_message(
+				PEP_SESSION session,
+				message *src,
+				stringlist_t *extra,
+				message **dst,
+				PEP_enc_format enc_format,
+				PEP_encrypt_flags_t flags
+			);
 
-        static PEP_STATUS cache_mime_encode_message(
-                which one,
-                const message * msg,
-                bool omit_fields,
-                char **mimetext,
-                bool has_pEp_msg_attachment     
-            );
-
-        static void cache_release(std::string id);
+        static PEP_STATUS cache_release(const char *id);
 
     protected:
-        DYNAMIC_API PEP_STATUS decrypt_message(
+		PEP_STATUS mime_decode_message(
+				const char *mimetext,
+				size_t size,
+				message **msg,
+				bool* has_possible_pEp_msg
+			);
+
+        PEP_STATUS mime_encode_message(
+                which one,
+                const message * src,
+                bool omit_fields,
+                char **mimetext,
+                bool has_pEp_msg_attachment
+            );
+
+        PEP_STATUS decrypt_message(
                 PEP_SESSION session,
                 message *src,
                 message **dst,
@@ -53,13 +84,14 @@ namespace pEp {
                 PEP_decrypt_flags_t *flags
         );
 
-        DYNAMIC_API PEP_STATUS mime_encode_message(
-                which one,
-                const message * src,
-                bool omit_fields,
-                char **mimetext,
-                bool has_pEp_msg_attachment
-            );
+		PEP_STATUS encrypt_message(
+				PEP_SESSION session,
+				message *src,
+				stringlist_t *extra,
+				message **dst,
+				PEP_enc_format enc_format,
+				PEP_encrypt_flags_t flags
+			);
 
         static ::message *empty_message_copy(::message *src);
     };

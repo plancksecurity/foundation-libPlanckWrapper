@@ -14,47 +14,75 @@ int main()
     pEp_identity *alice = ::new_identity("alice@mail.com", nullptr, PEP_OWN_USERID, "Alice");
     ::myself(session, alice);
 
-    pEp_identity *bob = ::new_identity("bob@mail.com", nullptr, PEP_OWN_USERID, "Bob");
-    ::update_identity(session, bob);
-
-    ::message *src = new_message(PEP_dir_incoming);
-    src->from = identity_dup(alice);
-    src->to = ::new_identity_list(::identity_dup(bob));
-
-    src->shortmsg = strdup("short message");
-    assert(src->shortmsg);
-
-    src->longmsg = strdup("long message");
-    assert(src->longmsg);
-
-    src->longmsg_formatted = strdup("<long msg='formatted'/>");
-    assert(src->longmsg_formatted);
-
-    src->attachments = new_bloblist(strdup("blobdata"), 8, "application/octet-stream", "blob.data");
-    assert(src->attachments && src->attachments->value);
+    char *mime = strdup("From: Alice <alice@mail.com>\n"
+                        "To: Bob <bob@mail.com>\n"
+                        "Subject: short message\n"
+                        "Message-ID: <42>\n"
+                        "\n"
+                        "long message\n");
 
     // add to cache
 
+    ::message *src = nullptr;
+    bool has_possible_pEp_msg;
+    status = MessageCache::cache_mime_decode_message(mime, strlen(mime), &src, &has_possible_pEp_msg);
+    assert(status == PEP_STATUS_OK);
+
+    status = ::myself(session, src->from);
+    assert(status == PEP_STATUS_OK);
+
+    ::update_identity(session, src->to->ident);
+    assert(status == PEP_STATUS_OK);
+
+    pEp_identity *bob = identity_dup(src->to->ident);
+
+    src->dir = PEP_dir_outgoing;
     ::message *dst = nullptr;
+    status = MessageCache::cache_encrypt_message(session, src, nullptr, &dst, PEP_enc_PEP, 0);
+    assert(status != PEP_ILLEGAL_VALUE);
+
+    assert(src->longmsg == nullptr);
+    assert(src->attachments == nullptr);
+
+    assert(dst == nullptr);
+
+    // remove from cache
+
+    free(mime);
+    mime = nullptr;
+    status = MessageCache::cache_mime_encode_message(MessageCache::msg_src, src, false, &mime, false);
+    assert(status == PEP_STATUS_OK);
+
+    cout << mime << endl;
+
+    // add to cache
+
+    ::free_message(src);
+    src = nullptr;
+    status = MessageCache::cache_mime_decode_message(mime, strlen(mime), &src, &has_possible_pEp_msg);
+    assert(status == PEP_STATUS_OK);
+
+    assert(src->longmsg == nullptr);
+    assert(src->attachments == nullptr);
+
     PEP_rating rating;
     PEP_decrypt_flags_t flags = 0;
     stringlist_t *keylist = nullptr;
 
     status = MessageCache::cache_decrypt_message(session, src, &dst, &keylist, &rating, &flags);
-    assert(status == PEP_ILLEGAL_VALUE);
-
-    src->id = strdup("42");
-    assert(src->id);
-    status = MessageCache::cache_decrypt_message(session, src, &dst, &keylist, &rating, &flags);
     assert(status != PEP_ILLEGAL_VALUE);
 
-    assert(string(src->longmsg) == "pEp");
+    assert(src->longmsg == nullptr);
     assert(src->attachments == nullptr);
 
     // remove from cache
 
-    char *mime = nullptr;
+    free(mime);
+    mime = nullptr;
     status = MessageCache::cache_mime_encode_message(MessageCache::msg_src, src, false, &mime, false);
+
+    assert(src->longmsg == nullptr);
+    assert(src->attachments == nullptr);
 
     cout << mime << endl;
 
