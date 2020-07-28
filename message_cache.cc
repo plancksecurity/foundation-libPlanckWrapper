@@ -226,7 +226,7 @@ namespace pEp {
 
         ::message *_msg = ::message_dup(msg);
         if (one == msg_src) {
-            ::message _src = _cache.at(std::string(msg->id)).src;
+            ::message *_src = _cache.at(std::string(msg->id)).src;
             ::free_message(_cache.at(msg->id).dst);
 
             free(_msg->longmsg);
