@@ -58,6 +58,7 @@ namespace pEp {
     PEP_STATUS MessageCache::cache_release(const char *id)
     {
         try {
+            std::lock_guard<std::mutex> l(message_cache._mtx);
             message_cache._cache.erase(std::string(id));
         }
         catch (...) { }
@@ -320,8 +321,11 @@ namespace pEp {
 
         *msg = empty_message_copy(_msg);
 
-        message_cache._cache.emplace(std::make_pair(std::string(_msg->id),
-                    cache_entry(_msg, nullptr)));
+        {
+            std::lock_guard<std::mutex> l(_mtx);
+            message_cache._cache.emplace(std::make_pair(std::string(_msg->id),
+                        cache_entry(_msg, nullptr)));
+        }
 
         return status;
     }
@@ -335,7 +339,11 @@ namespace pEp {
             PEP_encrypt_flags_t flags
         )
     {
-        ::message *_msg = message_cache._cache.at(src->id).src;
+        ::message *_msg;
+        {
+            std::lock_guard<std::mutex> l(_mtx);
+            _msg = message_cache._cache.at(src->id).src;
+        }
         
         free(src->longmsg);
         src->longmsg = _msg->longmsg;
@@ -363,8 +371,12 @@ namespace pEp {
         src->attachments = nullptr;
  
         *dst = empty_message_copy(_dst);
-        ::free_message(message_cache._cache.at(src->id).dst);
-        message_cache._cache.at(src->id).dst = _dst;
+
+        {
+            std::lock_guard<std::mutex> l(_mtx);
+            ::free_message(message_cache._cache.at(src->id).dst);
+            message_cache._cache.at(src->id).dst = _dst;
+        }
 
         return status;
     }
