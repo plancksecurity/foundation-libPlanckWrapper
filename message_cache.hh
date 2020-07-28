@@ -22,8 +22,7 @@ namespace pEp {
         std::mutex _mtx;
 
     public:
-        static 
-        DYNAMIC_API PEP_STATUS cache_decrypt_message(
+        static PEP_STATUS cache_decrypt_message(
                 PEP_SESSION session,
                 message *src,
                 message **dst,
@@ -34,8 +33,7 @@ namespace pEp {
 
         enum which { msg_src, msg_dst };;
 
-        static
-        DYNAMIC_API PEP_STATUS cached_mime_encode_message(
+        static PEP_STATUS cached_mime_encode_message(
                 which one,
                 const message * msg,
                 bool omit_fields,

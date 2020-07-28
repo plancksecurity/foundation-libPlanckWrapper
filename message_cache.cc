@@ -3,7 +3,7 @@
 pEp::MessageCache pEp::message_cache;
 
 namespace pEp {
-    DYNAMIC_API PEP_STATUS MessageCache::cache_decrypt_message(
+    PEP_STATUS MessageCache::cache_decrypt_message(
             PEP_SESSION session,
             message *src,
             message **dst,
@@ -16,7 +16,7 @@ namespace pEp {
                 rating, flags);
     }
 
-    DYNAMIC_API PEP_STATUS MessageCache::cached_mime_encode_message(
+    PEP_STATUS MessageCache::cached_mime_encode_message(
             which one,
             const message * msg,
             bool omit_fields,
