@@ -225,7 +225,7 @@ namespace pEp {
             stringlist_t **keylist,
             PEP_rating *rating,
             PEP_decrypt_flags_t *flags
-    )
+        )
     {
         if (!src || emptystr(src->id))
             return PEP_ILLEGAL_VALUE;

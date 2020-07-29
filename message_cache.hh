@@ -22,7 +22,7 @@ namespace pEp {
         std::mutex _mtx;
 
     public:
-        enum which { msg_src, msg_dst };
+        enum which { msg_src = 0, msg_dst = 1 };
 
 		static PEP_STATUS cache_mime_decode_message(
 				const char *mimetext,
