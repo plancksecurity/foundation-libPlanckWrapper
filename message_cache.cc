@@ -218,6 +218,29 @@ namespace pEp {
         return dst;
     }
 
+    static void correctAttachmentsOrder(bloblist_t*& bl)
+    {
+        // only execute if there are exactly two attachments, both with
+        // a non-empty MIME type
+
+        if (bl && bl->next && !bl->next->next && !emptystr(bl->mime_type) &&
+                !emptystr(bl->next->mime_type)) {
+
+            // if this is most likely an PGP/MIME compliant format then correct
+            // order of attachments
+
+            if (std::string(bl->mime_type) == "application/octet-stream" &&
+                    std::string(bl->next->mime_type) ==
+                    "application/pgp-encrypted") {
+                bloblist_t *one = bl->next;
+                bloblist_t *two = bl;
+                bl = one;
+                bl->next = two;
+                bl->next->next = nullptr;
+            }
+        }
+    }
+
     DYNAMIC_API PEP_STATUS MessageCache::decrypt_message(
             PEP_SESSION session,
             message *src,
@@ -247,6 +270,9 @@ namespace pEp {
         free_bloblist(src->attachments);
         src->attachments = _msg->attachments;
         _msg->attachments = nullptr;
+
+        // if attachments got reordered correct
+        correctAttachmentsOrder(src->attachments);
 
         ::message *_dst = nullptr;
         PEP_STATUS status = ::decrypt_message(session, src, &_dst, keylist,
