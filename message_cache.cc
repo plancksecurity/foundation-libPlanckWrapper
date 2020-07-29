@@ -12,7 +12,7 @@ namespace pEp {
             stringlist_t **keylist,
             PEP_rating *rating,
             PEP_decrypt_flags_t *flags
-    )
+        )
     {
         return message_cache.decrypt_message(session, src, dst, keylist,
                 rating, flags);

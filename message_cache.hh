@@ -46,7 +46,7 @@ namespace pEp {
                 stringlist_t **keylist,
                 PEP_rating *rating,
                 PEP_decrypt_flags_t *flags
-        );
+            );
 
 		static PEP_STATUS cache_encrypt_message(
 				PEP_SESSION session,
@@ -82,7 +82,7 @@ namespace pEp {
                 stringlist_t **keylist,
                 PEP_rating *rating,
                 PEP_decrypt_flags_t *flags
-        );
+            );
 
 		PEP_STATUS encrypt_message(
 				PEP_SESSION session,
