@@ -17,7 +17,6 @@ int main()
     char *mime = strdup("From: Alice <alice@mail.com>\n"
                         "To: Bob <bob@mail.com>\n"
                         "Subject: short message\n"
-                        "Message-ID: <42>\n"
                         "\n"
                         "long message\n");
 

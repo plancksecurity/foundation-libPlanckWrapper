@@ -20,8 +20,11 @@ namespace pEp {
 
         cache _cache;
         std::mutex _mtx;
+        long long next_id = 23;
 
     public:
+        MessageCache();
+
         enum which { msg_src = 0, msg_dst = 1 };
 
 		static PEP_STATUS cache_mime_decode_message(

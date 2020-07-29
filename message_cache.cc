@@ -1,10 +1,19 @@
 #include "message_cache.hh"
 #include <cassert>
 #include <cstring>
+#include <random>
 
 pEp::MessageCache pEp::message_cache;
 
 namespace pEp {
+    MessageCache::MessageCache()
+    {
+        std::random_device r;
+        std::default_random_engine e(r());
+        std::uniform_int_distribution<long long> u(1, 0x0100000000000000L);
+        next_id = u(e);
+    }
+
     PEP_STATUS MessageCache::cache_decrypt_message(
             PEP_SESSION session,
             message *src,
@@ -360,6 +369,17 @@ namespace pEp {
                 has_possible_pEp_msg);
         if (status)
             return status;
+
+        // guarantee we have a Message-ID
+
+        if (_msg && emptystr(_msg->id)) {
+            free(_msg->id);
+            std::string _id = std::to_string(next_id++);
+            _msg->id = strdup((std::string("pEp_auto_id_") + _id).c_str());
+            assert(_msg->id);
+            if (!_msg->id)
+                throw std::bad_alloc();
+        }
 
         *msg = empty_message_copy(_msg);
 
