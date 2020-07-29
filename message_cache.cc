@@ -230,18 +230,44 @@ namespace pEp {
         if (!src || emptystr(src->id))
             return PEP_ILLEGAL_VALUE;
 
-        PEP_STATUS status = ::decrypt_message(session, src, dst, keylist,
+        ::message *_msg;
+        {
+            std::lock_guard<std::mutex> l(_mtx);
+            _msg = message_cache._cache.at(src->id).src;
+        }
+        
+        free(src->longmsg);
+        src->longmsg = _msg->longmsg;
+        _msg->longmsg = nullptr;
+
+        free(src->longmsg_formatted);
+        src->longmsg_formatted = _msg->longmsg_formatted;
+        _msg->longmsg_formatted = nullptr;
+
+        free_bloblist(src->attachments);
+        src->attachments = _msg->attachments;
+        _msg->attachments = nullptr;
+
+        ::message *_dst = nullptr;
+        PEP_STATUS status = ::decrypt_message(session, src, &_dst, keylist,
                 rating, flags);
 
-        ::message *_cpy = empty_message_copy(src);
+        _msg->longmsg = src->longmsg;
+        src->longmsg = nullptr;
 
-        ::message *_src = (::message *) malloc(sizeof(::message));
-        ::memcpy(_src, src, sizeof(::message));
-        ::memcpy(src, _cpy, sizeof(::message));
+        _msg->longmsg_formatted = src->longmsg_formatted;
+        src->longmsg_formatted = nullptr;
 
-        ::message *_dst = *dst;
+        _msg->attachments = src->attachments;
+        src->attachments = nullptr;
+ 
         *dst = empty_message_copy(_dst);
 
+        {
+            std::lock_guard<std::mutex> l(_mtx);
+            ::free_message(message_cache._cache.at(src->id).dst);
+            message_cache._cache.at(src->id).dst = _dst;
+        }
         return status;
     }
 
