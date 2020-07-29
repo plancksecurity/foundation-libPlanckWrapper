@@ -241,6 +241,21 @@ namespace pEp {
         }
     }
 
+    static void swapContent(::message*& part, ::message*& full)
+    {
+        free(part->longmsg);
+        part->longmsg = full->longmsg;
+        full->longmsg = nullptr;
+
+        free(part->longmsg_formatted);
+        part->longmsg_formatted = full->longmsg_formatted;
+        full->longmsg_formatted = nullptr;
+
+        free_bloblist(part->attachments);
+        part->attachments = full->attachments;
+        full->attachments = nullptr;
+    }
+
     DYNAMIC_API PEP_STATUS MessageCache::decrypt_message(
             PEP_SESSION session,
             message *src,
@@ -259,17 +274,7 @@ namespace pEp {
             _msg = message_cache._cache.at(src->id).src;
         }
         
-        free(src->longmsg);
-        src->longmsg = _msg->longmsg;
-        _msg->longmsg = nullptr;
-
-        free(src->longmsg_formatted);
-        src->longmsg_formatted = _msg->longmsg_formatted;
-        _msg->longmsg_formatted = nullptr;
-
-        free_bloblist(src->attachments);
-        src->attachments = _msg->attachments;
-        _msg->attachments = nullptr;
+        swapContent(src, _msg);
 
         // if attachments got reordered correct
         correctAttachmentsOrder(src->attachments);
@@ -278,15 +283,8 @@ namespace pEp {
         PEP_STATUS status = ::decrypt_message(session, src, &_dst, keylist,
                 rating, flags);
 
-        _msg->longmsg = src->longmsg;
-        src->longmsg = nullptr;
+        swapContent(_msg, src);
 
-        _msg->longmsg_formatted = src->longmsg_formatted;
-        src->longmsg_formatted = nullptr;
-
-        _msg->attachments = src->attachments;
-        src->attachments = nullptr;
- 
         *dst = empty_message_copy(_dst);
 
         {
@@ -316,36 +314,14 @@ namespace pEp {
             ::message *_src = _cache.at(std::string(msg->id)).src;
             ::free_message(_cache.at(msg->id).dst);
 
-            free(_msg->longmsg);
-            _msg->longmsg = _src->longmsg;
-            _src->longmsg = nullptr;
-
-            free(_msg->longmsg_formatted);
-            _msg->longmsg_formatted = _src->longmsg_formatted;
-            _src->longmsg_formatted = nullptr;
-
-            free_bloblist(_msg->attachments);
-            _msg->attachments = _src->attachments;
-            _src->attachments = nullptr;
-
+            swapContent(_msg, _src);
             free_message(_src);
         }
         else /* msg_dst */ {
             ::message *_dst = _cache.at(std::string(msg->id)).dst;
             ::free_message(_cache.at(msg->id).src);
 
-            free(_msg->longmsg);
-            _msg->longmsg = _dst->longmsg;
-            _dst->longmsg = nullptr;
-
-            free(_msg->longmsg_formatted);
-            _msg->longmsg_formatted = _dst->longmsg_formatted;
-            _dst->longmsg_formatted = nullptr;
-
-            free_bloblist(_msg->attachments);
-            _msg->attachments = _dst->attachments;
-            _dst->attachments = nullptr;
-
+            swapContent(_msg, _dst);
             free_message(_dst);
         }
 
@@ -397,31 +373,14 @@ namespace pEp {
             _msg = message_cache._cache.at(src->id).src;
         }
         
-        free(src->longmsg);
-        src->longmsg = _msg->longmsg;
-        _msg->longmsg = nullptr;
-
-        free(src->longmsg_formatted);
-        src->longmsg_formatted = _msg->longmsg_formatted;
-        _msg->longmsg_formatted = nullptr;
-
-        free_bloblist(src->attachments);
-        src->attachments = _msg->attachments;
-        _msg->attachments = nullptr;
+        swapContent(src, _msg);
 
         ::message *_dst = nullptr;
         PEP_STATUS status = ::encrypt_message(session, src, extra, &_dst,
                 enc_format, flags);
 
-        _msg->longmsg = src->longmsg;
-        src->longmsg = nullptr;
+        swapContent(_msg, src);
 
-        _msg->longmsg_formatted = src->longmsg_formatted;
-        src->longmsg_formatted = nullptr;
-
-        _msg->attachments = src->attachments;
-        src->attachments = nullptr;
- 
         *dst = empty_message_copy(_dst);
 
         {
