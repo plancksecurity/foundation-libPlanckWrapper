@@ -20,6 +20,7 @@ namespace pEp {
 
         cache _cache;
         std::mutex _mtx;
+        long long id_range = 42;
         long long next_id = 23;
 
     public:

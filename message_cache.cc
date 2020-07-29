@@ -10,7 +10,8 @@ namespace pEp {
     {
         std::random_device r;
         std::default_random_engine e(r());
-        std::uniform_int_distribution<long long> u(1, 0x0100000000000000L);
+        std::uniform_int_distribution<long long> u(1, LLONG_MAX >> 1);
+        id_range = u(e);
         next_id = u(e);
     }
 
@@ -374,8 +375,9 @@ namespace pEp {
 
         if (_msg && emptystr(_msg->id)) {
             free(_msg->id);
+            std::string _range = std::to_string(id_range);
             std::string _id = std::to_string(next_id++);
-            _msg->id = strdup((std::string("pEp_auto_id_") + _id).c_str());
+            _msg->id = strdup((std::string("pEp_auto_id_") + _range + _id).c_str());
             assert(_msg->id);
             if (!_msg->id)
                 throw std::bad_alloc();
