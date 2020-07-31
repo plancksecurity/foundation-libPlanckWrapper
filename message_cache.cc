@@ -1,6 +1,7 @@
 #include "message_cache.hh"
 #include <cassert>
 #include <cstring>
+#include <climits>
 #include <random>
 
 pEp::MessageCache pEp::message_cache;
