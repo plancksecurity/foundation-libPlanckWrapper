@@ -36,6 +36,9 @@
     <ClCompile Include="..\callback_dispatcher.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\message_cache.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Adapter.hh">
@@ -66,6 +69,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\Semaphore.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\message_cache.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

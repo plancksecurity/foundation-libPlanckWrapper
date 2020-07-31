@@ -281,7 +281,7 @@ namespace pEp {
         full->attachments = nullptr;
     }
 
-    DYNAMIC_API PEP_STATUS MessageCache::decrypt_message(
+    PEP_STATUS MessageCache::decrypt_message(
             PEP_SESSION session,
             message *src,
             message **dst,
@@ -320,7 +320,7 @@ namespace pEp {
         return status;
     }
 
-    DYNAMIC_API PEP_STATUS MessageCache::mime_encode_message(
+    PEP_STATUS MessageCache::mime_encode_message(
             which one,
             const message * msg,
             bool omit_fields,
