@@ -16,6 +16,16 @@ namespace pEp {
         next_id = u(e);
     }
 
+    MessageCache::cache_entry::cache_entry(::message *s, ::message *d)
+                : src(s), dst(d)
+    { }
+
+    MessageCache::cache_entry::~cache_entry()
+    {
+        ::free_message(src);
+        ::free_message(dst);
+    }
+
     PEP_STATUS MessageCache::cache_decrypt_message(
             PEP_SESSION session,
             message *src,
@@ -350,8 +360,6 @@ namespace pEp {
 
         {
             std::lock_guard<std::mutex> l(_mtx);
-            ::free_message(_cache.at(msg->id).src);
-            ::free_message(_cache.at(msg->id).dst);
             _cache.erase(msg->id);
         }
 
