@@ -118,7 +118,7 @@ namespace pEp {
                 PEP_encrypt_flags_t flags
             );
 
-        static ::message *empty_message_copy(::message *src);
+        void generateMessageID(::message* msg);
     };
 
     extern MessageCache message_cache;

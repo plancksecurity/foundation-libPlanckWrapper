@@ -196,7 +196,7 @@ namespace pEp {
         return false;
     }
 
-    ::message *MessageCache::empty_message_copy(::message *src)
+    static ::message *empty_message_copy(const ::message *src)
     {
         if (!src)
             return nullptr;
@@ -297,9 +297,8 @@ namespace pEp {
         {
             std::lock_guard<std::mutex> l(_mtx);
             _msg = message_cache._cache.at(src->id).src;
+            swapContent(src, _msg);
         }
-        
-        swapContent(src, _msg);
 
         // if attachments got reordered correct
         correctAttachmentsOrder(src->attachments);
@@ -307,13 +306,11 @@ namespace pEp {
         ::message *_dst = nullptr;
         PEP_STATUS status = ::decrypt_message(session, src, &_dst, keylist,
                 rating, flags);
-
-        swapContent(_msg, src);
-
         *dst = empty_message_copy(_dst);
 
         {
             std::lock_guard<std::mutex> l(_mtx);
+            swapContent(_msg, src);
             ::free_message(message_cache._cache.at(src->id).dst);
             message_cache._cache.at(src->id).dst = _dst;
         }
@@ -334,29 +331,44 @@ namespace pEp {
         if (one != msg_src && one != msg_dst)
             return PEP_ILLEGAL_VALUE;
 
-        ::message *_msg = ::message_dup(msg);
-        if (one == msg_src) {
-            ::message *_src = _cache.at(std::string(msg->id)).src;
-            ::free_message(_cache.at(msg->id).dst);
+        ::message *_msg = empty_message_copy(msg);
 
+        if (one == msg_src) {
+            std::lock_guard<std::mutex> l(_mtx);
+            ::message *_src = _cache.at(std::string(msg->id)).src;
             swapContent(_msg, _src);
-            free_message(_src);
         }
         else /* msg_dst */ {
+            std::lock_guard<std::mutex> l(_mtx);
             ::message *_dst = _cache.at(std::string(msg->id)).dst;
-            ::free_message(_cache.at(msg->id).src);
-
             swapContent(_msg, _dst);
-            free_message(_dst);
         }
 
         PEP_STATUS status = ::mime_encode_message(_msg, omit_fields, mimetext,
                 has_pEp_msg_attachment);
-
         ::free_message(_msg);
-        _cache.erase(msg->id);
+
+        {
+            std::lock_guard<std::mutex> l(_mtx);
+            ::free_message(_cache.at(msg->id).src);
+            ::free_message(_cache.at(msg->id).dst);
+            _cache.erase(msg->id);
+        }
 
         return status;
+    }
+
+    void MessageCache::generateMessageID(::message* msg)
+    {
+        if (msg && emptystr(msg->id)) {
+            free(msg->id);
+            std::string _range = std::to_string(id_range);
+            std::string _id = std::to_string(next_id++);
+            msg->id = strdup((std::string("pEp_auto_id_") + _range + _id).c_str());
+            assert(msg->id);
+            if (!msg->id)
+                throw std::bad_alloc();
+        }
     }
 
     PEP_STATUS MessageCache::mime_decode_message(
@@ -372,18 +384,7 @@ namespace pEp {
         if (status)
             return status;
 
-        // guarantee we have a Message-ID
-
-        if (_msg && emptystr(_msg->id)) {
-            free(_msg->id);
-            std::string _range = std::to_string(id_range);
-            std::string _id = std::to_string(next_id++);
-            _msg->id = strdup((std::string("pEp_auto_id_") + _range + _id).c_str());
-            assert(_msg->id);
-            if (!_msg->id)
-                throw std::bad_alloc();
-        }
-
+        generateMessageID(_msg);
         *msg = empty_message_copy(_msg);
 
         {
@@ -408,20 +409,17 @@ namespace pEp {
         {
             std::lock_guard<std::mutex> l(_mtx);
             _msg = message_cache._cache.at(src->id).src;
+            swapContent(src, _msg);
         }
-        
-        swapContent(src, _msg);
 
         ::message *_dst = nullptr;
         PEP_STATUS status = ::encrypt_message(session, src, extra, &_dst,
                 enc_format, flags);
-
-        swapContent(_msg, src);
-
         *dst = empty_message_copy(_dst);
 
         {
             std::lock_guard<std::mutex> l(_mtx);
+            swapContent(_msg, src);
             ::free_message(message_cache._cache.at(src->id).dst);
             message_cache._cache.at(src->id).dst = _dst;
         }
@@ -443,20 +441,17 @@ namespace pEp {
         {
             std::lock_guard<std::mutex> l(_mtx);
             _msg = message_cache._cache.at(src->id).src;
+            swapContent(src, _msg);
         }
-        
-        swapContent(src, _msg);
 
         ::message *_dst = nullptr;
         PEP_STATUS status = ::encrypt_message_for_self(session, target_id, src,
                 extra, &_dst, enc_format, flags);
-
-        swapContent(_msg, src);
-
         *dst = empty_message_copy(_dst);
 
         {
             std::lock_guard<std::mutex> l(_mtx);
+            swapContent(_msg, src);
             ::free_message(message_cache._cache.at(src->id).dst);
             message_cache._cache.at(src->id).dst = _dst;
         }
