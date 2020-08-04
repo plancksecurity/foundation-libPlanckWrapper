@@ -9,8 +9,8 @@
 namespace pEp {
     class MessageCache {
         struct cache_entry {
-            cache_entry(::message *s, ::message *d);
-            ~cache_entry();
+            cache_entry(::message *s, ::message *d)
+                : src(s), dst(d) { }
 
             ::message *src;
             ::message *dst;
