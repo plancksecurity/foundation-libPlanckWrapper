@@ -7,6 +7,7 @@
 #include <assert.h>
 #include "status_to_string.hh"
 #include "pEpLog.hh"
+#include "passphrase_cache.hh"
 
 using namespace std;
 
@@ -82,6 +83,11 @@ namespace pEp {
             return 0;
         }
 
+        PEP_STATUS _ensure_passphrase(PEP_SESSION session, const char *fpr)
+        {
+            return passphrase_cache.ensure_passphrase(session, fpr);
+        }
+
         // threshold: max waiting time in seconds
         SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold)
         {
@@ -120,7 +126,7 @@ namespace pEp {
 
                 case init:
                     if (!_session)
-                        status = ::init(&_session, _messageToSend, _inject_sync_event);
+                        status = ::init(&_session, _messageToSend, _inject_sync_event, _ensure_passphrase);
                     break;
 
                 default:
