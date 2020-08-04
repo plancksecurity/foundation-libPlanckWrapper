@@ -75,6 +75,8 @@ namespace pEp {
         static PEP_STATUS cache_release(const char *id);
 
     protected:
+        void release(std::string id);
+
 		PEP_STATUS mime_decode_message(
 				const char *mimetext,
 				size_t size,

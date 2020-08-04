@@ -82,12 +82,19 @@ namespace pEp {
 
     PEP_STATUS MessageCache::cache_release(const char *id)
     {
+        message_cache.release(id);
+        return PEP_STATUS_OK;
+    }
+
+    void MessageCache::release(std::string id)
+    {
         try {
             std::lock_guard<std::mutex> l(message_cache._mtx);
-            message_cache._cache.erase(std::string(id));
+            ::free_message(_cache.at(id).src);
+            ::free_message(_cache.at(id).dst);
+            _cache.erase(id);
         }
         catch (...) { }
-        return PEP_STATUS_OK;
     }
 
     static char *dup(const char *src)
@@ -348,12 +355,7 @@ namespace pEp {
                 has_pEp_msg_attachment);
         ::free_message(_msg);
 
-        {
-            std::lock_guard<std::mutex> l(_mtx);
-            ::free_message(_cache.at(msg->id).src);
-            ::free_message(_cache.at(msg->id).dst);
-            _cache.erase(msg->id);
-        }
+        cache_release(msg->id);
 
         return status;
     }
