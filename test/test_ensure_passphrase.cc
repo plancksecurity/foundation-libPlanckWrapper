@@ -13,6 +13,7 @@
 
 #include <pEp/message_api.h>
 #include <pEp/keymanagement.h>
+#include <pEp/key_reset.h>
 
 using namespace pEp;
 using namespace pEp::Adapter;
@@ -45,9 +46,14 @@ void test()
 
     pEp_identity* bob = ::new_identity("bob@example.org", bob_fpr, "BOB", "Bob Dog");
     PEP_STATUS status = ::set_own_key(session(), bob, bob_fpr);
+    assert(status == PEP_STATUS_OK);
 
     pEp_identity* erwin = ::new_identity("erwin@example.org", erwin_fpr, "BOB", "Bob is Erwin");
     status = ::set_own_key(session(), erwin, erwin_fpr);
+    assert(status == PEP_STATUS_OK);
+
+    status = ::key_reset_all_own_keys(session());
+    assert(status == PEP_STATUS_OK);
 
     ::free_identity(bob);
     ::free_identity(erwin);
