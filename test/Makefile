@@ -13,4 +13,4 @@ all: $(TST)
 
 clean:	
 	rm -f $(TST)
-	rm -f *.dSYM
+	rm -Rf *.dSYM
