@@ -156,7 +156,7 @@ namespace pEp {
 
     PEP_STATUS PassphraseCache::ensure_passphrase(PEP_SESSION session, std::string fpr)
     {
-        PEP_STATUS status = PEP_STATUS_OK;
+        PEP_STATUS status;
 
         for_each_passphrase([&](std::string passphrase) {
             status = ::config_passphrase(session, passphrase.c_str());

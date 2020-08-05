@@ -2,28 +2,15 @@ include ../Makefile.conf
 
 LDFLAGS=-L../ $(ENGINE_LIB)
 LDLIBS=-lstdc++ -lpEpEngine -lpEpAdapter
-CXXFLAGS+=-I../
+CXXFLAGS+=-I../ $(ENGINE_INC) -std=c++11 -DENGINE_TEST=$(ENGINE_TEST)
 
-.PHONY=all, test_adapter, test_adapter_cxx, test_library
+SRC=$(wildcard test_*.cc)
+TST=$(subst .cc,,$(SRC))
 
-all: test_adapter test_adapter_cxx test_library test_passphrase_cache test_semaphore test_message_cache
+all: $(TST)
 
-test_adapter: test_adapter.cc ../libpEpAdapter.a
-
-test_adapter_cxx: test_adapter_cxx.cc ../libpEpAdapter.a
-
-test_library: test_library.cc ../libpEpAdapter.a
-
-test_passphrase_cache: test_passphrase_cache.cc ../libpEpAdapter.a
-
-test_semaphore: test_semaphore.cc ../libpEpAdapter.a
-
-test_message_cache: test_message_cache.cc ../libpEpAdapter.a
+%: %.cc ../libpEpAdapter.a
 
 clean:	
-	rm -vf test_adapter
-	rm -rvf test_adapter.dSYM
-	rm -vf test_adapter_cxx
-	rm -rvf test_adapter_cxx.dSYM
-	rm -vf test_library
-	rm -rvf test_library.dSYM
+	rm -f $(TST)
+	rm -f *.dSYM
