@@ -24,6 +24,7 @@ namespace pEp {
 
     namespace Adapter {
         int _inject_sync_event(SYNC_EVENT ev, void *management);
+        PEP_STATUS _ensure_passphrase(PEP_SESSION session, const char *fpr);
 
         template<class T = void>
         void startup(

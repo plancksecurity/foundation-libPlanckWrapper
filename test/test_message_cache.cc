@@ -1,18 +1,26 @@
 #include <iostream>
 #include <cassert>
+#include <sys/param.h>
+#include <unistd.h>
 #include "message_cache.hh"
+#include "Adapter.hh"
 
 using namespace std;
 using namespace pEp;
 
 int main()
 {
-    PEP_SESSION session;
-    PEP_STATUS status = ::init(&session, nullptr, nullptr);
-    assert(status == PEP_STATUS_OK);
+    char path[MAXPATHLEN+1];
+    const char *templ = "/tmp/test_message_cache.XXXXXXXXXXXX";
+    strcpy(path, templ);
+    char *tmpdir = mkdtemp(path);
+    assert(tmpdir);
+    chdir(tmpdir);
+    setenv("HOME", path, 1);
+    cerr << "test directory: " << path << endl;
 
     pEp_identity *alice = ::new_identity("alice@mail.com", nullptr, PEP_OWN_USERID, "Alice");
-    ::myself(session, alice);
+    ::myself(pEp::Adapter::session(), alice);
 
     char *mime = strdup("From: Alice <alice@mail.com>\n"
                         "To: Bob <bob@mail.com>\n"
@@ -24,20 +32,20 @@ int main()
 
     ::message *src = nullptr;
     bool has_possible_pEp_msg;
-    status = MessageCache::cache_mime_decode_message(mime, strlen(mime), &src, &has_possible_pEp_msg);
+    PEP_STATUS status = MessageCache::cache_mime_decode_message(mime, strlen(mime), &src, &has_possible_pEp_msg);
     assert(status == PEP_STATUS_OK);
 
-    status = ::myself(session, src->from);
+    status = ::myself(pEp::Adapter::session(), src->from);
     assert(status == PEP_STATUS_OK);
 
-    ::update_identity(session, src->to->ident);
+    ::update_identity(pEp::Adapter::session(), src->to->ident);
     assert(status == PEP_STATUS_OK);
 
     pEp_identity *bob = identity_dup(src->to->ident);
 
     src->dir = PEP_dir_outgoing;
     ::message *dst = nullptr;
-    status = MessageCache::cache_encrypt_message(session, src, nullptr, &dst, PEP_enc_PEP, 0);
+    status = MessageCache::cache_encrypt_message(pEp::Adapter::session(), src, nullptr, &dst, PEP_enc_PEP, 0);
     assert(status != PEP_ILLEGAL_VALUE);
 
     assert(src->longmsg == nullptr);
@@ -68,7 +76,7 @@ int main()
     PEP_decrypt_flags_t flags = 0;
     stringlist_t *keylist = nullptr;
 
-    status = MessageCache::cache_decrypt_message(session, src, &dst, &keylist, &rating, &flags);
+    status = MessageCache::cache_decrypt_message(pEp::Adapter::session(), src, &dst, &keylist, &rating, &flags);
     assert(status != PEP_ILLEGAL_VALUE);
 
     assert(src->longmsg == nullptr);
@@ -90,7 +98,8 @@ int main()
     ::free_message(dst);
     ::free_identity(bob);
     ::free_identity(alice);
-    ::release(session);
+
+    pEp::Adapter::session(pEp::Adapter::release);
     return 0;
 }
 

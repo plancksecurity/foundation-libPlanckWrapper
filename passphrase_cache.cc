@@ -153,5 +153,21 @@ namespace pEp {
             return PEP_WRONG_PASSPHRASE;
         }
 	}
+
+    PEP_STATUS PassphraseCache::ensure_passphrase(PEP_SESSION session, std::string fpr)
+    {
+        PEP_STATUS status;
+
+        for_each_passphrase([&](std::string passphrase) {
+            status = ::config_passphrase(session, passphrase.c_str());
+            if (status)
+                return true;
+
+            status = ::probe_encrypt(session, fpr.c_str());
+            return status == PEP_STATUS_OK;
+        });
+
+        return status;
+    }
 };
 

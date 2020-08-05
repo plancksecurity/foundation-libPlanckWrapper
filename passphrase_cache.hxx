@@ -1,4 +1,3 @@
-#pragma once
 #include "passphrase_cache.hh"
 
 namespace pEp {
