@@ -1,7 +1,9 @@
 #include <iostream>
 #include <unistd.h>
 #include <assert.h>
+#include <sys/param.h>
 
+#include "Adapter.hh"
 #include "passphrase_cache.hh"
 #include "status_to_string.hh"
 
@@ -21,10 +23,14 @@ extern "C" {
 
 int main()
 {
-    PEP_SESSION session;
-    PEP_STATUS status = ::init(&session, NULL, NULL);
-    assert(status == PEP_STATUS_OK);
-    assert(session);
+    char path[MAXPATHLEN+1];
+    const char *templ = "/tmp/test_passphrase_cache.XXXXXXXXXXXX";
+    strcpy(path, templ);
+    char *tmpdir = mkdtemp(path);
+    assert(tmpdir);
+    chdir(tmpdir);
+    setenv("HOME", path, 1);
+    std::cerr << "test directory: " << path << std::endl;
 
     const char *str = "23";
     char *bytes = NULL;
@@ -45,9 +51,9 @@ int main()
     std::cout << "expected: two passphrases but reverse order\n";
     cache.for_each_passphrase([&](std::string passphrase){std::cout << "'" << passphrase << "'\n"; return false;});
 
-    status = cache.api(api_test1, session, "23", bytes, n, (::stringlist_t *) NULL);
+    PEP_STATUS status = cache.api(api_test1, pEp::Adapter::session(), "23", bytes, n, (::stringlist_t *) NULL);
     assert(status == PEP_WRONG_PASSPHRASE);
-    status = cache.api(api_test2, session, n, str, bytes, sl);
+    status = cache.api(api_test2, pEp::Adapter::session(), n, str, bytes, sl);
     assert(status == PEP_STATUS_OK);
 
     cache.add("hello");
@@ -74,12 +80,12 @@ int main()
     std::cout << "expected: no passphrase\n";
     cache.for_each_passphrase([&](std::string passphrase){std::cout << "'" << passphrase << "'\n"; return false;});
 
-    status = cache.api(api_test1, session, str, bytes, n, sl);
+    status = cache.api(api_test1, pEp::Adapter::session(), str, bytes, n, sl);
     assert(status == PEP_WRONG_PASSPHRASE);
-    status = cache.api(api_test2, session, 23, str, bytes, sl);
+    status = cache.api(api_test2, pEp::Adapter::session(), 23, str, bytes, sl);
     assert(status == PEP_STATUS_OK);
 
-    ::release(session);
+    pEp::Adapter::session(pEp::Adapter::release);
     return 0;
 }
 

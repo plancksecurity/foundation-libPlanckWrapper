@@ -28,8 +28,6 @@ DEPENDS=$(subst .cc,.d,$(SOURCE))
 
 all: $(TARGET)
 
--include Makefile.protocols
-
 %.d: %.cc
 	@set -e; rm -f $@; \
 	$(CXX) -MM $(CPPFLAGS) $(CXXFLAGS) $< > $@.$$$$; \

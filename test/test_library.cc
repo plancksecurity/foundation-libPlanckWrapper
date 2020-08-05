@@ -1,6 +1,3 @@
-// small unittest program for libpEpAdapter
-// TODO: use Gtest or the like for more modular unit tests!
-
 #include "pc_container.hh"
 #include <cstdio>
 #include <cstdlib>
