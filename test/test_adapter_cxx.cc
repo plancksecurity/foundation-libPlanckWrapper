@@ -31,8 +31,8 @@ public:
 	}
 } o;
 
-int main() {
-    pEp::Test::setup();
+int main(int argc, char **argv) {
+    pEp::Test::setup(argc, argv);
 
 	// Create new identity
 	pEpLog("updating or creating identity for me");

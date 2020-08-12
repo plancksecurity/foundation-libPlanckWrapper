@@ -21,9 +21,9 @@ extern "C" {
     }
 };
 
-int main()
+int main(int argc, char **argv)
 {
-    pEp::Test::setup();
+    pEp::Test::setup(argc, argv);
 
     const char *str = "23";
     char *bytes = NULL;

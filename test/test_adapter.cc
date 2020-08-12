@@ -24,9 +24,9 @@ PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handsha
     return PEP_STATUS_OK;
 }
 
-int main()
+int main(int argc, char **argv)
 {
-    pEp::Test::setup();
+    pEp::Test::setup(argc, argv);
 
     // Create new identity
     pEpLog("updating or creating identity for me");

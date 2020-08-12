@@ -22,7 +22,7 @@ namespace pEp {
 
             if (a.size() > 1) {
                 if (a[1] == "--help") {
-                    cout << "usage: " << a[0] << " [--dir TESTDIR]" << endl;
+                    cout << "usage: " << a[0] << " [--dir HOME]" << endl;
                     exit(0);
                 }
                 else if (a[1] == "--dir" && a.size() == 3) {

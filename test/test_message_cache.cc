@@ -8,9 +8,9 @@
 using namespace std;
 using namespace pEp;
 
-int main()
+int main(int argc, char **argv)
 {
-    Test::setup();
+    Test::setup(argc, argv);
 
     pEp_identity *alice = ::new_identity("alice@mail.com", nullptr, PEP_OWN_USERID, "Alice");
     ::myself(pEp::Adapter::session(), alice);
