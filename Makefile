@@ -7,19 +7,7 @@ include Makefile.conf
 
 TARGET=libpEpAdapter.a
 
-ifneq ($(wildcard local.conf),)
-    $(info ================================================)
-    $(info Overrides in `local.conf` are used.)
-    $(info ================================================)
-endif
-
-ifdef BUILD_CONFIG
-    $(info ================================================)
-    $(info Overrides in `$(BUILD_CONFIG)` are used.)
-    $(info ================================================)
-endif
-
-.PHONY: all, lib, test, install, uninstall, clean
+.PHONY: install, uninstall, clean
 
 SOURCE=$(wildcard *.cc)
 HEADERS=$(wildcard *.hh *.hxx)

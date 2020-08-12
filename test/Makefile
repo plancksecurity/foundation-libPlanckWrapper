@@ -11,8 +11,14 @@ all: $(TST)
 
 $(TST): framework.o
 
+.PHONY: clean rmtestdata
+
 clean:	
 	rm -f $(TST)
 	rm -Rf *.dSYM
 	rm -f *.o
 	rm -Rf /tmp/test_pEp.*
+
+rmtestdata:
+	rm -Rf /tmp/test_pEp.*
+
