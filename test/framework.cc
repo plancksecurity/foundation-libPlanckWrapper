@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <utility>
 #include <unistd.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -10,23 +11,45 @@
 #include <sys/param.h>
 
 #include <pEp/keymanagement.h>
-#include "Adapter.hh"
 
 namespace pEp {
     namespace Test {
         using namespace Adapter;
 
-        void setup()
+        void setup(vector<string>& a)
         {
+            string dir = "/tmp/test_pEp.XXXXXXXXXXXX";
+
+            if (a.size() > 1) {
+                if (a[1] == "--help") {
+                    cout << "usage: " << a[0] << " [--dir TESTDIR]" << endl;
+                    exit(0);
+                }
+                else if (a[1] == "--dir" && a.size() == 3) {
+                    dir = a[2];
+                }
+                else {
+                    cerr << "illegal parameter" << endl;
+                    exit(1);
+                }
+            }
+
             char path[MAXPATHLEN+1];
-            const char *templ = "/tmp/test_pEp.XXXXXXXXXXXX";
+            const char *templ = dir.c_str();
             strcpy(path, templ);
-            char *tmpdir = mkdtemp(path);
-            assert(tmpdir);
-            chdir(tmpdir);
+            mkdtemp(path);
+            chdir(path);
             setenv("HOME", path, 1);
             cerr << "test directory: " << path << endl;
- 
+        }
+
+        void setup(int argc, char **argv)
+        {
+            vector<string> a{(size_t) argc};
+            for (int i=0; i<argc; ++i)
+                a[i] = argv[i];
+
+            setup(a);
         }
 
         void import_key_from_file(string filename)

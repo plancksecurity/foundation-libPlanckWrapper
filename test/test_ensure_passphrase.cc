@@ -20,9 +20,9 @@ using namespace pEp;
 using namespace pEp::Adapter;
 using namespace std;
 
-int main()
+int main(int argc, char **argv)
 {
-    Test::setup();
+    Test::setup(argc, argv);
 
     passphrase_cache.add("erwin");
     passphrase_cache.add("cathy");
