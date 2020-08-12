@@ -9,8 +9,9 @@ TST=$(subst .cc,,$(SRC))
 
 all: $(TST)
 
-%: %.cc ../libpEpAdapter.a
+$(TST): framework.o
 
 clean:	
 	rm -f $(TST)
 	rm -Rf *.dSYM
+	rm -f *.o

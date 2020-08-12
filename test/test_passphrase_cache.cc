@@ -3,7 +3,7 @@
 #include <assert.h>
 #include <sys/param.h>
 
-#include "Adapter.hh"
+#include "framework.hh"
 #include "passphrase_cache.hh"
 #include "status_to_string.hh"
 
@@ -23,14 +23,7 @@ extern "C" {
 
 int main()
 {
-    char path[MAXPATHLEN+1];
-    const char *templ = "/tmp/test_passphrase_cache.XXXXXXXXXXXX";
-    strcpy(path, templ);
-    char *tmpdir = mkdtemp(path);
-    assert(tmpdir);
-    chdir(tmpdir);
-    setenv("HOME", path, 1);
-    std::cerr << "test directory: " << path << std::endl;
+    pEp::Test::setup();
 
     const char *str = "23";
     char *bytes = NULL;

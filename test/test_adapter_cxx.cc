@@ -1,7 +1,7 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
-#include "Adapter.hh"
+#include "framework.hh"
 #include <iostream>
 #include <assert.h>
 #include <unistd.h>
@@ -32,6 +32,8 @@ public:
 } o;
 
 int main() {
+    pEp::Test::setup();
+
 	// Create new identity
 	pEpLog("updating or creating identity for me");
 	pEp_identity *me = new_identity("alice@peptest.ch", NULL, "23", "Who the F* is Alice");

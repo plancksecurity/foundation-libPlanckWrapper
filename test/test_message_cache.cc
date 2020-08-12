@@ -3,21 +3,14 @@
 #include <sys/param.h>
 #include <unistd.h>
 #include "message_cache.hh"
-#include "Adapter.hh"
+#include "framework.hh"
 
 using namespace std;
 using namespace pEp;
 
 int main()
 {
-    char path[MAXPATHLEN+1];
-    const char *templ = "/tmp/test_message_cache.XXXXXXXXXXXX";
-    strcpy(path, templ);
-    char *tmpdir = mkdtemp(path);
-    assert(tmpdir);
-    chdir(tmpdir);
-    setenv("HOME", path, 1);
-    cerr << "test directory: " << path << endl;
+    Test::setup();
 
     pEp_identity *alice = ::new_identity("alice@mail.com", nullptr, PEP_OWN_USERID, "Alice");
     ::myself(pEp::Adapter::session(), alice);

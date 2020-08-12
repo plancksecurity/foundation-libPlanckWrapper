@@ -1,7 +1,7 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
-#include "Adapter.hh"
+#include "framework.hh"
 #include <iostream>
 #include <assert.h>
 #include <unistd.h>
@@ -26,14 +26,7 @@ PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handsha
 
 int main()
 {
-    char path[MAXPATHLEN+1];
-    const char *templ = "/tmp/test_adapter.XXXXXXXXXXXX";
-    strcpy(path, templ);
-    char *tmpdir = mkdtemp(path);
-    assert(tmpdir);
-    chdir(tmpdir);
-    setenv("HOME", path, 1);
-    cerr << "test directory: " << path << endl;
+    pEp::Test::setup();
 
     // Create new identity
     pEpLog("updating or creating identity for me");

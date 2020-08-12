@@ -43,13 +43,14 @@ lib: $(TARGET)
 all: lib
 
 test: lib
-	$(MAKE) -C test all
+	$(MAKE) -C test
 
 $(TARGET): $(OBJECTS)
 	$(AR) -rc $@ $^
 
 clean:
 	rm -vf $(TARGET) $(OBJECTS) $(DEPENDS)
+	rm -f *.d.*
 	$(MAKE) -C test clean
 
 install: $(TARGET)
