@@ -15,3 +15,4 @@ clean:
 	rm -f $(TST)
 	rm -Rf *.dSYM
 	rm -f *.o
+	rm -Rf /tmp/test_pEp.*
