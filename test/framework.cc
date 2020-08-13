@@ -14,6 +14,9 @@
 
 #include <pEp/keymanagement.h>
 #include <pEp/mime.h>
+#include <pEp/message_api.h>
+#include <pEp/sync_codec.h>
+#include <pEp/distribution_codec.h>
 
 pEp::Test::Transport pEp::Test::transport;
 std::string pEp::Test::path;
@@ -87,7 +90,12 @@ namespace pEp {
             return shared_ptr<::message>(msg, ::free_message);
         }
 
-        Message make_message(string text)
+        Identity make_identity(::pEp_identity *ident)
+        {
+            return shared_ptr<::pEp_identity>(ident , ::free_identity);
+        }
+
+        Message mime_parse(string text)
         {
             ::message *msg;
             bool has_possible_pEp_msg;
@@ -96,13 +104,47 @@ namespace pEp {
             return make_message(msg);
         }
 
-        string make_string(Message msg)
+        string mime_compose(Message msg)
         {
             char *mimetext;
             PEP_STATUS status = ::mime_encode_message(msg.get(), false, &mimetext, false);
             throw_status(status);
             string text = mimetext;
             free(mimetext);
+            return text;
+        }
+
+        string make_pEp_msg(Message msg)
+        {
+            string text;
+
+            ::message *_dst;
+            stringlist_t *keylist;
+            PEP_rating rating;
+            PEP_decrypt_flags_t flags = 0;
+            PEP_STATUS status = ::decrypt_message(session(), msg.get(), &_dst, &keylist, &rating, &flags);
+            throw_status(status);
+            Message dst = make_message(_dst);
+
+            for (auto a = _dst->attachments; a && a->value; a = a->next) {
+                if (string("application/pEp.sync") == a->mime_type) {
+                    char *_text;
+                    status = PER_to_XER_Sync_msg(a->value, a->size, &_text);
+                    throw_status(status);
+                    text += _text;
+                    pEp_free(_text);
+                    return text;
+                }
+                else if (string("application/pEp.distribution") == a->mime_type) {
+                    char *_text;
+                    status = PER_to_XER_Distribution_msg(a->value, a->size, &_text);
+                    throw_status(status);
+                    text += _text;
+                    pEp_free(_text);
+                    return text;
+                }
+            }
+            
             return text;
         }
 

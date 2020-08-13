@@ -19,16 +19,24 @@ namespace pEp {
         void import_key_from_file(string filename);
 
         using Message = shared_ptr<::message>;
+        using Identity= shared_ptr<::pEp_identity>;
 
         // use this instead of constructor to auto assign ::free_message as
         // deleter
         Message make_message(::message *msg);
 
+        // use this instead of constructor to auto assign ::free_identity as
+        // deleter
+        Identity make_identity(::pEp_identity *ident);
+
         // MIME parser
-        Message make_message(string text);
+        Message mime_parse(string text);
 
         // MIME composer
-        string make_string(Message msg);
+        string mime_compose(Message msg);
+
+        // Sync and Distribution decoder
+        string make_pEp_msg(Message msg);
 
         struct Transport {
             string inbox_path = "inbox";
