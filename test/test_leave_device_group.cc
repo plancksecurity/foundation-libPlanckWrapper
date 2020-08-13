@@ -29,6 +29,7 @@ PEP_STATUS test_notifyHandshake(pEp_identity *_me, pEp_identity *_partner, sync_
 int main(int argc, char **argv)
 {
     Test::setup(argc, argv);
+    session();
 
     // set up two own identites for sync
 
@@ -44,39 +45,37 @@ int main(int argc, char **argv)
     Test::import_key_from_file(bob_filename);
     Test::import_key_from_file(erwin_filename);
 
-    pEp_identity* bob = ::new_identity("bob@example.org", bob_fpr, "BOB", "Bob Dog");
-    PEP_STATUS status = ::set_own_key(session(), bob, bob_fpr);
+    Test::Identity bob = Test::make_identity(::new_identity("bob@example.org", bob_fpr, "BOB", "Bob Dog"));
+    PEP_STATUS status = ::set_own_key(session(), bob.get(), bob_fpr);
     assert(status == PEP_STATUS_OK);
 
-    status = ::enable_identity_for_sync(session(), bob);
+    status = ::enable_identity_for_sync(session(), bob.get());
     assert(status == PEP_STATUS_OK);
 
-    pEp_identity* erwin = ::new_identity("erwin@example.org", erwin_fpr, "BOB", "Bob is Erwin");
-    status = ::set_own_key(session(), erwin, erwin_fpr);
+    Test::Identity erwin = Test::make_identity(::new_identity("erwin@example.org", erwin_fpr, "BOB", "Bob is Erwin"));
+    status = ::set_own_key(session(), erwin.get(), erwin_fpr);
     assert(status == PEP_STATUS_OK);
 
-    status = ::enable_identity_for_sync(session(), erwin);
+    status = ::enable_identity_for_sync(session(), erwin.get());
     assert(status == PEP_STATUS_OK);
 
     // simulate a device group by setting the identities to in sync
 
-    status = set_identity_flags(session(), bob, PEP_idf_devicegroup);
-    status = set_identity_flags(session(), erwin, PEP_idf_devicegroup);
+    status = set_identity_flags(session(), bob.get(), PEP_idf_devicegroup);
+    status = set_identity_flags(session(), erwin.get(), PEP_idf_devicegroup);
 
     // register at callback_dispatcher and start sync
 
     callback_dispatcher.add(test_messageToSend, test_notifyHandshake);
     CallbackDispatcher::start_sync();
 
+    // leave device group
 
-    // stop sync
-    CallbackDispatcher::stop_sync();
+    status = ::leave_device_group(session());
 
-    // free own identities and release session and release session
+    // wait for sync shutdown and release first session
 
-    ::free_identity(bob);
-    ::free_identity(erwin);
-
+    Test::join_sync_thread();
     session(Adapter::release);
 
     return 0;

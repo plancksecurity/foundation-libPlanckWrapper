@@ -5,6 +5,8 @@
 #include <sstream>
 #include <utility>
 #include <exception>
+#include <thread>
+
 #include <unistd.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -20,6 +22,7 @@
 
 pEp::Test::Transport pEp::Test::transport;
 std::string pEp::Test::path;
+extern std::thread *pEp::Adapter::_sync_thread;
 
 namespace pEp {
     namespace Test {
@@ -146,6 +149,11 @@ namespace pEp {
             }
             
             return text;
+        }
+
+        void join_sync_thread()
+        {
+            _sync_thread->join();
         }
 
         Message Transport::recv()

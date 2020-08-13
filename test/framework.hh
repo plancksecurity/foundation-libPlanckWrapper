@@ -38,6 +38,9 @@ namespace pEp {
         // Sync and Distribution decoder
         string make_pEp_msg(Message msg);
 
+        // wait until Sync has shut down
+        void join_sync_thread();
+
         struct Transport {
             string inbox_path = "inbox";
             string outbox_path = "outbox";
