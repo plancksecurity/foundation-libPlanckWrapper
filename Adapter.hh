@@ -7,6 +7,8 @@
 #include <string>
 #include <thread>
 #include <stdexcept>
+#include <memory>
+
 #include <pEp/sync_api.h>
 
 namespace pEp {
@@ -45,7 +47,16 @@ namespace pEp {
             init,
             release
         };
-        PEP_SESSION session(session_action action = init);
+
+        class Session {
+            using SessionPtr = std::unique_ptr<_pEpSession, std::function<void(PEP_SESSION)>>;
+            SessionPtr _session = nullptr;
+
+        public:
+            PEP_SESSION operator()(session_action action = init);
+        };
+
+        extern thread_local Session session;
 
         // injects a NULL event into sync_event_queue to denote sync thread to shutdown,
         // and joins & removes the sync thread

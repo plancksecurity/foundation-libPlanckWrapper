@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     ::free_identity(bob);
     ::free_identity(erwin);
 
-    session(Adapter::release);
+    // session(Adapter::release);
 
     return 0;
 }

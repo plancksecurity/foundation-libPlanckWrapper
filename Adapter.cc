@@ -11,6 +11,8 @@
 
 using namespace std;
 
+thread_local pEp::Adapter::Session pEp::Adapter::session;
+
 namespace pEp {
     void throw_status(PEP_STATUS status)
     {
@@ -87,25 +89,26 @@ namespace pEp {
             return _sync_thread.get_id() == this_thread::get_id();
         }
 
-        PEP_SESSION session(session_action action)
+        PEP_SESSION Session::operator()(session_action action)
         {
             std::lock_guard<mutex> lock(m);
             bool in_sync = on_sync_thread();
 
-            thread_local static PEP_SESSION _session = nullptr;
             PEP_STATUS status = PEP_STATUS_OK;
 
             switch (action) {
                 case release:
-                    if (_session) {
-                        ::release(_session);
+                    if (_session.get())
                         _session = nullptr;
-                    }
                     break;
 
                 case init:
-                    if (!_session)
-                        status = ::init(&_session, _messageToSend, _inject_sync_event, _ensure_passphrase);
+                    if (!_session.get()) {
+                        PEP_SESSION session_;
+                        status = ::init(&session_, _messageToSend, _inject_sync_event, _ensure_passphrase);
+                        throw_status(status);
+                        _session = SessionPtr{session_, ::release};
+                    }
                     break;
 
                 default:
@@ -113,7 +116,7 @@ namespace pEp {
             }
 
             throw_status(status);
-            return _session;
+            return _session.get();
         }
 
         void shutdown()

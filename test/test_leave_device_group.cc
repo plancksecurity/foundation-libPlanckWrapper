@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <unistd.h>
 
 #include "framework.hh"
@@ -11,19 +12,44 @@ using namespace pEp;
 using namespace pEp::Adapter;
 using namespace std;
 
+vector<string> expected_msg = {
+        "synchronizeGroupKeys",
+        "groupKeysUpdate",
+        "initUnledGroupKeyReset",
+        "beacon",
+        "beacon"
+    };
+
+vector<::sync_handshake_signal> expected_notification = {
+        SYNC_NOTIFY_IN_GROUP,
+        SYNC_NOTIFY_START,
+        SYNC_NOTIFY_SOLE,
+        SYNC_NOTIFY_START,
+        SYNC_NOTIFY_STOP
+    };
+
 PEP_STATUS test_messageToSend(::message *_msg)
 {
+    static auto actual = expected_msg.begin();
+
     Test::Message msg = Test::make_message(_msg);
-    cerr << Test::make_pEp_msg(msg);
+    string text = Test::make_pEp_msg(msg);
+    cerr << "expecting: " << *actual << endl;
+    cerr << text;
+    assert(text.find(*actual++) != string::npos);
     return PEP_STATUS_OK;   
 }
 
 
 PEP_STATUS test_notifyHandshake(pEp_identity *_me, pEp_identity *_partner, sync_handshake_signal signal)
 {
+    static auto actual = expected_notification.begin();
+
     Test::Identity me = Test::make_identity(_me);
     Test::Identity partner = Test::make_identity(_partner);
-
+    cerr << "expecting: " << *actual << endl;
+    cerr << "notifyHandshake: " << signal << endl;
+    assert(signal == *actual++);
     return PEP_STATUS_OK;   
 }
 
@@ -77,13 +103,16 @@ int main(int argc, char **argv)
     // wait for sync shutdown and release first session
 
     Test::join_sync_thread();
+    assert(!is_sync_running());
 
     // switch off and on again
 
     CallbackDispatcher::start_sync();
     sleep(2);
+    assert(is_sync_running());
     CallbackDispatcher::stop_sync();
     Test::join_sync_thread();
+    assert(!is_sync_running());
 
     session(Adapter::release);
 
