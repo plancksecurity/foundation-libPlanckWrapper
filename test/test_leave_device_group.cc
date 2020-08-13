@@ -1,4 +1,5 @@
 #include <iostream>
+#include <unistd.h>
 
 #include "framework.hh"
 #include "passphrase_cache.hh"
@@ -76,6 +77,14 @@ int main(int argc, char **argv)
     // wait for sync shutdown and release first session
 
     Test::join_sync_thread();
+
+    // switch off and on again
+
+    CallbackDispatcher::start_sync();
+    sleep(2);
+    CallbackDispatcher::stop_sync();
+    Test::join_sync_thread();
+
     session(Adapter::release);
 
     return 0;

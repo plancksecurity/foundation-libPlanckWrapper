@@ -14,7 +14,7 @@ namespace pEp {
 
         extern messageToSend_t _messageToSend;
         extern notifyHandshake_t _notifyHandshake;
-        extern std::thread *_sync_thread;
+        extern std::thread _sync_thread;
 
         extern ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > q;
         extern std::mutex m;
@@ -75,17 +75,14 @@ namespace pEp {
 
             session();
 
-            if (!_sync_thread) {
+            if (!_sync_thread.joinable()) {
                 register_done = false;
-                _sync_thread = new std::thread(sync_thread<T>, obj, _startup, _shutdown);
+                _sync_thread = std::thread(sync_thread<T>, obj, _startup, _shutdown);
                 while (!register_done)
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-                if (_ex) {
-                    delete _sync_thread;
-                    _sync_thread = nullptr;
+                if (_ex)
                     std::rethrow_exception(_ex);
-                }
             }
         }
     }

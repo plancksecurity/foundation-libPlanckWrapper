@@ -22,7 +22,7 @@
 
 pEp::Test::Transport pEp::Test::transport;
 std::string pEp::Test::path;
-extern std::thread *pEp::Adapter::_sync_thread;
+extern std::thread pEp::Adapter::_sync_thread;
 
 namespace pEp {
     namespace Test {
@@ -127,33 +127,41 @@ namespace pEp {
             PEP_decrypt_flags_t flags = 0;
             PEP_STATUS status = ::decrypt_message(session(), msg.get(), &_dst, &keylist, &rating, &flags);
             throw_status(status);
-            Message dst = make_message(_dst);
 
-            for (auto a = _dst->attachments; a && a->value; a = a->next) {
-                if (string("application/pEp.sync") == a->mime_type) {
-                    char *_text;
-                    status = PER_to_XER_Sync_msg(a->value, a->size, &_text);
-                    throw_status(status);
-                    text += _text;
-                    pEp_free(_text);
-                    return text;
-                }
-                else if (string("application/pEp.distribution") == a->mime_type) {
-                    char *_text;
-                    status = PER_to_XER_Distribution_msg(a->value, a->size, &_text);
-                    throw_status(status);
-                    text += _text;
-                    pEp_free(_text);
-                    return text;
+            Message dst;
+            if (_dst)
+                dst = make_message(_dst);
+            else
+                dst = msg;
+
+            if (dst.get()->attachments) {
+                for (auto a = dst.get()->attachments; a && a->value; a = a->next) {
+                    if (string("application/pEp.sync") == a->mime_type) {
+                        char *_text;
+                        status = PER_to_XER_Sync_msg(a->value, a->size, &_text);
+                        throw_status(status);
+                        text += _text;
+                        pEp_free(_text);
+                        return text;
+                    }
+                    else if (string("application/pEp.distribution") == a->mime_type) {
+                        char *_text;
+                        status = PER_to_XER_Distribution_msg(a->value, a->size, &_text);
+                        throw_status(status);
+                        text += _text;
+                        pEp_free(_text);
+                        return text;
+                    }
                 }
             }
-            
+
             return text;
         }
 
         void join_sync_thread()
         {
-            _sync_thread->join();
+            if (_sync_thread.joinable())
+                _sync_thread.join();
         }
 
         Message Transport::recv()

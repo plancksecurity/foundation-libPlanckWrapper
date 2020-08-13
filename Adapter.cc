@@ -38,17 +38,14 @@ namespace pEp {
     namespace Adapter {
         messageToSend_t _messageToSend = nullptr;
         notifyHandshake_t _notifyHandshake = nullptr;
-        std::thread *_sync_thread = nullptr;
+        std::thread _sync_thread;
 
         ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > q;
         std::mutex m;
 
         std::thread::id sync_thread_id()
         {
-            if (_sync_thread)
-                return _sync_thread->get_id();
-            else
-                return std::thread::id();
+            return _sync_thread.get_id();
         }
 
         int _inject_sync_event(SYNC_EVENT ev, void *management)
@@ -64,21 +61,6 @@ namespace pEp {
             }
             catch (exception&) {
                 return 1;
-            }
-            if (ev == nullptr) {
-                if (!on_sync_thread()) {
-                    if(_sync_thread->joinable()) {
-                        pEpLog("Waiting for Sync thread to join...");
-                        _sync_thread->join();
-                        delete _sync_thread;
-                        _sync_thread = nullptr;
-                        pEpLog("...thread joined");
-                        q.clear();
-                    } else  {
-                        //FATAL
-                        pEpLog("FATAL: sync thread not joinable/detached");
-                    }
-                }
             }
             return 0;
         }
@@ -102,10 +84,7 @@ namespace pEp {
 
         bool on_sync_thread()
         {
-            if (_sync_thread && _sync_thread->get_id() == this_thread::get_id())
-                return true;
-            else
-                return false;
+            return _sync_thread.get_id() == this_thread::get_id();
         }
 
         PEP_SESSION session(session_action action)
@@ -140,15 +119,16 @@ namespace pEp {
         void shutdown()
         {
         	pEpLog("called");
-            if (_sync_thread) {
+            if (_sync_thread.joinable()) {
             	pEpLog("sync_is_running - injecting null event");
                 _inject_sync_event(nullptr, nullptr);
+                _sync_thread.join();
             }
         }
 
         bool is_sync_running()
         {
-            return _sync_thread != nullptr;
+            return _sync_thread.joinable();
         }
 
         bool in_shutdown()
