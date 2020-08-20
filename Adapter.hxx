@@ -24,7 +24,8 @@ namespace pEp {
         static std::exception_ptr _ex;
         static bool register_done = false;
 
-        template< class T > void sync_thread(T *obj, function< void(T *) > _startup, function< void(T *) > _shutdown)
+        template< class T >
+        void sync_thread(T *obj, function< void(T *) > _startup, function< void(T *) > _shutdown)
         {
             _ex = nullptr;
             assert(_messageToSend);
@@ -59,13 +60,13 @@ namespace pEp {
                 _shutdown(obj);
         }
 
-        template< class T > void startup(
+        template< class T >
+        void startup(
             messageToSend_t messageToSend,
             notifyHandshake_t notifyHandshake,
             T *obj,
             function< void(T *) > _startup,
-            function< void(T *) > _shutdown
-        )
+            function< void(T *) > _shutdown)
         {
             if (messageToSend)
                 _messageToSend = messageToSend;

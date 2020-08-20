@@ -30,12 +30,12 @@ namespace pEp {
 
         template<class T = void>
         void startup(
-                messageToSend_t messageToSend,
-                notifyHandshake_t notifyHandshake,
-                T *obj = nullptr,
-                std::function< void (T *) > _startup = nullptr,
-                std::function< void (T *) > _shutdown = nullptr
-            );
+            messageToSend_t messageToSend,
+            notifyHandshake_t notifyHandshake,
+            T *obj = nullptr,
+            std::function< void (T *) > _startup = nullptr,
+            std::function< void (T *) > _shutdown = nullptr
+        );
 
         // returns 'true' when called from the "sync" thread, 'false' otherwise.
         bool on_sync_thread();
