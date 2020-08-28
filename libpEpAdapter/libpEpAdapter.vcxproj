@@ -99,6 +99,7 @@ XCOPY "$(SolutionDir)libpEpAdapter\*.hxx" "$(SolutionDir)pEp\" /I/F/Y
     <ClCompile Include="..\Adapter.cc" />
     <ClCompile Include="..\callback_dispatcher.cc" />
     <ClCompile Include="..\call_with_lock.cc" />
+    <ClCompile Include="..\constant_time_algo.cc" />
     <ClCompile Include="..\message_cache.cc" />
     <ClCompile Include="..\passphrase_cache.cc" />
     <ClCompile Include="..\slurp.cc" />
@@ -108,6 +109,7 @@ XCOPY "$(SolutionDir)libpEpAdapter\*.hxx" "$(SolutionDir)pEp\" /I/F/Y
     <ClInclude Include="..\Adapter.hh" />
     <ClInclude Include="..\Adapter.hxx" />
     <ClInclude Include="..\callback_dispatcher.hh" />
+    <ClInclude Include="..\constant_time_algo.hh" />
     <ClInclude Include="..\locked_queue.hh" />
     <ClInclude Include="..\message_cache.hh" />
     <ClInclude Include="..\passphrase_cache.hh" />
