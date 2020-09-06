@@ -13,7 +13,8 @@ namespace pEp
             d |= ( static_cast<unsigned>(a[idx]) ^ static_cast<unsigned>(b[idx]) );
         }
         
-        return d != 0;
+        // if d is still 0, the strings are equal.
+        return d == 0;
     }
 
 } // end of namespace pEp
