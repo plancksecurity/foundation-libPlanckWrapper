@@ -72,7 +72,7 @@ namespace pEp {
             );
 
 
-        static PEP_STATUS cache_release(const char *id);
+        static PEP_STATUS cache_release(std::string id);
 
     protected:
         void release(std::string id);
@@ -120,7 +120,9 @@ namespace pEp {
                 PEP_encrypt_flags_t flags
             );
 
-        void generateMessageID(::message* msg);
+        void generateCacheID(::message* msg);
+        static std::string cacheID(const ::message* msg);
+        static void removeCacheID(::message* msg);
     };
 
     extern MessageCache message_cache;

@@ -80,7 +80,7 @@ namespace pEp {
                 extra, dst, enc_format, flags);
     }
 
-    PEP_STATUS MessageCache::cache_release(const char *id)
+    PEP_STATUS MessageCache::cache_release(std::string id)
     {
         message_cache.release(id);
         return PEP_STATUS_OK;
@@ -297,13 +297,13 @@ namespace pEp {
             PEP_decrypt_flags_t *flags
         )
     {
-        if (!src || emptystr(src->id))
+        if (!src || cacheID(src) == "")
             return PEP_ILLEGAL_VALUE;
 
         ::message *_msg;
         {
             std::lock_guard<std::mutex> l(_mtx);
-            _msg = message_cache._cache.at(src->id).src;
+            _msg = message_cache._cache.at(cacheID(src)).src;
             swapContent(src, _msg);
         }
 
@@ -318,8 +318,8 @@ namespace pEp {
         {
             std::lock_guard<std::mutex> l(_mtx);
             swapContent(_msg, src);
-            ::free_message(message_cache._cache.at(src->id).dst);
-            message_cache._cache.at(src->id).dst = _dst;
+            ::free_message(message_cache._cache.at(cacheID(src)).dst);
+            message_cache._cache.at(cacheID(src)).dst = _dst;
         }
         return status;
     }
@@ -332,7 +332,7 @@ namespace pEp {
             bool has_pEp_msg_attachment     
         )
     {
-        if (!msg || emptystr(msg->id))
+        if (!msg || cacheID(msg) == "")
             return PEP_ILLEGAL_VALUE;
 
         if (one != msg_src && one != msg_dst)
@@ -342,34 +342,98 @@ namespace pEp {
 
         if (one == msg_src) {
             std::lock_guard<std::mutex> l(_mtx);
-            ::message *_src = _cache.at(std::string(msg->id)).src;
+            ::message *_src = _cache.at(cacheID(msg)).src;
             swapContent(_msg, _src);
         }
         else /* msg_dst */ {
             std::lock_guard<std::mutex> l(_mtx);
-            ::message *_dst = _cache.at(std::string(msg->id)).dst;
+            ::message *_dst = _cache.at(cacheID(msg)).dst;
             swapContent(_msg, _dst);
         }
 
+        removeCacheID(_msg);
         PEP_STATUS status = ::mime_encode_message(_msg, omit_fields, mimetext,
                 has_pEp_msg_attachment);
         ::free_message(_msg);
 
-        cache_release(msg->id);
+        cache_release(cacheID(msg));
 
         return status;
     }
 
-    void MessageCache::generateMessageID(::message* msg)
+    void MessageCache::generateCacheID(::message* msg)
     {
-        if (msg && emptystr(msg->id)) {
-            free(msg->id);
-            std::string _range = std::to_string(id_range);
-            std::string _id = std::to_string(next_id++);
-            msg->id = strdup((std::string("pEp_auto_id_") + _range + _id).c_str());
-            assert(msg->id);
-            if (!msg->id)
+        std::string _range = std::to_string(id_range);
+        std::string _id = std::to_string(next_id++);
+        std::string cid = _range + _id;
+
+        // if opt_fields is an empty list generate a new list
+        if (!msg->opt_fields || !msg->opt_fields->value) {
+            free_stringpair_list(msg->opt_fields);
+            msg->opt_fields =
+                ::new_stringpair_list(::new_stringpair("X-pEp-Adapter-Cache-ID",
+                            cid.c_str()));
+            if (!msg->opt_fields)
                 throw std::bad_alloc();
+        }
+        else {
+            // add the cache ID as first field to an existing list
+            auto spl = msg->opt_fields;
+            msg->opt_fields =
+                ::new_stringpair_list(::new_stringpair("X-pEp-Adapter-Cache-ID",
+                            cid.c_str()));
+            if (!msg->opt_fields) {
+                msg->opt_fields = spl;
+                throw std::bad_alloc();
+            }
+            msg->opt_fields->next = spl;
+        }
+    }
+
+    std::string MessageCache::cacheID(const ::message* msg)
+    {
+        for (auto spl = msg->opt_fields; spl && spl->value; spl = spl->next) {
+            assert(spl->value->key);
+            if (spl->value->key && std::string(spl->value->key) ==
+                    "X-pEp-Adapter-Cache-ID") {
+                assert(spl->value->value);
+                if (spl->value->value)
+                    return spl->value->value;
+                else
+                    return "";
+            }
+        }
+        return "";
+    }
+ 
+    void MessageCache::removeCacheID(::message* msg)
+    {
+        // if the first element in the list is the cache ID then skip
+        if (msg->opt_fields && msg->opt_fields->value &&
+                msg->opt_fields->value->key &&
+                std::string(msg->opt_fields->value->key) ==
+                "X-pEp-Adapter-Cache-ID") {
+            auto n = msg->opt_fields->next;
+            msg->opt_fields->next = nullptr;
+            ::free_stringpair_list(msg->opt_fields);
+            msg->opt_fields = n;
+        }
+        else {
+            // go through the list and remove
+            ::stringpair_list_t *prev = nullptr;
+            for (auto spl = msg->opt_fields; spl && spl->value; spl =
+                    spl->next) {
+                assert(spl->value->key);
+                if (spl->value->key &&
+                        std::string(spl->value->key) == "X-pEp-Adapter-Cache-ID") {
+                    auto next = spl->next;
+                    spl->next = nullptr;
+                    ::free_stringpair_list(spl);
+                    prev->next = next;
+                    break;
+                }
+                prev = spl;
+            }
         }
     }
 
@@ -386,12 +450,11 @@ namespace pEp {
         if (status)
             return status;
 
-        generateMessageID(_msg);
-        *msg = empty_message_copy(_msg);
+        generateCacheID(_msg); *msg = empty_message_copy(_msg);
 
         {
             std::lock_guard<std::mutex> l(_mtx);
-            message_cache._cache.emplace(std::make_pair(std::string(_msg->id),
+            message_cache._cache.emplace(std::make_pair(cacheID(_msg),
                         cache_entry(_msg, nullptr)));
         }
 
@@ -409,21 +472,19 @@ namespace pEp {
     {
         ::message *_msg;
         {
-            std::lock_guard<std::mutex> l(_mtx);
-            _msg = message_cache._cache.at(src->id).src;
-            swapContent(src, _msg);
+            std::lock_guard<std::mutex> l(_mtx); _msg =
+                message_cache._cache.at(cacheID(src)).src; swapContent(src, _msg);
         }
 
-        ::message *_dst = nullptr;
-        PEP_STATUS status = ::encrypt_message(session, src, extra, &_dst,
-                enc_format, flags);
+        ::message *_dst = nullptr; PEP_STATUS status =
+            ::encrypt_message(session, src, extra, &_dst, enc_format, flags);
         *dst = empty_message_copy(_dst);
 
         {
             std::lock_guard<std::mutex> l(_mtx);
             swapContent(_msg, src);
-            ::free_message(message_cache._cache.at(src->id).dst);
-            message_cache._cache.at(src->id).dst = _dst;
+            ::free_message(message_cache._cache.at(cacheID(src)).dst);
+            message_cache._cache.at(cacheID(src)).dst = _dst;
         }
 
         return status;
@@ -441,21 +502,20 @@ namespace pEp {
     {
         ::message *_msg;
         {
-            std::lock_guard<std::mutex> l(_mtx);
-            _msg = message_cache._cache.at(src->id).src;
-            swapContent(src, _msg);
+            std::lock_guard<std::mutex> l(_mtx); _msg =
+                message_cache._cache.at(cacheID(src)).src; swapContent(src,
+                        _msg);
         }
 
-        ::message *_dst = nullptr;
-        PEP_STATUS status = ::encrypt_message_for_self(session, target_id, src,
-                extra, &_dst, enc_format, flags);
-        *dst = empty_message_copy(_dst);
+        ::message *_dst = nullptr; PEP_STATUS status =
+            ::encrypt_message_for_self(session, target_id, src, extra, &_dst,
+                    enc_format, flags); *dst = empty_message_copy(_dst);
 
         {
             std::lock_guard<std::mutex> l(_mtx);
             swapContent(_msg, src);
-            ::free_message(message_cache._cache.at(src->id).dst);
-            message_cache._cache.at(src->id).dst = _dst;
+            ::free_message(message_cache._cache.at(cacheID(src)).dst);
+            message_cache._cache.at(cacheID(src)).dst = _dst;
         }
 
         return status;
