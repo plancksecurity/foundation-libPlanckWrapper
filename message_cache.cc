@@ -472,12 +472,14 @@ namespace pEp {
     {
         ::message *_msg;
         {
-            std::lock_guard<std::mutex> l(_mtx); _msg =
-                message_cache._cache.at(cacheID(src)).src; swapContent(src, _msg);
+            std::lock_guard<std::mutex> l(_mtx);
+            _msg = message_cache._cache.at(cacheID(src)).src;
+            swapContent(src, _msg);
         }
 
-        ::message *_dst = nullptr; PEP_STATUS status =
-            ::encrypt_message(session, src, extra, &_dst, enc_format, flags);
+        ::message *_dst = nullptr;
+        PEP_STATUS status = ::encrypt_message(session, src, extra, &_dst,
+                enc_format, flags);
         *dst = empty_message_copy(_dst);
 
         {
@@ -502,14 +504,15 @@ namespace pEp {
     {
         ::message *_msg;
         {
-            std::lock_guard<std::mutex> l(_mtx); _msg =
-                message_cache._cache.at(cacheID(src)).src; swapContent(src,
-                        _msg);
+            std::lock_guard<std::mutex> l(_mtx);
+            _msg = message_cache._cache.at(cacheID(src)).src;
+            swapContent(src, _msg);
         }
 
-        ::message *_dst = nullptr; PEP_STATUS status =
-            ::encrypt_message_for_self(session, target_id, src, extra, &_dst,
-                    enc_format, flags); *dst = empty_message_copy(_dst);
+        ::message *_dst = nullptr;
+        PEP_STATUS status = ::encrypt_message_for_self(session, target_id, src,
+                extra, &_dst, enc_format, flags);
+        *dst = empty_message_copy(_dst);
 
         {
             std::lock_guard<std::mutex> l(_mtx);
