@@ -203,7 +203,7 @@ namespace pEp {
         return false;
     }
 
-    static ::message *empty_message_copy(const ::message *src)
+    static ::message *empty_message_copy(const ::message *src, std::string _id = "")
     {
         if (!src)
             return nullptr;
@@ -243,9 +243,18 @@ namespace pEp {
 
         dst->keywords = dup(src->keywords);
         dst->comments = dup(src->comments);
-        dst->opt_fields = dup(src->opt_fields);
         dst->enc_format = src->enc_format;
         dst->_sender_fpr = dup(src->_sender_fpr);
+
+        if (_id == "") {
+            dst->opt_fields  = dup(src->opt_fields);
+        }
+        else {
+            dst->opt_fields = ::new_stringpair_list(::new_stringpair("X-pEp-Adapter-Cache-ID", _id.c_str()));
+            if (!dst->opt_fields)
+                throw std::bad_alloc();
+            dst->opt_fields->next  = dup(src->opt_fields);
+        }
 
         return dst;
     }
@@ -301,9 +310,10 @@ namespace pEp {
             return PEP_ILLEGAL_VALUE;
 
         ::message *_msg;
+        std::string _id = cacheID(src);
         {
             std::lock_guard<std::mutex> l(_mtx);
-            _msg = message_cache._cache.at(cacheID(src)).src;
+            _msg = message_cache._cache.at(_id).src;
             swapContent(src, _msg);
         }
 
@@ -313,13 +323,13 @@ namespace pEp {
         ::message *_dst = nullptr;
         PEP_STATUS status = ::decrypt_message(session, src, &_dst, keylist,
                 rating, flags);
-        *dst = empty_message_copy(_dst);
+        *dst = empty_message_copy(_dst, _id);
 
         {
             std::lock_guard<std::mutex> l(_mtx);
             swapContent(_msg, src);
-            ::free_message(message_cache._cache.at(cacheID(src)).dst);
-            message_cache._cache.at(cacheID(src)).dst = _dst;
+            ::free_message(message_cache._cache.at(_id).dst);
+            message_cache._cache.at(_id).dst = _dst;
         }
         return status;
     }
@@ -471,20 +481,21 @@ namespace pEp {
         )
     {
         ::message *_msg;
+        std::string _id = cacheID(src);
         {
             std::lock_guard<std::mutex> l(_mtx); _msg =
-                message_cache._cache.at(cacheID(src)).src; swapContent(src, _msg);
+                message_cache._cache.at(_id).src; swapContent(src, _msg);
         }
 
         ::message *_dst = nullptr; PEP_STATUS status =
             ::encrypt_message(session, src, extra, &_dst, enc_format, flags);
-        *dst = empty_message_copy(_dst);
+        *dst = empty_message_copy(_dst, _id);
 
         {
             std::lock_guard<std::mutex> l(_mtx);
             swapContent(_msg, src);
-            ::free_message(message_cache._cache.at(cacheID(src)).dst);
-            message_cache._cache.at(cacheID(src)).dst = _dst;
+            ::free_message(message_cache._cache.at(_id).dst);
+            message_cache._cache.at(_id).dst = _dst;
         }
 
         return status;
@@ -501,21 +512,22 @@ namespace pEp {
         )
     {
         ::message *_msg;
+        std::string _id = cacheID(src);
         {
             std::lock_guard<std::mutex> l(_mtx); _msg =
-                message_cache._cache.at(cacheID(src)).src; swapContent(src,
+                message_cache._cache.at(_id).src; swapContent(src,
                         _msg);
         }
 
         ::message *_dst = nullptr; PEP_STATUS status =
             ::encrypt_message_for_self(session, target_id, src, extra, &_dst,
-                    enc_format, flags); *dst = empty_message_copy(_dst);
+                    enc_format, flags); *dst = empty_message_copy(_dst, _id);
 
         {
             std::lock_guard<std::mutex> l(_mtx);
             swapContent(_msg, src);
-            ::free_message(message_cache._cache.at(cacheID(src)).dst);
-            message_cache._cache.at(cacheID(src)).dst = _dst;
+            ::free_message(message_cache._cache.at(_id).dst);
+            message_cache._cache.at(_id).dst = _dst;
         }
 
         return status;

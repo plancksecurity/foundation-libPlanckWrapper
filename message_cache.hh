@@ -73,6 +73,7 @@ namespace pEp {
 
 
         static PEP_STATUS cache_release(std::string id);
+        static void removeCacheID(::message* msg);
 
     protected:
         void release(std::string id);
@@ -122,7 +123,6 @@ namespace pEp {
 
         void generateCacheID(::message* msg);
         static std::string cacheID(const ::message* msg);
-        static void removeCacheID(::message* msg);
     };
 
     extern MessageCache message_cache;
