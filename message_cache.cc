@@ -204,6 +204,7 @@ namespace pEp {
     }
 
     static ::message *empty_message_copy(const ::message *src, std::string _id = "")
+    static ::message *empty_message_copy(const ::message *src)
     {
         if (!src)
             return nullptr;
