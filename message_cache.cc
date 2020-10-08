@@ -247,13 +247,13 @@ namespace pEp {
         dst->_sender_fpr = dup(src->_sender_fpr);
 
         if (_id == "") {
-            dst->opt_fields  = dup(src->opt_fields);
+            dst->opt_fields = dup(src->opt_fields);
         }
         else {
             dst->opt_fields = ::new_stringpair_list(::new_stringpair("X-pEp-Adapter-Cache-ID", _id.c_str()));
             if (!dst->opt_fields)
                 throw std::bad_alloc();
-            dst->opt_fields->next  = dup(src->opt_fields);
+            dst->opt_fields->next = dup(src->opt_fields);
         }
 
         return dst;
@@ -483,12 +483,14 @@ namespace pEp {
         ::message *_msg;
         std::string _id = cacheID(src);
         {
-            std::lock_guard<std::mutex> l(_mtx); _msg =
-                message_cache._cache.at(_id).src; swapContent(src, _msg);
+            std::lock_guard<std::mutex> l(_mtx);
+            _msg = message_cache._cache.at(_id).src;
+            swapContent(src, _msg);
         }
 
-        ::message *_dst = nullptr; PEP_STATUS status =
-            ::encrypt_message(session, src, extra, &_dst, enc_format, flags);
+        ::message *_dst = nullptr;
+        PEP_STATUS status = ::encrypt_message(session, src, extra, &_dst,
+                enc_format, flags);
         *dst = empty_message_copy(_dst, _id);
 
         {
@@ -514,14 +516,15 @@ namespace pEp {
         ::message *_msg;
         std::string _id = cacheID(src);
         {
-            std::lock_guard<std::mutex> l(_mtx); _msg =
-                message_cache._cache.at(_id).src; swapContent(src,
-                        _msg);
+            std::lock_guard<std::mutex> l(_mtx);
+            _msg = message_cache._cache.at(_id).src;
+            swapContent(src, _msg);
         }
 
-        ::message *_dst = nullptr; PEP_STATUS status =
-            ::encrypt_message_for_self(session, target_id, src, extra, &_dst,
-                    enc_format, flags); *dst = empty_message_copy(_dst, _id);
+        ::message *_dst = nullptr;
+        PEP_STATUS status = ::encrypt_message_for_self(session, target_id, src,
+                extra, &_dst, enc_format, flags);
+        *dst = empty_message_copy(_dst, _id);
 
         {
             std::lock_guard<std::mutex> l(_mtx);
