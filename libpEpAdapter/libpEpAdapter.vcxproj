@@ -119,6 +119,11 @@ XCOPY "$(SolutionDir)libpEpAdapter\*.hxx" "$(SolutionDir)pEp\" /I/F/Y
     <ClInclude Include="..\slurp.hh" />
     <ClInclude Include="..\status_to_string.hh" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\pEpEngine\build-windows\pEpEngine.vcxproj">
+      <Project>{146e69f8-e1da-456a-b048-6dd29d9acf6b}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
