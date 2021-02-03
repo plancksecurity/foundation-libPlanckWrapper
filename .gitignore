@@ -11,3 +11,6 @@ local.conf
 build/
 # Default ignored files
 .idea/workspace.xml
+# Windows
+libpEpAdapter/Debug/
+libpEpAdapter/Release/
