@@ -12,5 +12,5 @@ build/
 # Default ignored files
 .idea/workspace.xml
 # Windows
-libpEpAdapter/Debug/
-libpEpAdapter/Release/
+build-windows/Debug/
+build-windows/Release/
