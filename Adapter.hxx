@@ -16,7 +16,7 @@ namespace pEp {
         extern notifyHandshake_t _notifyHandshake;
         extern std::thread _sync_thread;
 
-        extern ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > q;
+        extern ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > sync_evt_q;
         extern std::mutex m;
 
         SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold);
