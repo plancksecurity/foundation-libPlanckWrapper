@@ -10,7 +10,7 @@ lib
 local.conf
 build/
 # Default ignored files
-.idea/workspace.xml
+?idea/
 # Windows
 build-windows/Debug/
 build-windows/Release/
