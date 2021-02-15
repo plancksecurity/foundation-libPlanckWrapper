@@ -71,6 +71,7 @@ namespace pEp {
 
     void CallbackDispatcher::start_sync()
     {
+        pEpLog("called");
         callback_dispatcher.semaphore.go();
 
         pEp::Adapter::startup<CallbackDispatcher>(CallbackDispatcher::messageToSend,
@@ -78,6 +79,7 @@ namespace pEp {
                 &CallbackDispatcher::on_startup,
                 &CallbackDispatcher::on_shutdown);
 
+        pEpLog("all targets signal: SYNC_NOTIFY_START");
         for (auto target : callback_dispatcher.targets) {
             if (target.notifyHandshake) {
                 target.notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_START);

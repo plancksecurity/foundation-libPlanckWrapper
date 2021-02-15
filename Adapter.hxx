@@ -22,11 +22,12 @@ namespace pEp {
         SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold);
 
         static std::exception_ptr _ex;
-        static bool register_done = false;
+        static std::atomic_bool register_done{false};
 
         template< class T >
         void sync_thread(T *obj, function< void(T *) > _startup, function< void(T *) > _shutdown)
         {
+            pEpLog("called");
             _ex = nullptr;
             assert(_messageToSend);
             assert(_notifyHandshake);
@@ -41,11 +42,11 @@ namespace pEp {
                     _notifyHandshake, _retrieve_next_sync_event);
                 try {
                     throw_status(status);
-                    register_done = true;
+                    register_done.store(true);
                 }
                 catch (...) {
                     _ex = std::current_exception();
-                    register_done = true;
+                    register_done.store(true);
                     return;
                 }
             }
@@ -70,6 +71,7 @@ namespace pEp {
             function< void(T *) > _startup,
             function< void(T *) > _shutdown)
         {
+            pEpLog("called");
             if (messageToSend) {
                 _messageToSend = messageToSend;
             }
@@ -77,17 +79,21 @@ namespace pEp {
             if (notifyHandshake) {
                 _notifyHandshake = notifyHandshake;
             }
-
+            pEpLog("creating session");
             session();
 
             if (!_sync_thread.joinable()) {
-                register_done = false;
+                register_done.store(false);
+                pEpLog("creating sync-thread");
+
                 _sync_thread = std::thread(sync_thread<T>, obj, _startup, _shutdown);
-                while (!register_done) {
+                while (register_done.load() == false) {
+                    pEpLog("waiting for sync-thread to init...");
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 }
 
                 if (_ex) {
+                    pEpLog("exception pending, rethrowing");
                     std::rethrow_exception(_ex);
                 }
             }
