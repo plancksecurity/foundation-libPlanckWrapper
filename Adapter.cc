@@ -93,7 +93,6 @@ namespace pEp {
         PEP_SESSION Session::operator()(session_action action)
         {
             std::lock_guard<mutex> lock(m);
-            bool in_sync = on_sync_thread();
 
             PEP_STATUS status = PEP_STATUS_OK;
 
