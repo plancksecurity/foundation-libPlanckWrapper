@@ -11,8 +11,18 @@ centos8:build:
   extends: .make_in_docker
   stage: build
   variables:
-    CI_MAKE_TARGET: libpepadapter
-    CI_DISTRO_TARGET: centos8
+    CI_DISTRO_TARGET: "centos8"
+  rules:
+    - if: '$CI_COMMIT_TAG  !~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
+
+centos8:tagged-build:
+  extends: .make_in_docker
+  stage: build
+  variables:
+    CI_DISTRO_TARGET: "centos8"
+    TAGGED_BUILD: "true"
+  rules:
+    - if: '$CI_COMMIT_TAG  =~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
 
 # Debian
 
@@ -20,6 +30,17 @@ debian10:build:
   extends: .make_in_docker
   stage: build
   variables:
-    CI_MAKE_TARGET: libpepadapter
-    CI_DISTRO_TARGET: debian10
-    DEBIAN_FRONTEND: noninteractive
+    CI_DISTRO_TARGET: "debian10"
+    DEBIAN_FRONTEND: "noninteractive"
+  rules:
+    - if: '$CI_COMMIT_TAG  !~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
+
+debian10:tagged-build:
+  extends: .make_in_docker
+  stage: build
+  variables:
+    CI_DISTRO_TARGET: "debian10"
+    DEBIAN_FRONTEND: "noninteractive"
+    TAGGED_BUILD: "true"
+  rules:
+    - if: '$CI_COMMIT_TAG  =~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
