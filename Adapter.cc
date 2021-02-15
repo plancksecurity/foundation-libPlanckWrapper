@@ -78,8 +78,9 @@ namespace pEp {
             SYNC_EVENT syncEvent = nullptr;
             const bool success = sync_evt_q.try_pop_front(syncEvent, std::chrono::seconds(threshold));
 
-            if (!success)
+            if (!success) {
                 return new_sync_timeout_event();
+            }
 
             return syncEvent;
         }
@@ -98,8 +99,9 @@ namespace pEp {
 
             switch (action) {
                 case release:
-                    if (_session.get())
+                    if (_session.get()) {
                         _session = nullptr;
+                    }
                     break;
 
                 case init:
@@ -143,10 +145,11 @@ namespace pEp {
             catch (std::underflow_error&) {
                 return false;
             }
-            if (ev)
+            if (ev) {
                 return false;
-            else
+            } else {
                 return true;
+            }
        }
     }
 }

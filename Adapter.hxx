@@ -30,8 +30,9 @@ namespace pEp {
             _ex = nullptr;
             assert(_messageToSend);
             assert(_notifyHandshake);
-            if (obj && _startup)
+            if (obj && _startup) {
                 _startup(obj);
+            }
 
             session();
 
@@ -56,8 +57,9 @@ namespace pEp {
 
             session(release);
 
-            if (obj && _shutdown)
+            if (obj && _shutdown) {
                 _shutdown(obj);
+            }
         }
 
         template< class T >
@@ -68,22 +70,26 @@ namespace pEp {
             function< void(T *) > _startup,
             function< void(T *) > _shutdown)
         {
-            if (messageToSend)
+            if (messageToSend) {
                 _messageToSend = messageToSend;
+            }
 
-            if (notifyHandshake)
+            if (notifyHandshake) {
                 _notifyHandshake = notifyHandshake;
+            }
 
             session();
 
             if (!_sync_thread.joinable()) {
                 register_done = false;
                 _sync_thread = std::thread(sync_thread<T>, obj, _startup, _shutdown);
-                while (!register_done)
+                while (!register_done) {
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                }
 
-                if (_ex)
+                if (_ex) {
                     std::rethrow_exception(_ex);
+                }
             }
         }
     }
