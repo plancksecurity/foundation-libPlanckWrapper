@@ -23,11 +23,11 @@ namespace pEp {
         void try_wait()
         {
             std::unique_lock<std::mutex> lock(mtx);
-            if (_stop.load() == false) {
+            if (!_stop.load()) {
                 return;
             }
 
-            while(_stop.load() == true) {
+            while(_stop.load()) {
                 cv.wait(lock);
             }
         }
