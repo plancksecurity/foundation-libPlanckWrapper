@@ -1,9 +1,10 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
-#pragma once
+#ifndef LIBPEPADAPTER_PC_CONTAINER_HH
+#define LIBPEPADAPTER_PC_CONTAINER_HH
 
-// Conainer adapter that contains a container and a producer/consume queue
+// Container adapter that contains a container and a producer/consume queue
 // that holds references to all changed elements
 
 #include <functional>
@@ -82,4 +83,5 @@ private:
 };
 
 } // end of namespace pEp
+#endif // LIBPEPADAPTER_PC_CONTAINER_HH
 

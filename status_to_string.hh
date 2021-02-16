@@ -1,4 +1,8 @@
-#pragma once
+// This file is under GNU General Public License 3.0
+// see LICENSE.txt
+
+#ifndef LIBPEPADAPTER_STATUS_TO_STRING_HH
+#define LIBPEPADAPTER_STATUS_TO_STRING_HH
 
 #include <pEp/pEpEngine.h>
 #include <pEp/status_to_string.h>
@@ -11,3 +15,5 @@ namespace pEp
     std::string status_to_string(PEP_STATUS status);
     
 } // end of namespace pEp
+
+#endif // LIBPEPADAPTER_STATUS_TO_STRING_HH

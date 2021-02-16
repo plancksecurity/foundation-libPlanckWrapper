@@ -1,7 +1,8 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
-#pragma once
+#ifndef LIBPEPADAPTER_ADAPTER_HXX
+#define LIBPEPADAPTER_ADAPTER_HXX
 
 #include <thread>
 #include "locked_queue.hh"
@@ -35,11 +36,15 @@ namespace pEp {
                 _startup(obj);
             }
 
+            pEpLog("creating session");
             session();
 
             {
+                //TODO: Do we need to use a passphraseWrap here???
+                pEpLog("register_sync_callbacks()");
                 PEP_STATUS status = register_sync_callbacks(session(), nullptr,
                     _notifyHandshake, _retrieve_next_sync_event);
+                pEpLog("register_sync_callbacks() return:" << status);
                 try {
                     throw_status(status);
                     register_done.store(true);
@@ -100,3 +105,5 @@ namespace pEp {
         }
     }
 }
+
+#endif //LIBPEPADAPTER_ADAPTER_HXX

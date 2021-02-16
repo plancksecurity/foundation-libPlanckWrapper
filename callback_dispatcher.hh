@@ -1,4 +1,8 @@
-#pragma once
+// This file is under GNU General Public License 3.0
+// see LICENSE.txt
+
+#ifndef LIBPEPADAPTER_CALLBACK_DISPATCHER_HH
+#define LIBPEPADAPTER_CALLBACK_DISPATCHER_HH
 
 #include <vector>
 #include <functional>
@@ -60,3 +64,4 @@ namespace pEp {
     extern CallbackDispatcher callback_dispatcher;
 }
 
+#endif // LIBPEPADAPTER_CALLBACK_DISPATCHER_HH

@@ -1,3 +1,6 @@
+// This file is under GNU General Public License 3.0
+// see LICENSE.txt
+
 #include <cassert>
 #include "Adapter.hh"
 #include "passphrase_cache.hh"

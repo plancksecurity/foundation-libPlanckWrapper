@@ -1,7 +1,8 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
-#pragma once
+#ifndef LIBPEPADAPTER_ADAPTER_HH
+#define LIBPEPADAPTER_ADAPTER_HH
 
 #include <functional>
 #include <string>
@@ -68,3 +69,5 @@ namespace pEp {
 }
 
 #include "Adapter.hxx"
+
+#endif  //LIBPEPADAPTER_ADAPTER_HH

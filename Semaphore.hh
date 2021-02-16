@@ -1,3 +1,9 @@
+// This file is under GNU General Public License 3.0
+// see LICENSE.txt
+
+#ifndef LIBPEPADAPTER_SEMAPHORE_HH
+#define LIBPEPADAPTER_SEMAPHORE_HH
+
 #include <mutex>
 #include <condition_variable>
 
@@ -40,4 +46,7 @@ namespace pEp {
         }
     };
 }
+
+#endif // LIBPEPADAPTER_SEMAPHORE_HH
+
 
