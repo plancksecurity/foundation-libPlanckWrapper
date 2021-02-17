@@ -1,0 +1,25 @@
+include:
+  - '.gitlab-ci-files/common-prepare.yml'
+
+stages:
+  - build
+
+
+# CentOS/RHEL
+
+centos8:build:
+  extends: .make_in_docker
+  stage: build
+  variables:
+    CI_MAKE_TARGET: libpepadapter
+    CI_DISTRO_TARGET: centos8
+
+# Debian
+
+debian10:build:
+  extends: .make_in_docker
+  stage: build
+  variables:
+    CI_MAKE_TARGET: libpepadapter
+    CI_DISTRO_TARGET: debian10
+    DEBIAN_FRONTEND: noninteractive

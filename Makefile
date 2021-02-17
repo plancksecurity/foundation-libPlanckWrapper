@@ -13,14 +13,9 @@ SOURCE=$(wildcard *.cc)
 HEADERS=$(wildcard *.hh *.hxx)
 OBJECTS=$(subst .cc,.o,$(SOURCE))
 DEPENDS=$(subst .cc,.d,$(SOURCE))
+CXXFLAGS+= -MMD -MP
 
 all: $(TARGET)
-
-%.d: %.cc
-	@set -e; rm -f $@; \
-	$(CXX) -MM $(CPPFLAGS) $(CXXFLAGS) $< > $@.$$$$; \
-	sed 's,\($*\)\.o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
-	rm -f $@.$$$$
 
 ifneq ($(MAKECMDGOALS),clean)
     -include $(DEPENDS)
