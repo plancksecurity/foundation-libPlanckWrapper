@@ -14,7 +14,7 @@ namespace pEpLog {
 std::mutex mtx;
 
 std::atomic_bool is_initialized{false};
-std::atomic_bool is_enabled{true};
+std::atomic_bool is_enabled{false};
 std::atomic_bool is_enabled_backend_pEpEngine{true};
 std::atomic_bool is_enabled_backend_cout{false};
 std::atomic_bool is_enabled_backend_cerr{false};
