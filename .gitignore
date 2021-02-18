@@ -14,3 +14,4 @@ build/
 # Windows
 build-windows/Debug/
 build-windows/Release/
+build-windows/libpEpAdapter.vcxproj.user

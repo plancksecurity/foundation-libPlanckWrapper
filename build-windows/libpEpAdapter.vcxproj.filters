@@ -42,6 +42,9 @@
     <ClCompile Include="..\constant_time_algo.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\pEpLog.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Adapter.hh">
@@ -78,6 +81,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\constant_time_algo.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\pEpLog.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

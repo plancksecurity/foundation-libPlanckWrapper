@@ -92,6 +92,7 @@
     <ClCompile Include="..\constant_time_algo.cc" />
     <ClCompile Include="..\message_cache.cc" />
     <ClCompile Include="..\passphrase_cache.cc" />
+    <ClCompile Include="..\pEpLog.cc" />
     <ClCompile Include="..\slurp.cc" />
     <ClCompile Include="..\status_to_string.cc" />
   </ItemGroup>
@@ -105,6 +106,7 @@
     <ClInclude Include="..\passphrase_cache.hh" />
     <ClInclude Include="..\passphrase_cache.hxx" />
     <ClInclude Include="..\pc_container.hh" />
+    <ClInclude Include="..\pEpLog.hh" />
     <ClInclude Include="..\Semaphore.hh" />
     <ClInclude Include="..\slurp.hh" />
     <ClInclude Include="..\status_to_string.hh" />
