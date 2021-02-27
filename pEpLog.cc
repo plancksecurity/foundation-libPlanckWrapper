@@ -4,7 +4,9 @@
 #include "pEpLog.hh"
 #include <iostream>
 #include <sstream>
+#include <mutex>
 #include <atomic>
+
 
 namespace pEp {
 namespace Adapter {

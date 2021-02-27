@@ -8,6 +8,7 @@
 #include "locked_queue.hh"
 #include <cassert>
 #include "pEpLog.hh"
+#include <atomic>
 
 namespace pEp {
     namespace Adapter {
