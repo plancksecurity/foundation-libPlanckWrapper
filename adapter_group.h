@@ -15,7 +15,7 @@ extern "C" {
  *************************************************************************************************/
 
 /**
- *  <!--       group_create()       -->
+ *  <!--       adapter_group_create()       -->
  *
  *  @brief      Create a group in the database with the input group_identity and manager and invite new members to the group
  *              if this is an own group (for the external API, this is always the case).
@@ -47,7 +47,7 @@ extern "C" {
  *
  *
  */
-DYNAMIC_API PEP_STATUS group_create(
+DYNAMIC_API PEP_STATUS adapter_group_create(
         PEP_SESSION session,
         pEp_identity *group_identity,
         pEp_identity *manager,
@@ -56,7 +56,7 @@ DYNAMIC_API PEP_STATUS group_create(
     );
 
 /**
- *  <!--       group_join()       -->
+ *  <!--       adapter_group_join()       -->
  *
  *  @brief          Join a group for which we have received an invitation, marking
  *                  our own membership in the database for the group and sending the manager
@@ -76,14 +76,14 @@ DYNAMIC_API PEP_STATUS group_create(
  *
  *
  */
-DYNAMIC_API PEP_STATUS group_join(
+DYNAMIC_API PEP_STATUS adapter_group_join(
         PEP_SESSION session,
         pEp_identity *group_identity,
         pEp_identity *as_member
     );
 
 /**
- *  <!--       group_dissolve()       -->
+ *  <!--       adapter_group_dissolve()       -->
  *
  *  @brief          Dissolve a group, revoke its key, notify all members of the dissolution and
  *                  revocation, and mark the group as inactive in the database
@@ -103,14 +103,14 @@ DYNAMIC_API PEP_STATUS group_join(
  *  @warning        For recipients to accept the dissolution, the sender/manager key used must be a key that they
  *                  have a trust entry for.
  */
-DYNAMIC_API PEP_STATUS group_dissolve(
+DYNAMIC_API PEP_STATUS adapter_group_dissolve(
         PEP_SESSION session,
         pEp_identity *group_identity,
         pEp_identity *manager
     );
 
 /**
- *  <!--       group_invite_member()       -->
+ *  <!--       adapter_group_invite_member()       -->
  *
  *  @brief      Invite a member to an extant group, marking the member as invited in the database and
  *              sending out an invitation to said member
@@ -131,14 +131,14 @@ DYNAMIC_API PEP_STATUS group_dissolve(
  *                  this is the accepted message format for invitations to potential members
  *
  */
-DYNAMIC_API PEP_STATUS group_invite_member(
+DYNAMIC_API PEP_STATUS adapter_group_invite_member(
         PEP_SESSION session,
         pEp_identity *group_identity,
         pEp_identity *group_member
     );
 
 /**
- *  <!--       group_remove_member()       -->
+ *  <!--       adapter_group_remove_member()       -->
  *
  *  @brief      Remove a member from a group, deleting the member from the member list and executing a key
  *              reset on the group identity
@@ -157,14 +157,14 @@ DYNAMIC_API PEP_STATUS group_invite_member(
  *  @todo           Revamp implementation and execute key reset
  *
  */
-PEP_STATUS group_remove_member(
+PEP_STATUS adapter_group_remove_member(
         PEP_SESSION session,
         pEp_identity *group_identity,
         pEp_identity *group_member
     );
 
 /**
- *  <!--       group_rating()       -->
+ *  <!--       adapter_group_rating()       -->
  *
  *  @brief      Get the rating for this group - if the caller is the manager, this will return the aggregate rating
  *              of group members. For members, this will return the rating of the group_identity
@@ -182,7 +182,7 @@ PEP_STATUS group_remove_member(
  *  @ownership      FIXME
  *
  */
-DYNAMIC_API PEP_STATUS group_rating(
+DYNAMIC_API PEP_STATUS adapter_group_rating(
         PEP_SESSION session,
         pEp_identity *group_identity,
         pEp_identity *manager,
@@ -196,7 +196,7 @@ DYNAMIC_API PEP_STATUS group_rating(
  *************************************************************************************************/
 
 /**
- *  <!--       query_groups()       -->
+ *  <!--       group_query_groups()       -->
  *
  *  @brief          queries the list manager which groups currently exist.
  *
@@ -211,13 +211,13 @@ DYNAMIC_API PEP_STATUS group_rating(
  *
  */
 
-DYNAMIC_API PEP_STATUS query_groups(
+DYNAMIC_API PEP_STATUS group_query_groups(
         PEP_SESSION session,
         identity_list **groups
     );
 
 /**
- *  <!--       query_group_manager()       -->
+ *  <!--       group_query_manager()       -->
  *
  *  @brief          queries the list manager for the group manager of a given group.
  *
@@ -232,14 +232,14 @@ DYNAMIC_API PEP_STATUS query_groups(
  *
  */
 
-DYNAMIC_API PEP_STATUS query_group_manager(
+DYNAMIC_API PEP_STATUS group_query_manager(
         PEP_SESSION session,
         const pEp_identity * const group,
         pEp_identity **manager
     );
 
 /**
- *  <!--       query_group_members()       -->
+ *  <!--       group_query_members()       -->
  *
  *  @brief          queries the list manager for all members of a given group.
  *
@@ -254,7 +254,7 @@ DYNAMIC_API PEP_STATUS query_group_manager(
  *
  */
 
-DYNAMIC_API PEP_STATUS query_group_members(
+DYNAMIC_API PEP_STATUS group_query_members(
         PEP_SESSION session,
         const pEp_identity * const group,
         identity_list **members
