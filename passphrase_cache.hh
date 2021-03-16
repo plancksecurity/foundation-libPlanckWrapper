@@ -1,4 +1,8 @@
-#pragma once
+// This file is under GNU General Public License 3.0
+// see LICENSE.txt
+
+#ifndef LIBPEPADAPTER_PASSPHRASE_CACHE_HH
+#define LIBPEPADAPTER_PASSPHRASE_CACHE_HH
 
 #include <list>
 #include <string>
@@ -85,3 +89,4 @@ namespace pEp {
 
 #include "passphrase_cache.hxx"
 
+#endif // LIBPEPADAPTER_PASSPHRASE_CACHE_HH

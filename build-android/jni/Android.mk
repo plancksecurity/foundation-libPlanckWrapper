@@ -25,12 +25,7 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../pEpEngine/build-android/include \
 
 LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)../include
 
-LOCAL_SRC_FILES += $(LOCAL_PATH)/../../Adapter.cc \
-        $(LOCAL_PATH)/../../slurp.cc \
-        $(LOCAL_PATH)/../../call_with_lock.cc \
-        $(LOCAL_PATH)/../../passphrase_cache.cc  \
-        $(LOCAL_PATH)/../../callback_dispatcher.cc  \
-        $(LOCAL_PATH)/../../status_to_string.cc
+LOCAL_SRC_FILES += $(wildcard $(LOCAL_PATH)/../../*.cc)
 
 
 include $(BUILD_STATIC_LIBRARY)

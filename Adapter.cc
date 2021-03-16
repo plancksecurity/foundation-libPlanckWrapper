@@ -42,7 +42,7 @@ namespace pEp {
         notifyHandshake_t _notifyHandshake = nullptr;
         std::thread _sync_thread;
 
-        ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > q;
+        ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > sync_evt_q;
         std::mutex m;
 
         std::thread::id sync_thread_id()
@@ -54,11 +54,11 @@ namespace pEp {
         {
             try {
                 if (ev == nullptr) {
-                    q.clear();
-                    q.push_back(ev);
+                    sync_evt_q.clear();
+                    sync_evt_q.push_back(ev);
                 }
                 else {
-                    q.push_front(ev);
+                    sync_evt_q.push_front(ev);
                 }
             }
             catch (exception&) {
@@ -76,10 +76,11 @@ namespace pEp {
         SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold)
         {
             SYNC_EVENT syncEvent = nullptr;
-            const bool success = q.try_pop_front(syncEvent, std::chrono::seconds(threshold));
+            const bool success = sync_evt_q.try_pop_front(syncEvent, std::chrono::seconds(threshold));
 
-            if (!success)
+            if (!success) {
                 return new_sync_timeout_event();
+            }
 
             return syncEvent;
         }
@@ -92,14 +93,14 @@ namespace pEp {
         PEP_SESSION Session::operator()(session_action action)
         {
             std::lock_guard<mutex> lock(m);
-            bool in_sync = on_sync_thread();
 
             PEP_STATUS status = PEP_STATUS_OK;
 
             switch (action) {
                 case release:
-                    if (_session.get())
+                    if (_session.get()) {
                         _session = nullptr;
+                    }
                     break;
 
                 case init:
@@ -138,15 +139,16 @@ namespace pEp {
         {
             SYNC_EVENT ev;
             try {
-                ev = q.back();
+                ev = sync_evt_q.back();
             }
             catch (std::underflow_error&) {
                 return false;
             }
-            if (ev)
+            if (ev) {
                 return false;
-            else
+            } else {
                 return true;
+            }
        }
     }
 }

@@ -1,4 +1,8 @@
-#pragma once
+// This file is under GNU General Public License 3.0
+// see LICENSE.txt
+
+#ifndef LIBPEPADAPTER_CALLBACK_DISPATCHER_HH
+#define LIBPEPADAPTER_CALLBACK_DISPATCHER_HH
 
 #include <vector>
 #include <functional>
@@ -27,30 +31,37 @@ namespace pEp {
 
     public:
         void add(
-                ::messageToSend_t messageToSend,
-                ::notifyHandshake_t notifyHandshake,
-                proc on_startup = nullptr,
-                proc on_shutdown = nullptr
-            );
+            ::messageToSend_t messageToSend,
+            ::notifyHandshake_t notifyHandshake,
+            proc on_startup = nullptr,
+            proc on_shutdown = nullptr
+        );
         void remove(::messageToSend_t messageToSend);
 
         static void start_sync();
         static void stop_sync();
 
         static PEP_STATUS messageToSend(::message *msg);
-        static PEP_STATUS notifyHandshake(::pEp_identity *me,
-                ::pEp_identity *partner, ::sync_handshake_signal signal);
+        static PEP_STATUS notifyHandshake(
+            ::pEp_identity *me,
+            ::pEp_identity *partner,
+            ::sync_handshake_signal signal
+        );
     protected:
         void on_startup();
         void on_shutdown();
 
         PEP_STATUS _messageToSend(::message *msg);
-        PEP_STATUS _notifyHandshake(::pEp_identity *me,
-                ::pEp_identity *partner, ::sync_handshake_signal signal);
+        PEP_STATUS _notifyHandshake(
+            ::pEp_identity *me,
+            ::pEp_identity *partner,
+            ::sync_handshake_signal signal
+        );
 
         friend const char *PassphraseCache::add(const std::string& passphrase);
     };
 
     extern CallbackDispatcher callback_dispatcher;
-};
+}
 
+#endif // LIBPEPADAPTER_CALLBACK_DISPATCHER_HH

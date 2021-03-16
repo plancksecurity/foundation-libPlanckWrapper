@@ -1,4 +1,8 @@
-#pragma once
+// This file is under GNU General Public License 3.0
+// see LICENSE.txt
+
+#ifndef LIBPEPADAPTER_MESSAGE_CACHE_HH
+#define LIBPEPADAPTER_MESSAGE_CACHE_HH
 
 #include <string>
 #include <unordered_map>
@@ -128,3 +132,4 @@ namespace pEp {
     extern MessageCache message_cache;
 };
 
+#endif // LIBPEPADAPTER_MESSAGE_CACHE_HH

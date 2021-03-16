@@ -1,3 +1,6 @@
+// This file is under GNU General Public License 3.0
+// see LICENSE.txt
+
 #include "callback_dispatcher.hh"
 #include "passphrase_cache.hh"
 #include <stdexcept>
@@ -25,8 +28,9 @@ namespace pEp {
         )
     {
         assert(messageToSend);
-        if (!messageToSend)
+        if (!messageToSend) {
             throw std::invalid_argument("messageToSend must be set");
+        }
 
         targets.push_back({messageToSend, notifyHandshake, on_startup, shutdown});
     }
@@ -34,8 +38,9 @@ namespace pEp {
     void CallbackDispatcher::remove(::messageToSend_t messageToSend)
     {
         assert(messageToSend);
-        if (!messageToSend)
+        if (!messageToSend) {
             throw std::invalid_argument("messageToSend argument needed");
+        }
 
         for (auto target = targets.begin(); target != targets.end(); ++target) {
             if (target->messageToSend == messageToSend) {
@@ -43,28 +48,33 @@ namespace pEp {
                 break;
             }
         }
-        if (targets.empty())
+
+        if (targets.empty()) {
             stop_sync();
+        }
     }
 
     void CallbackDispatcher::on_startup()
     {
         for (auto target : targets) {
-            if (target.on_startup)
+            if (target.on_startup) {
                 target.on_startup();
+            }
         }
     }
 
     void CallbackDispatcher::on_shutdown()
     {
         for (auto target : targets) {
-            if (target.on_shutdown)
+            if (target.on_shutdown) {
                 target.on_shutdown();
+            }
         }
     }
 
     void CallbackDispatcher::start_sync()
     {
+        pEpLog("called");
         callback_dispatcher.semaphore.go();
 
         pEp::Adapter::startup<CallbackDispatcher>(CallbackDispatcher::messageToSend,
@@ -72,9 +82,11 @@ namespace pEp {
                 &CallbackDispatcher::on_startup,
                 &CallbackDispatcher::on_shutdown);
 
+        pEpLog("all targets signal: SYNC_NOTIFY_START");
         for (auto target : callback_dispatcher.targets) {
-            if (target.notifyHandshake)
+            if (target.notifyHandshake) {
                 target.notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_START);
+            }
         }
     }
 
@@ -85,8 +97,9 @@ namespace pEp {
         callback_dispatcher.semaphore.go();
 
         for (auto target : callback_dispatcher.targets) {
-            if (target.notifyHandshake)
+            if (target.notifyHandshake) {
                 target.notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_STOP);
+            }
         }
     }
 
@@ -95,14 +108,16 @@ namespace pEp {
         if (Adapter::on_sync_thread() && !msg) {
             semaphore.try_wait();
 
-            if (Adapter::in_shutdown())
+            if (Adapter::in_shutdown()) {
                 return PEP_SYNC_NO_CHANNEL;
+            }
 
             PEP_STATUS status = PassphraseCache::config_next_passphrase();
 
             // if the cache has no valid passphrase ask the app
-            if (status == PEP_PASSPHRASE_REQUIRED || status == PEP_WRONG_PASSPHRASE)
+            if (status == PEP_PASSPHRASE_REQUIRED || status == PEP_WRONG_PASSPHRASE) {
                 semaphore.stop();
+            }
 
             // the pEp engine must try again
             return status;
@@ -117,8 +132,9 @@ namespace pEp {
             ::message *_msg = nullptr;
             if (msg) {
                 _msg = ::message_dup(msg);
-                if (!_msg)
+                if (!_msg) {
                     return PEP_OUT_OF_MEMORY;
+                }
             }
             assert(target.messageToSend);
             target.messageToSend(_msg);
@@ -135,8 +151,9 @@ namespace pEp {
                 ::pEp_identity *_me = nullptr;
                 if (me) {
                     _me = ::identity_dup(me);
-                    if (!_me)
+                    if (!_me) {
                         return PEP_OUT_OF_MEMORY;
+                    }
                 }
                 ::pEp_identity *_partner = nullptr;
                 if (partner) {

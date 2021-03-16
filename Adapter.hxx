@@ -1,12 +1,14 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
-#pragma once
+#ifndef LIBPEPADAPTER_ADAPTER_HXX
+#define LIBPEPADAPTER_ADAPTER_HXX
 
 #include <thread>
 #include "locked_queue.hh"
 #include <cassert>
 #include "pEpLog.hh"
+#include <atomic>
 
 namespace pEp {
     namespace Adapter {
@@ -16,35 +18,41 @@ namespace pEp {
         extern notifyHandshake_t _notifyHandshake;
         extern std::thread _sync_thread;
 
-        extern ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > q;
+        extern ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > sync_evt_q;
         extern std::mutex m;
 
         SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold);
 
         static std::exception_ptr _ex;
-        static bool register_done = false;
+        static std::atomic_bool register_done{false};
 
         template< class T >
         void sync_thread(T *obj, function< void(T *) > _startup, function< void(T *) > _shutdown)
         {
+            pEpLog("called");
             _ex = nullptr;
             assert(_messageToSend);
             assert(_notifyHandshake);
-            if (obj && _startup)
+            if (obj && _startup) {
                 _startup(obj);
+            }
 
+            pEpLog("creating session");
             session();
 
             {
+                //TODO: Do we need to use a passphraseWrap here???
+                pEpLog("register_sync_callbacks()");
                 PEP_STATUS status = register_sync_callbacks(session(), nullptr,
                     _notifyHandshake, _retrieve_next_sync_event);
+                pEpLog("register_sync_callbacks() return:" << status);
                 try {
                     throw_status(status);
-                    register_done = true;
+                    register_done.store(true);
                 }
                 catch (...) {
                     _ex = std::current_exception();
-                    register_done = true;
+                    register_done.store(true);
                     return;
                 }
             }
@@ -56,8 +64,9 @@ namespace pEp {
 
             session(release);
 
-            if (obj && _shutdown)
+            if (obj && _shutdown) {
                 _shutdown(obj);
+            }
         }
 
         template< class T >
@@ -68,23 +77,34 @@ namespace pEp {
             function< void(T *) > _startup,
             function< void(T *) > _shutdown)
         {
-            if (messageToSend)
+            pEpLog("called");
+            if (messageToSend) {
                 _messageToSend = messageToSend;
+            }
 
-            if (notifyHandshake)
+            if (notifyHandshake) {
                 _notifyHandshake = notifyHandshake;
-
+            }
+            pEpLog("creating session");
             session();
 
             if (!_sync_thread.joinable()) {
-                register_done = false;
-                _sync_thread = std::thread(sync_thread<T>, obj, _startup, _shutdown);
-                while (!register_done)
-                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                register_done.store(false);
+                pEpLog("creating sync-thread");
 
-                if (_ex)
+                _sync_thread = std::thread(sync_thread<T>, obj, _startup, _shutdown);
+                while (register_done.load() == false) {
+                    pEpLog("waiting for sync-thread to init...");
+                    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                }
+
+                if (_ex) {
+                    pEpLog("exception pending, rethrowing");
                     std::rethrow_exception(_ex);
+                }
             }
         }
     }
 }
+
+#endif //LIBPEPADAPTER_ADAPTER_HXX

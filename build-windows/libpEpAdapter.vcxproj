@@ -64,11 +64,6 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
-    <PostBuildEvent>
-      <Command>XCOPY "$(SolutionDir)libpEpAdapter\*.hh" "$(SolutionDir)pEp\" /I/F/Y
-XCOPY "$(SolutionDir)libpEpAdapter\*.hxx" "$(SolutionDir)pEp\" /I/F/Y
-</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -86,11 +81,6 @@ XCOPY "$(SolutionDir)libpEpAdapter\*.hxx" "$(SolutionDir)pEp\" /I/F/Y
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
-    <PostBuildEvent>
-      <Command>XCOPY "$(SolutionDir)libpEpAdapter\*.hh" "$(SolutionDir)pEp\" /I/F/Y
-XCOPY "$(SolutionDir)libpEpAdapter\*.hxx" "$(SolutionDir)pEp\" /I/F/Y
-</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -102,6 +92,7 @@ XCOPY "$(SolutionDir)libpEpAdapter\*.hxx" "$(SolutionDir)pEp\" /I/F/Y
     <ClCompile Include="..\constant_time_algo.cc" />
     <ClCompile Include="..\message_cache.cc" />
     <ClCompile Include="..\passphrase_cache.cc" />
+    <ClCompile Include="..\pEpLog.cc" />
     <ClCompile Include="..\slurp.cc" />
     <ClCompile Include="..\status_to_string.cc" />
   </ItemGroup>
@@ -115,9 +106,15 @@ XCOPY "$(SolutionDir)libpEpAdapter\*.hxx" "$(SolutionDir)pEp\" /I/F/Y
     <ClInclude Include="..\passphrase_cache.hh" />
     <ClInclude Include="..\passphrase_cache.hxx" />
     <ClInclude Include="..\pc_container.hh" />
+    <ClInclude Include="..\pEpLog.hh" />
     <ClInclude Include="..\Semaphore.hh" />
     <ClInclude Include="..\slurp.hh" />
     <ClInclude Include="..\status_to_string.hh" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\pEpEngine\build-windows\pEpEngine.vcxproj">
+      <Project>{146e69f8-e1da-456a-b048-6dd29d9acf6b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

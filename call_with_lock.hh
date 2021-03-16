@@ -1,7 +1,8 @@
-// this file is under GNU GPL 3.0, see LICENSE.txt
+// This file is under GNU General Public License 3.0
+// see LICENSE.txt
 
-#ifndef PEP_CALL_WITH_LOCK_HH
-#define PEP_CALL_WITH_LOCK_HH
+#ifndef LIBPEPADAPTER_CALL_WITH_LOCK_HH
+#define LIBPEPADAPTER_CALL_WITH_LOCK_HH
 
 #include <mutex>
 
@@ -22,4 +23,4 @@ namespace pEp
 
 }
 
-#endif // PEP_CALL_WITH_LOCK_HH
+#endif // LIBPEPADAPTER_CALL_WITH_LOCK_HH
