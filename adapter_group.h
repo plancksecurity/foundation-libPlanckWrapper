@@ -49,7 +49,7 @@ DYNAMIC_API PEP_STATUS query_groups(
 
 DYNAMIC_API PEP_STATUS query_group_manager(
         PEP_SESSION session,
-        pEp_identity *group,
+        const pEp_identity * const group,
         pEp_identity **manager
     );
 
@@ -71,7 +71,7 @@ DYNAMIC_API PEP_STATUS query_group_manager(
 
 DYNAMIC_API PEP_STATUS query_group_members(
         PEP_SESSION session,
-        pEp_identity *group,
+        const pEp_identity * const group,
         identity_list **members
     );
 
