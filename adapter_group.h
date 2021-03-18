@@ -44,16 +44,16 @@ extern "C" {
  *
  *  @ownership      FIXME
  *
- *
+ *  TODO: member_list *memberlist -> change to identity_list
  *
  */
 DYNAMIC_API PEP_STATUS adapter_group_create(
         PEP_SESSION session,
         pEp_identity *group_identity,
         pEp_identity *manager,
-        identity_list *memberlist,
+        member_list *memberlist,
         pEp_group **group
-    );
+);
 
 /**
  *  <!--       adapter_group_join()       -->
@@ -80,7 +80,7 @@ DYNAMIC_API PEP_STATUS adapter_group_join(
         PEP_SESSION session,
         pEp_identity *group_identity,
         pEp_identity *as_member
-    );
+);
 
 /**
  *  <!--       adapter_group_dissolve()       -->
@@ -107,7 +107,7 @@ DYNAMIC_API PEP_STATUS adapter_group_dissolve(
         PEP_SESSION session,
         pEp_identity *group_identity,
         pEp_identity *manager
-    );
+);
 
 /**
  *  <!--       adapter_group_invite_member()       -->
@@ -135,7 +135,7 @@ DYNAMIC_API PEP_STATUS adapter_group_invite_member(
         PEP_SESSION session,
         pEp_identity *group_identity,
         pEp_identity *group_member
-    );
+);
 
 /**
  *  <!--       adapter_group_remove_member()       -->
@@ -161,7 +161,7 @@ PEP_STATUS adapter_group_remove_member(
         PEP_SESSION session,
         pEp_identity *group_identity,
         pEp_identity *group_member
-    );
+);
 
 /**
  *  <!--       adapter_group_rating()       -->
@@ -187,7 +187,7 @@ DYNAMIC_API PEP_STATUS adapter_group_rating(
         pEp_identity *group_identity,
         pEp_identity *manager,
         PEP_rating *rating
-    );
+);
 
 
 
@@ -214,7 +214,7 @@ DYNAMIC_API PEP_STATUS adapter_group_rating(
 DYNAMIC_API PEP_STATUS group_query_groups(
         PEP_SESSION session,
         identity_list **groups
-    );
+);
 
 /**
  *  <!--       group_query_manager()       -->
@@ -234,9 +234,9 @@ DYNAMIC_API PEP_STATUS group_query_groups(
 
 DYNAMIC_API PEP_STATUS group_query_manager(
         PEP_SESSION session,
-        const pEp_identity * const group,
+        const pEp_identity *const group,
         pEp_identity **manager
-    );
+);
 
 /**
  *  <!--       group_query_members()       -->
@@ -256,9 +256,9 @@ DYNAMIC_API PEP_STATUS group_query_manager(
 
 DYNAMIC_API PEP_STATUS group_query_members(
         PEP_SESSION session,
-        const pEp_identity * const group,
+        const pEp_identity *const group,
         identity_list **members
-    );
+);
 
 
 #ifdef __cplusplus
