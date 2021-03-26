@@ -74,8 +74,8 @@ namespace pEp {
 
         template<class T>
         void startup(
-            messageToSend_t messageToSend,
-            notifyHandshake_t notifyHandshake,
+            ::messageToSend_t messageToSend,
+            ::notifyHandshake_t notifyHandshake,
             T *obj,
             function<void(T *)> _startup,
             function<void(T *)> _shutdown)
