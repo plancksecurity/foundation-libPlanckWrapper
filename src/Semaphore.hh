@@ -19,7 +19,7 @@ namespace pEp {
         std::atomic_bool _stop;
 
     public:
-        Semaphore() : _stop(false) { }
+        Semaphore() : _stop(false) {}
 
         void stop()
         {
@@ -34,7 +34,7 @@ namespace pEp {
                 return;
             }
 
-            while(_stop.load()) {
+            while (_stop.load()) {
                 cv.wait(lock);
             }
         }
@@ -46,8 +46,6 @@ namespace pEp {
             cv.notify_all();
         }
     };
-}
+} // namespace pEp
 
 #endif // LIBPEPADAPTER_SEMAPHORE_HH
-
-
