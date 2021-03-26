@@ -26,6 +26,16 @@ namespace pEp {
         static std::exception_ptr _ex;
         static std::atomic_bool register_done{false};
 
+        /*
+         * Sync Thread
+         * 1. Execute registered startup function
+         * 2. Create session for the sync thread (registers: messageToSend, _inject_sync_event, _ensure_passphrase)
+         * 3. register_sync_callbacks() (registers: _notifyHandshake, _retrieve_next_sync_event)
+         * 4. Enter Sync Event Dispatching Loop (do_sync_protocol())
+         * 5. unregister_sync_callbacks()
+         * 6. Release the session
+         * 7. Execute registered shutdown function
+         */
         template<class T>
         void sync_thread(T *obj, function<void(T *)> _startup, function<void(T *)> _shutdown)
         {
@@ -33,13 +43,17 @@ namespace pEp {
             _ex = nullptr;
             assert(_messageToSend);
             assert(_notifyHandshake);
+
+            // 1. Execute registered startup function
             if (obj && _startup) {
                 _startup(obj);
             }
 
-            pEpLog("creating session");
+            pEpLog("creating session for the sync thread");
+            // 2. Create session for the sync thread
             session();
 
+            // 3. register_sync_callbacks()
             {
                 // TODO: Do we need to use a passphraseWrap here???
                 pEpLog("register_sync_callbacks()");
@@ -50,6 +64,8 @@ namespace pEp {
                     _retrieve_next_sync_event);
 
                 pEpLog("register_sync_callbacks() return:" << status);
+                // Convert status into exception and store it
+                // set register_done AFTER that
                 try {
                     throw_status(status);
                     register_done.store(true);
@@ -61,17 +77,30 @@ namespace pEp {
             }
 
             pEpLog("sync protocol loop started");
+            // 4. Enter Sync Event Dispatching Loop (do_sync_protocol())
             ::do_sync_protocol(session(), (void *)obj);
             pEpLog("sync protocol loop ended");
+
+            // 5. unregister_sync_callbacks()
             unregister_sync_callbacks(session());
 
+            // 6. Release the session
+            // TODO: Maybe do that AFTER shutdown?
             session(release);
 
+            // 7. Execute registered shutdown function
             if (obj && _shutdown) {
                 _shutdown(obj);
             }
         }
 
+        /*
+         * Sync Thread Startup
+         * 1. ensure session for the main thread (registers: messageToSend, _inject_sync_event, _ensure_passphrase)
+         * 2. Start the sync thread
+         * 3. Defer execution until sync thread register_sync_callbacks() has returned
+         * 4. Throw pending exception from the sync thread
+         */
         template<class T>
         void startup(
             ::messageToSend_t messageToSend,
@@ -88,19 +117,22 @@ namespace pEp {
             if (notifyHandshake) {
                 _notifyHandshake = notifyHandshake;
             }
-            pEpLog("creating session");
+            pEpLog("ensure session for the main thread");
+            // 1. ensure session for the main thread (registers: messageToSend, _inject_sync_event, _ensure_passphrase)
             session();
 
             if (!_sync_thread.joinable()) {
                 register_done.store(false);
                 pEpLog("creating sync-thread");
-
+                // 2. Start the sync thread
                 _sync_thread = std::thread(sync_thread<T>, obj, _startup, _shutdown);
+                // 3. Defer execution until sync thread register_sync_callbacks() has returned
                 while (register_done.load() == false) {
                     pEpLog("waiting for sync-thread to init...");
                     std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 }
 
+                // 4. Throw pending exception from the sync thread
                 if (_ex) {
                     pEpLog("exception pending, rethrowing");
                     std::rethrow_exception(_ex);
@@ -110,4 +142,4 @@ namespace pEp {
     } // namespace Adapter
 } // namespace pEp
 
-#endif // LIBPEPADAPTER_ADAPTER_HXX
+#endif //LIBPEPADAPTER_ADAPTER_HXX
