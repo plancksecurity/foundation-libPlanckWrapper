@@ -14,20 +14,20 @@ namespace pEp {
     namespace Adapter {
         using std::function;
 
-        extern messageToSend_t _messageToSend;
-        extern notifyHandshake_t _notifyHandshake;
+        extern ::messageToSend_t _messageToSend;
+        extern ::notifyHandshake_t _notifyHandshake;
         extern std::thread _sync_thread;
 
-        extern ::utility::locked_queue< SYNC_EVENT, ::free_Sync_event > sync_evt_q;
+        extern ::utility::locked_queue<::SYNC_EVENT, ::free_Sync_event> sync_evt_q;
         extern std::mutex m;
 
-        SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold);
+        ::SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold);
 
         static std::exception_ptr _ex;
         static std::atomic_bool register_done{false};
 
-        template< class T >
-        void sync_thread(T *obj, function< void(T *) > _startup, function< void(T *) > _shutdown)
+        template<class T>
+        void sync_thread(T *obj, function<void(T *)> _startup, function<void(T *)> _shutdown)
         {
             pEpLog("called");
             _ex = nullptr;
@@ -41,16 +41,19 @@ namespace pEp {
             session();
 
             {
-                //TODO: Do we need to use a passphraseWrap here???
+                // TODO: Do we need to use a passphraseWrap here???
                 pEpLog("register_sync_callbacks()");
-                PEP_STATUS status = register_sync_callbacks(session(), nullptr,
-                    _notifyHandshake, _retrieve_next_sync_event);
+                ::PEP_STATUS status = ::register_sync_callbacks(
+                    session(),
+                    nullptr,
+                    _notifyHandshake,
+                    _retrieve_next_sync_event);
+
                 pEpLog("register_sync_callbacks() return:" << status);
                 try {
                     throw_status(status);
                     register_done.store(true);
-                }
-                catch (...) {
+                } catch (...) {
                     _ex = std::current_exception();
                     register_done.store(true);
                     return;
@@ -58,7 +61,7 @@ namespace pEp {
             }
 
             pEpLog("sync protocol loop started");
-            do_sync_protocol(session(), (void *)obj);
+            ::do_sync_protocol(session(), (void *)obj);
             pEpLog("sync protocol loop ended");
             unregister_sync_callbacks(session());
 
@@ -69,13 +72,13 @@ namespace pEp {
             }
         }
 
-        template< class T >
+        template<class T>
         void startup(
             messageToSend_t messageToSend,
             notifyHandshake_t notifyHandshake,
             T *obj,
-            function< void(T *) > _startup,
-            function< void(T *) > _shutdown)
+            function<void(T *)> _startup,
+            function<void(T *)> _shutdown)
         {
             pEpLog("called");
             if (messageToSend) {
@@ -104,7 +107,7 @@ namespace pEp {
                 }
             }
         }
-    }
-}
+    } // namespace Adapter
+} // namespace pEp
 
-#endif //LIBPEPADAPTER_ADAPTER_HXX
+#endif // LIBPEPADAPTER_ADAPTER_HXX

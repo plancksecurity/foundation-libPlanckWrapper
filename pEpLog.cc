@@ -9,32 +9,35 @@
 
 
 namespace pEp {
-namespace Adapter {
-namespace pEpLog {
+    namespace Adapter {
+        namespace pEpLog {
 
-std::mutex mtx;
+            std::mutex mtx;
 
-std::atomic_bool is_enabled{false};
+            std::atomic_bool is_enabled{false};
 
-void set_enabled(bool enabled) {
-    is_enabled.store(enabled);
-}
+            void set_enabled(bool enabled)
+            {
+                is_enabled.store(enabled);
+            }
 
-bool get_enabled() {
-    return is_enabled.load();
-}
+            bool get_enabled()
+            {
+                return is_enabled.load();
+            }
 
-void log(std::string msg) {
-    if (is_enabled.load()) {
-        std::lock_guard<std::mutex> l(mtx);
-    #ifdef ANDROID
-        __android_log_print(ANDROID_LOG_DEBUG, "pEpDebugLog", "%s", msg.c_str());
-    #else
-        std::cout << msg << std::endl; //std::endl also flushes
-    #endif
-    }
-}
+            void log(std::string msg)
+            {
+                if (is_enabled.load()) {
+                    std::lock_guard<std::mutex> l(mtx);
+#ifdef ANDROID
+                    __android_log_print(ANDROID_LOG_DEBUG, "pEpDebugLog", "%s", msg.c_str());
+#else
+                    std::cout << msg << std::endl; //std::endl also flushes
+#endif
+                }
+            }
 
-} // pEpLog
-} // Adapter
-} // pEp
+        } // namespace pEpLog
+    }     // namespace Adapter
+} // namespace pEp

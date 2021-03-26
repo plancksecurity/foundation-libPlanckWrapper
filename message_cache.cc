@@ -20,67 +20,58 @@ namespace pEp {
     }
 
     PEP_STATUS MessageCache::cache_decrypt_message(
-            PEP_SESSION session,
-            message *src,
-            message **dst,
-            stringlist_t **keylist,
-            PEP_rating *rating,
-            PEP_decrypt_flags_t *flags
-        )
+        PEP_SESSION session,
+        message *src,
+        message **dst,
+        stringlist_t **keylist,
+        PEP_rating *rating,
+        PEP_decrypt_flags_t *flags)
     {
-        return message_cache.decrypt_message(session, src, dst, keylist,
-                rating, flags);
+        return message_cache.decrypt_message(session, src, dst, keylist, rating, flags);
     }
 
     PEP_STATUS MessageCache::cache_mime_encode_message(
-            int one,
-            const message * msg,
-            bool omit_fields,
-            char **mimetext,
-            bool has_pEp_msg_attachment     
-        )
+        int one,
+        const message *msg,
+        bool omit_fields,
+        char **mimetext,
+        bool has_pEp_msg_attachment)
     {
-        which _one = (which) one;
-        return message_cache.mime_encode_message(_one, msg, omit_fields,
-                mimetext, has_pEp_msg_attachment);
+        which _one = (which)one;
+        return message_cache.mime_encode_message(_one, msg, omit_fields, mimetext, has_pEp_msg_attachment);
     }
 
     PEP_STATUS MessageCache::cache_mime_decode_message(
-            const char *mimetext,
-            size_t size,
-            message **msg,
-            bool* has_possible_pEp_msg
-        )
+        const char *mimetext,
+        size_t size,
+        message **msg,
+        bool *has_possible_pEp_msg)
     {
-        return message_cache.mime_decode_message(mimetext, size, msg,
-                has_possible_pEp_msg);
+        return message_cache.mime_decode_message(mimetext, size, msg, has_possible_pEp_msg);
     }
 
     PEP_STATUS MessageCache::cache_encrypt_message(
-            PEP_SESSION session,
-            message *src,
-            stringlist_t *extra,
-            message **dst,
-            PEP_enc_format enc_format,
-            PEP_encrypt_flags_t flags
-        )
+        PEP_SESSION session,
+        message *src,
+        stringlist_t *extra,
+        message **dst,
+        PEP_enc_format enc_format,
+        PEP_encrypt_flags_t flags)
     {
-        return message_cache.encrypt_message(session, src, extra, dst,
-                enc_format, flags);
+        return message_cache.encrypt_message(session, src, extra, dst, enc_format, flags);
     }
 
     PEP_STATUS MessageCache::cache_encrypt_message_for_self(
-            PEP_SESSION session,
-            pEp_identity* target_id,
-            message *src,
-            stringlist_t* extra,
-            message **dst,
-            PEP_enc_format enc_format,
-            PEP_encrypt_flags_t flags
-        )
+        PEP_SESSION session,
+        pEp_identity *target_id,
+        message *src,
+        stringlist_t *extra,
+        message **dst,
+        PEP_enc_format enc_format,
+        PEP_encrypt_flags_t flags)
     {
-        return message_cache.encrypt_message_for_self(session, target_id, src,
-                extra, dst, enc_format, flags);
+        return message_cache
+            .encrypt_message_for_self(session, target_id, src, extra, dst, enc_format, flags);
     }
 
     PEP_STATUS MessageCache::cache_release(std::string id)
@@ -96,8 +87,8 @@ namespace pEp {
             ::free_message(_cache.at(id).src);
             ::free_message(_cache.at(id).dst);
             _cache.erase(id);
+        } catch (...) {
         }
-        catch (...) { }
     }
 
     static char *dup(const char *src)
@@ -105,7 +96,7 @@ namespace pEp {
         if (!src)
             return nullptr;
 
-        char * dst = ::strdup(src);
+        char *dst = ::strdup(src);
         assert(dst);
         if (!dst)
             throw std::bad_alloc();
@@ -118,7 +109,7 @@ namespace pEp {
         if (!src)
             return nullptr;
 
-        ::timestamp * dst = ::timestamp_dup(src);
+        ::timestamp *dst = ::timestamp_dup(src);
         if (!dst)
             throw std::bad_alloc();
 
@@ -130,7 +121,7 @@ namespace pEp {
         if (!src)
             return nullptr;
 
-        ::pEp_identity * dst = ::identity_dup(src);
+        ::pEp_identity *dst = ::identity_dup(src);
         if (!dst)
             throw std::bad_alloc();
 
@@ -142,7 +133,7 @@ namespace pEp {
         if (!src)
             return nullptr;
 
-        ::identity_list * dst = ::identity_list_dup(src);
+        ::identity_list *dst = ::identity_list_dup(src);
         if (!dst)
             throw std::bad_alloc();
 
@@ -154,7 +145,7 @@ namespace pEp {
         if (!src)
             return nullptr;
 
-        ::stringlist_t * dst = ::stringlist_dup(src);
+        ::stringlist_t *dst = ::stringlist_dup(src);
         if (!dst)
             throw std::bad_alloc();
 
@@ -166,19 +157,19 @@ namespace pEp {
         if (!src)
             return nullptr;
 
-        ::stringpair_list_t * dst = ::stringpair_list_dup(src);
+        ::stringpair_list_t *dst = ::stringpair_list_dup(src);
         if (!dst)
             throw std::bad_alloc();
 
         return dst;
     }
 
-    static ::message_ref_list *dup(const ::message_ref_list *src) {
+    static ::message_ref_list *dup(const ::message_ref_list *src)
+    {
         if (!src)
             return nullptr;
 
-        ::message_ref_list *dst = (::message_ref_list *) ::calloc(1,
-                sizeof(::message_ref_list));
+        ::message_ref_list *dst = (::message_ref_list *)::calloc(1, sizeof(::message_ref_list));
         assert(dst);
         if (!dst)
             throw std::bad_alloc();
@@ -187,8 +178,7 @@ namespace pEp {
         for (const message_ref_list *s = src; s; s = s->next) {
             d->msg_ref = s->msg_ref;
             if (s->next) {
-                d->next = (::message_ref_list *) ::calloc(1,
-                        sizeof(::message_ref_list));
+                d->next = (::message_ref_list *)::calloc(1, sizeof(::message_ref_list));
                 assert(d);
                 if (!d)
                     throw std::bad_alloc();
@@ -223,7 +213,7 @@ namespace pEp {
             dst->longmsg = dup("pEp");
         else if (!emptystr(src->longmsg_formatted))
             dst->longmsg_formatted = dup("<pEp/>");
-        
+
         // attachments are never copied
 
         dst->rawmsg_ref = src->rawmsg_ref;
@@ -251,9 +241,9 @@ namespace pEp {
 
         if (_id == "") {
             dst->opt_fields = dup(src->opt_fields);
-        }
-        else {
-            dst->opt_fields = ::new_stringpair_list(::new_stringpair("X-pEp-Adapter-Cache-ID", _id.c_str()));
+        } else {
+            dst->opt_fields = ::new_stringpair_list(
+                ::new_stringpair("X-pEp-Adapter-Cache-ID", _id.c_str()));
             if (!dst->opt_fields)
                 throw std::bad_alloc();
             dst->opt_fields->next = dup(src->opt_fields);
@@ -262,20 +252,19 @@ namespace pEp {
         return dst;
     }
 
-    static void correctAttachmentsOrder(bloblist_t*& bl)
+    static void correctAttachmentsOrder(bloblist_t *&bl)
     {
         // only execute if there are exactly two attachments, both with
         // a non-empty MIME type
 
         if (bl && bl->next && !bl->next->next && !emptystr(bl->mime_type) &&
-                !emptystr(bl->next->mime_type)) {
+            !emptystr(bl->next->mime_type)) {
 
             // if this is most likely an PGP/MIME compliant format then correct
             // order of attachments
 
             if (std::string(bl->mime_type) == "application/octet-stream" &&
-                    std::string(bl->next->mime_type) ==
-                    "application/pgp-encrypted") {
+                std::string(bl->next->mime_type) == "application/pgp-encrypted") {
                 bloblist_t *one = bl->next;
                 bloblist_t *two = bl;
                 bl = one;
@@ -285,7 +274,7 @@ namespace pEp {
         }
     }
 
-    static void swapContent(::message*& part, ::message*& full)
+    static void swapContent(::message *&part, ::message *&full)
     {
         free(part->longmsg);
         part->longmsg = full->longmsg;
@@ -301,13 +290,12 @@ namespace pEp {
     }
 
     PEP_STATUS MessageCache::decrypt_message(
-            PEP_SESSION session,
-            message *src,
-            message **dst,
-            stringlist_t **keylist,
-            PEP_rating *rating,
-            PEP_decrypt_flags_t *flags
-        )
+        PEP_SESSION session,
+        message *src,
+        message **dst,
+        stringlist_t **keylist,
+        PEP_rating *rating,
+        PEP_decrypt_flags_t *flags)
     {
         if (!src || cacheID(src) == "")
             return PEP_ILLEGAL_VALUE;
@@ -324,8 +312,7 @@ namespace pEp {
         correctAttachmentsOrder(src->attachments);
 
         ::message *_dst = nullptr;
-        PEP_STATUS status = ::decrypt_message(session, src, &_dst, keylist,
-                rating, flags);
+        PEP_STATUS status = ::decrypt_message(session, src, &_dst, keylist, rating, flags);
         *dst = empty_message_copy(_dst, _id);
 
         {
@@ -338,12 +325,11 @@ namespace pEp {
     }
 
     PEP_STATUS MessageCache::mime_encode_message(
-            which one,
-            const message * msg,
-            bool omit_fields,
-            char **mimetext,
-            bool has_pEp_msg_attachment     
-        )
+        which one,
+        const message *msg,
+        bool omit_fields,
+        char **mimetext,
+        bool has_pEp_msg_attachment)
     {
         if (!msg || cacheID(msg) == "")
             return PEP_ILLEGAL_VALUE;
@@ -357,16 +343,14 @@ namespace pEp {
             std::lock_guard<std::mutex> l(_mtx);
             ::message *_src = _cache.at(cacheID(msg)).src;
             swapContent(_msg, _src);
-        }
-        else /* msg_dst */ {
+        } else /* msg_dst */ {
             std::lock_guard<std::mutex> l(_mtx);
             ::message *_dst = _cache.at(cacheID(msg)).dst;
             swapContent(_msg, _dst);
         }
 
         removeCacheID(_msg);
-        PEP_STATUS status = ::mime_encode_message(_msg, omit_fields, mimetext,
-                has_pEp_msg_attachment);
+        PEP_STATUS status = ::mime_encode_message(_msg, omit_fields, mimetext, has_pEp_msg_attachment);
         ::free_message(_msg);
 
         cache_release(cacheID(msg));
@@ -374,7 +358,7 @@ namespace pEp {
         return status;
     }
 
-    void MessageCache::generateCacheID(::message* msg)
+    void MessageCache::generateCacheID(::message *msg)
     {
         std::string _range = std::to_string(id_range);
         std::string _id = std::to_string(next_id++);
@@ -383,18 +367,15 @@ namespace pEp {
         // if opt_fields is an empty list generate a new list
         if (!msg->opt_fields || !msg->opt_fields->value) {
             free_stringpair_list(msg->opt_fields);
-            msg->opt_fields =
-                ::new_stringpair_list(::new_stringpair("X-pEp-Adapter-Cache-ID",
-                            cid.c_str()));
+            msg->opt_fields = ::new_stringpair_list(
+                ::new_stringpair("X-pEp-Adapter-Cache-ID", cid.c_str()));
             if (!msg->opt_fields)
                 throw std::bad_alloc();
-        }
-        else {
+        } else {
             // add the cache ID as first field to an existing list
             auto spl = msg->opt_fields;
-            msg->opt_fields =
-                ::new_stringpair_list(::new_stringpair("X-pEp-Adapter-Cache-ID",
-                            cid.c_str()));
+            msg->opt_fields = ::new_stringpair_list(
+                ::new_stringpair("X-pEp-Adapter-Cache-ID", cid.c_str()));
             if (!msg->opt_fields) {
                 msg->opt_fields = spl;
                 throw std::bad_alloc();
@@ -403,12 +384,11 @@ namespace pEp {
         }
     }
 
-    std::string MessageCache::cacheID(const ::message* msg)
+    std::string MessageCache::cacheID(const ::message *msg)
     {
         for (auto spl = msg->opt_fields; spl && spl->value; spl = spl->next) {
             assert(spl->value->key);
-            if (spl->value->key && std::string(spl->value->key) ==
-                    "X-pEp-Adapter-Cache-ID") {
+            if (spl->value->key && std::string(spl->value->key) == "X-pEp-Adapter-Cache-ID") {
                 assert(spl->value->value);
                 if (spl->value->value)
                     return spl->value->value;
@@ -418,27 +398,22 @@ namespace pEp {
         }
         return "";
     }
- 
-    void MessageCache::removeCacheID(::message* msg)
+
+    void MessageCache::removeCacheID(::message *msg)
     {
         // if the first element in the list is the cache ID then skip
-        if (msg->opt_fields && msg->opt_fields->value &&
-                msg->opt_fields->value->key &&
-                std::string(msg->opt_fields->value->key) ==
-                "X-pEp-Adapter-Cache-ID") {
+        if (msg->opt_fields && msg->opt_fields->value && msg->opt_fields->value->key &&
+            std::string(msg->opt_fields->value->key) == "X-pEp-Adapter-Cache-ID") {
             auto n = msg->opt_fields->next;
             msg->opt_fields->next = nullptr;
             ::free_stringpair_list(msg->opt_fields);
             msg->opt_fields = n;
-        }
-        else {
+        } else {
             // go through the list and remove
             ::stringpair_list_t *prev = nullptr;
-            for (auto spl = msg->opt_fields; spl && spl->value; spl =
-                    spl->next) {
+            for (auto spl = msg->opt_fields; spl && spl->value; spl = spl->next) {
                 assert(spl->value->key);
-                if (spl->value->key &&
-                        std::string(spl->value->key) == "X-pEp-Adapter-Cache-ID") {
+                if (spl->value->key && std::string(spl->value->key) == "X-pEp-Adapter-Cache-ID") {
                     auto next = spl->next;
                     spl->next = nullptr;
                     ::free_stringpair_list(spl);
@@ -451,37 +426,34 @@ namespace pEp {
     }
 
     PEP_STATUS MessageCache::mime_decode_message(
-            const char *mimetext,
-            size_t size,
-            message **msg,
-            bool* has_possible_pEp_msg
-        )
+        const char *mimetext,
+        size_t size,
+        message **msg,
+        bool *has_possible_pEp_msg)
     {
         ::message *_msg = nullptr;
-        PEP_STATUS status = ::mime_decode_message(mimetext, size, &_msg,
-                has_possible_pEp_msg);
+        PEP_STATUS status = ::mime_decode_message(mimetext, size, &_msg, has_possible_pEp_msg);
         if (status)
             return status;
 
-        generateCacheID(_msg); *msg = empty_message_copy(_msg);
+        generateCacheID(_msg);
+        *msg = empty_message_copy(_msg);
 
         {
             std::lock_guard<std::mutex> l(_mtx);
-            message_cache._cache.emplace(std::make_pair(cacheID(_msg),
-                        cache_entry(_msg, nullptr)));
+            message_cache._cache.emplace(std::make_pair(cacheID(_msg), cache_entry(_msg, nullptr)));
         }
 
         return status;
     }
 
     PEP_STATUS MessageCache::encrypt_message(
-            PEP_SESSION session,
-            message *src,
-            stringlist_t *extra,
-            message **dst,
-            PEP_enc_format enc_format,
-            PEP_encrypt_flags_t flags
-        )
+        PEP_SESSION session,
+        message *src,
+        stringlist_t *extra,
+        message **dst,
+        PEP_enc_format enc_format,
+        PEP_encrypt_flags_t flags)
     {
         ::message *_msg;
         std::string _id = cacheID(src);
@@ -492,8 +464,7 @@ namespace pEp {
         }
 
         ::message *_dst = nullptr;
-        PEP_STATUS status = ::encrypt_message(session, src, extra, &_dst,
-                enc_format, flags);
+        PEP_STATUS status = ::encrypt_message(session, src, extra, &_dst, enc_format, flags);
         *dst = empty_message_copy(_dst, _id);
 
         {
@@ -507,14 +478,13 @@ namespace pEp {
     }
 
     PEP_STATUS MessageCache::encrypt_message_for_self(
-            PEP_SESSION session,
-            pEp_identity* target_id,
-            message *src,
-            stringlist_t* extra,
-            message **dst,
-            PEP_enc_format enc_format,
-            PEP_encrypt_flags_t flags
-        )
+        PEP_SESSION session,
+        pEp_identity *target_id,
+        message *src,
+        stringlist_t *extra,
+        message **dst,
+        PEP_enc_format enc_format,
+        PEP_encrypt_flags_t flags)
     {
         ::message *_msg;
         std::string _id = cacheID(src);
@@ -525,8 +495,14 @@ namespace pEp {
         }
 
         ::message *_dst = nullptr;
-        PEP_STATUS status = ::encrypt_message_for_self(session, target_id, src,
-                extra, &_dst, enc_format, flags);
+        PEP_STATUS status = ::encrypt_message_for_self(
+            session,
+            target_id,
+            src,
+            extra,
+            &_dst,
+            enc_format,
+            flags);
         *dst = empty_message_copy(_dst, _id);
 
         {
@@ -538,5 +514,4 @@ namespace pEp {
 
         return status;
     }
-};
-
+}; // namespace pEp
