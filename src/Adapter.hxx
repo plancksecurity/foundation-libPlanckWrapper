@@ -96,7 +96,7 @@ namespace pEp {
 
         /*
          * Sync Thread Startup
-         * 1. ensure session for the main thread (registers: messageToSend, _inject_sync_event, _ensure_passphrase)
+         * 1. re-initialize session for the main thread (registers: messageToSend, _inject_sync_event, _ensure_passphrase)
          * 2. Start the sync thread
          * 3. Defer execution until sync thread register_sync_callbacks() has returned
          * 4. Throw pending exception from the sync thread
@@ -118,8 +118,9 @@ namespace pEp {
                 _notifyHandshake = notifyHandshake;
             }
             pEpLog("ensure session for the main thread");
-            // 1. ensure session for the main thread (registers: messageToSend, _inject_sync_event, _ensure_passphrase)
-            session();
+            // 1. re-initialize session for the main thread (registers: messageToSend, _inject_sync_event, _ensure_passphrase)
+            session(release);
+            session(init);
 
             if (!_sync_thread.joinable()) {
                 register_done.store(false);
