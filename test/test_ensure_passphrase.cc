@@ -20,7 +20,7 @@ using namespace pEp;
 using namespace pEp::Adapter;
 using namespace std;
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     Test::setup(argc, argv);
 
@@ -28,7 +28,8 @@ int main(int argc, char **argv)
     passphrase_cache.add("cathy");
     passphrase_cache.add("bob");
 
-    const char* bob_filename = ENGINE_TEST "/test_keys/bob-primary-with-password-bob-subkey-without.pgp";
+    const char* bob_filename = ENGINE_TEST
+        "/test_keys/bob-primary-with-password-bob-subkey-without.pgp";
     const char* bob_fpr = "5C76378A62B04CF3F41BEC8D4940FC9FA1878736";
 
     const char* erwin_filename = ENGINE_TEST "/test_keys/erwin_normal_encrypted.pgp";
@@ -55,4 +56,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-

@@ -12,23 +12,19 @@ using namespace pEp;
 using namespace pEp::Adapter;
 using namespace std;
 
-vector<string> expected_msg = {
-        "synchronizeGroupKeys",
-        "groupKeysUpdate",
-        "initUnledGroupKeyReset",
-        "beacon",
-        "beacon"
-    };
+vector<string> expected_msg = { "synchronizeGroupKeys",
+                                "groupKeysUpdate",
+                                "initUnledGroupKeyReset",
+                                "beacon",
+                                "beacon" };
 
-vector<::sync_handshake_signal> expected_notification = {
-        SYNC_NOTIFY_IN_GROUP,
-        SYNC_NOTIFY_START,
-        SYNC_NOTIFY_SOLE,
-        SYNC_NOTIFY_START,
-        SYNC_NOTIFY_STOP
-    };
+vector<::sync_handshake_signal> expected_notification = { SYNC_NOTIFY_IN_GROUP,
+                                                          SYNC_NOTIFY_START,
+                                                          SYNC_NOTIFY_SOLE,
+                                                          SYNC_NOTIFY_START,
+                                                          SYNC_NOTIFY_STOP };
 
-PEP_STATUS test_messageToSend(::message *_msg)
+PEP_STATUS test_messageToSend(::message* _msg)
 {
     static auto actual = expected_msg.begin();
 
@@ -37,11 +33,11 @@ PEP_STATUS test_messageToSend(::message *_msg)
     cerr << "expecting: " << *actual << endl;
     cerr << text;
     assert(text.find(*actual++) != string::npos);
-    return PEP_STATUS_OK;   
+    return PEP_STATUS_OK;
 }
 
 
-PEP_STATUS test_notifyHandshake(pEp_identity *_me, pEp_identity *_partner, sync_handshake_signal signal)
+PEP_STATUS test_notifyHandshake(pEp_identity* _me, pEp_identity* _partner, sync_handshake_signal signal)
 {
     static auto actual = expected_notification.begin();
 
@@ -50,10 +46,10 @@ PEP_STATUS test_notifyHandshake(pEp_identity *_me, pEp_identity *_partner, sync_
     cerr << "expecting: " << *actual << endl;
     cerr << "notifyHandshake: " << signal << endl;
     assert(signal == *actual++);
-    return PEP_STATUS_OK;   
+    return PEP_STATUS_OK;
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     Test::setup(argc, argv);
     session();
@@ -63,7 +59,8 @@ int main(int argc, char **argv)
     passphrase_cache.add("erwin");
     passphrase_cache.add("bob");
 
-    const char* bob_filename = ENGINE_TEST "/test_keys/bob-primary-with-password-bob-subkey-without.pgp";
+    const char* bob_filename = ENGINE_TEST
+        "/test_keys/bob-primary-with-password-bob-subkey-without.pgp";
     const char* bob_fpr = "5C76378A62B04CF3F41BEC8D4940FC9FA1878736";
 
     const char* erwin_filename = ENGINE_TEST "/test_keys/erwin_normal_encrypted.pgp";
@@ -72,14 +69,16 @@ int main(int argc, char **argv)
     Test::import_key_from_file(bob_filename);
     Test::import_key_from_file(erwin_filename);
 
-    Test::Identity bob = Test::make_identity(::new_identity("bob@example.org", bob_fpr, "BOB", "Bob Dog"));
+    Test::Identity bob = Test::make_identity(
+        ::new_identity("bob@example.org", bob_fpr, "BOB", "Bob Dog"));
     PEP_STATUS status = ::set_own_key(session(), bob.get(), bob_fpr);
     assert(status == PEP_STATUS_OK);
 
     status = ::enable_identity_for_sync(session(), bob.get());
     assert(status == PEP_STATUS_OK);
 
-    Test::Identity erwin = Test::make_identity(::new_identity("erwin@example.org", erwin_fpr, "BOB", "Bob is Erwin"));
+    Test::Identity erwin = Test::make_identity(
+        ::new_identity("erwin@example.org", erwin_fpr, "BOB", "Bob is Erwin"));
     status = ::set_own_key(session(), erwin.get(), erwin_fpr);
     assert(status == PEP_STATUS_OK);
 
@@ -118,4 +117,3 @@ int main(int argc, char **argv)
 
     return 0;
 }
-

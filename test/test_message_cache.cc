@@ -25,7 +25,11 @@ int main(int argc, char **argv)
 
     ::message *src = nullptr;
     bool has_possible_pEp_msg;
-    PEP_STATUS status = MessageCache::cache_mime_decode_message(mime, strlen(mime), &src, &has_possible_pEp_msg);
+    PEP_STATUS status = MessageCache::cache_mime_decode_message(
+        mime,
+        strlen(mime),
+        &src,
+        &has_possible_pEp_msg);
     assert(status == PEP_STATUS_OK);
 
     status = ::myself(pEp::Adapter::session(), src->from);
@@ -38,7 +42,13 @@ int main(int argc, char **argv)
 
     src->dir = PEP_dir_outgoing;
     ::message *dst = nullptr;
-    status = MessageCache::cache_encrypt_message(pEp::Adapter::session(), src, nullptr, &dst, PEP_enc_PEP, 0);
+    status = MessageCache::cache_encrypt_message(
+        pEp::Adapter::session(),
+        src,
+        nullptr,
+        &dst,
+        PEP_enc_PEP,
+        0);
     assert(status != PEP_ILLEGAL_VALUE);
 
     assert(src->longmsg == nullptr);
@@ -69,7 +79,13 @@ int main(int argc, char **argv)
     PEP_decrypt_flags_t flags = 0;
     stringlist_t *keylist = nullptr;
 
-    status = MessageCache::cache_decrypt_message(pEp::Adapter::session(), src, &dst, &keylist, &rating, &flags);
+    status = MessageCache::cache_decrypt_message(
+        pEp::Adapter::session(),
+        src,
+        &dst,
+        &keylist,
+        &rating,
+        &flags);
     assert(status != PEP_ILLEGAL_VALUE);
 
     assert(src->longmsg == nullptr);
@@ -95,4 +111,3 @@ int main(int argc, char **argv)
     pEp::Adapter::session(pEp::Adapter::release);
     return 0;
 }
-
