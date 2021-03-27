@@ -19,7 +19,7 @@ namespace pEp {
         extern std::thread _sync_thread;
 
         extern ::utility::locked_queue<::SYNC_EVENT, ::free_Sync_event> sync_evt_q;
-        extern std::mutex m;
+        extern std::mutex mut;
 
         ::SYNC_EVENT _retrieve_next_sync_event(void *management, unsigned threshold);
 
@@ -29,13 +29,14 @@ namespace pEp {
         /*
          * Sync Thread
          * 1. Execute registered startup function
-         * 2. Create session for the sync thread (registers: messageToSend, _inject_sync_event, _ensure_passphrase)
+         * 2. Create session for the sync thread (registers: messageToSend, inject_sync_event, ensure_passphrase)
          * 3. register_sync_callbacks() (registers: _notifyHandshake, _retrieve_next_sync_event)
          * 4. Enter Sync Event Dispatching Loop (do_sync_protocol())
          * 5. unregister_sync_callbacks()
          * 6. Release the session
          * 7. Execute registered shutdown function
          */
+        // private
         template<class T>
         void sync_thread(T *obj, function<void(T *)> _startup, function<void(T *)> _shutdown)
         {
@@ -96,11 +97,12 @@ namespace pEp {
 
         /*
          * Sync Thread Startup
-         * 1. re-initialize session for the main thread (registers: messageToSend, _inject_sync_event, _ensure_passphrase)
+         * 1. ensure session for the main thread (registers: messageToSend, _queue_sync_event, _ensure_passphrase)
          * 2. Start the sync thread
          * 3. Defer execution until sync thread register_sync_callbacks() has returned
          * 4. Throw pending exception from the sync thread
          */
+        // private
         template<class T>
         void startup(
             ::messageToSend_t messageToSend,
@@ -118,7 +120,7 @@ namespace pEp {
                 _notifyHandshake = notifyHandshake;
             }
             pEpLog("ensure session for the main thread");
-            // 1. re-initialize session for the main thread (registers: messageToSend, _inject_sync_event, _ensure_passphrase)
+            // 1. re-initialize session for the main thread (registers: messageToSend, _queue_sync_event, _ensure_passphrase)
             session(release);
             session(init);
 

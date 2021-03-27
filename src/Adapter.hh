@@ -26,7 +26,25 @@ namespace pEp {
     };
 
     namespace Adapter {
-        int _inject_sync_event(::SYNC_EVENT ev, void *management);
+        // public
+        enum class SyncModes
+        {
+            Off,
+            Sync,
+            Async
+        };
+
+        void sync_initialize(
+            SyncModes mode,
+            ::messageToSend_t messageToSend,
+            ::notifyHandshake_t notifyHandshake,
+            bool adapter_manages_sync_thread);
+
+        void set_sync_mode(SyncModes mode);
+
+        int _queue_sync_event(::SYNC_EVENT ev, void *management);
+        int _process_sync_event(::SYNC_EVENT ev, void *management);
+
         ::PEP_STATUS _ensure_passphrase(::PEP_SESSION session, const char *fpr);
 
         template<class T = void>
@@ -46,7 +64,7 @@ namespace pEp {
         enum session_action
         {
             init,
-            release
+            release,
         };
 
         class Session {
