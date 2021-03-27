@@ -7,7 +7,7 @@
 #include <vector>
 #include <memory>
 
-#include "Adapter.hh"
+#include <pEp/message.h>
 
 namespace pEp {
     namespace Test {

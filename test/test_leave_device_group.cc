@@ -3,14 +3,13 @@
 #include <unistd.h>
 
 #include "framework.hh"
-#include "passphrase_cache.hh"
-#include "callback_dispatcher.hh"
+#include <passphrase_cache.hh>
+#include <callback_dispatcher.hh>
 
 #include <pEp/sync_api.h>
 
-using namespace pEp;
-using namespace pEp::Adapter;
 using namespace std;
+using namespace pEp;
 
 vector<string> expected_msg = { "synchronizeGroupKeys",
                                 "groupKeysUpdate",
@@ -24,7 +23,7 @@ vector<::sync_handshake_signal> expected_notification = { SYNC_NOTIFY_IN_GROUP,
                                                           SYNC_NOTIFY_START,
                                                           SYNC_NOTIFY_STOP };
 
-PEP_STATUS test_messageToSend(::message* _msg)
+::PEP_STATUS test_messageToSend(::message* _msg)
 {
     static auto actual = expected_msg.begin();
 
@@ -37,7 +36,7 @@ PEP_STATUS test_messageToSend(::message* _msg)
 }
 
 
-PEP_STATUS test_notifyHandshake(pEp_identity* _me, pEp_identity* _partner, sync_handshake_signal signal)
+::PEP_STATUS test_notifyHandshake(::pEp_identity* _me, ::pEp_identity* _partner, sync_handshake_signal signal)
 {
     static auto actual = expected_notification.begin();
 
@@ -52,7 +51,7 @@ PEP_STATUS test_notifyHandshake(pEp_identity* _me, pEp_identity* _partner, sync_
 int main(int argc, char** argv)
 {
     Test::setup(argc, argv);
-    session();
+    Adapter::session();
 
     // set up two own identites for sync
 
@@ -71,24 +70,24 @@ int main(int argc, char** argv)
 
     Test::Identity bob = Test::make_identity(
         ::new_identity("bob@example.org", bob_fpr, "BOB", "Bob Dog"));
-    PEP_STATUS status = ::set_own_key(session(), bob.get(), bob_fpr);
+    PEP_STATUS status = ::set_own_key(Adapter::session(), bob.get(), bob_fpr);
     assert(status == PEP_STATUS_OK);
 
-    status = ::enable_identity_for_sync(session(), bob.get());
+    status = ::enable_identity_for_sync(Adapter::session(), bob.get());
     assert(status == PEP_STATUS_OK);
 
     Test::Identity erwin = Test::make_identity(
         ::new_identity("erwin@example.org", erwin_fpr, "BOB", "Bob is Erwin"));
-    status = ::set_own_key(session(), erwin.get(), erwin_fpr);
+    status = ::set_own_key(Adapter::session(), erwin.get(), erwin_fpr);
     assert(status == PEP_STATUS_OK);
 
-    status = ::enable_identity_for_sync(session(), erwin.get());
+    status = ::enable_identity_for_sync(Adapter::session(), erwin.get());
     assert(status == PEP_STATUS_OK);
 
     // simulate a device group by setting the identities to in sync
 
-    status = set_identity_flags(session(), bob.get(), PEP_idf_devicegroup);
-    status = set_identity_flags(session(), erwin.get(), PEP_idf_devicegroup);
+    status = ::set_identity_flags(Adapter::session(), bob.get(), PEP_idf_devicegroup);
+    status = ::set_identity_flags(Adapter::session(), erwin.get(), PEP_idf_devicegroup);
 
     // register at callback_dispatcher and start sync
 
@@ -97,23 +96,24 @@ int main(int argc, char** argv)
 
     // leave device group
 
-    status = ::leave_device_group(session());
+
+    status = ::leave_device_group(Adapter::session());
 
     // wait for sync shutdown and release first session
 
     Test::join_sync_thread();
-    assert(!is_sync_running());
+    assert(!Adapter::is_sync_running());
 
     // switch off and on again
 
     CallbackDispatcher::start_sync();
     sleep(2);
-    assert(is_sync_running());
+    assert(Adapter::is_sync_running());
     CallbackDispatcher::stop_sync();
     Test::join_sync_thread();
-    assert(!is_sync_running());
+    assert(!Adapter::is_sync_running());
 
-    session(Adapter::release);
+    Adapter::session(Adapter::release);
 
     return 0;
 }

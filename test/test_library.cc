@@ -4,9 +4,7 @@
 #include <iostream>
 #include <thread>
 
-
 using namespace pEp;
-
 
 // Producer's data:
 class P {

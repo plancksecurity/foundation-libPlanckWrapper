@@ -9,15 +9,15 @@
 
 #include "framework.hh"
 
-#include "passphrase_cache.hh"
-#include "status_to_string.hh"
+#include <passphrase_cache.hh>
+#include <status_to_string.hh>
+#include <Adapter.hh>
 
 #include <pEp/message_api.h>
 #include <pEp/keymanagement.h>
 #include <pEp/key_reset.h>
 
 using namespace pEp;
-using namespace pEp::Adapter;
 using namespace std;
 
 int main(int argc, char** argv)
@@ -38,15 +38,15 @@ int main(int argc, char** argv)
     Test::import_key_from_file(bob_filename);
     Test::import_key_from_file(erwin_filename);
 
-    pEp_identity* bob = ::new_identity("bob@example.org", bob_fpr, "BOB", "Bob Dog");
-    PEP_STATUS status = ::set_own_key(session(), bob, bob_fpr);
+    ::pEp_identity* bob = ::new_identity("bob@example.org", bob_fpr, "BOB", "Bob Dog");
+    ::PEP_STATUS status = ::set_own_key(Adapter::session(), bob, bob_fpr);
     assert(status == PEP_STATUS_OK);
 
-    pEp_identity* erwin = ::new_identity("erwin@example.org", erwin_fpr, "BOB", "Bob is Erwin");
-    status = ::set_own_key(session(), erwin, erwin_fpr);
+    ::pEp_identity* erwin = ::new_identity("erwin@example.org", erwin_fpr, "BOB", "Bob is Erwin");
+    status = ::set_own_key(Adapter::session(), erwin, erwin_fpr);
     assert(status == PEP_STATUS_OK);
 
-    status = ::key_reset_all_own_keys(session());
+    status = ::key_reset_all_own_keys(Adapter::session());
     assert(status == PEP_STATUS_OK);
 
     ::free_identity(bob);
