@@ -1,5 +1,7 @@
-#include "framework.hh"
+// This file is under GNU General Public License 3.0
+// see LICENSE.txt
 
+#include "framework.hh"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -83,7 +85,10 @@ namespace pEp {
             ifstream f(filename, ifstream::in);
             string key{ istreambuf_iterator<char>(f), istreambuf_iterator<char>() };
             ::identity_list *il = NULL;
+            cout << key.c_str() << endl;
+            cout << key.length() << endl;
             ::PEP_STATUS status = ::import_key(session(), key.c_str(), key.length(), &il);
+            throw_status(status);
             assert(status == PEP_KEY_IMPORTED);
             ::free_identity_list(il);
         }

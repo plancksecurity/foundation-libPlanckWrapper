@@ -1,5 +1,6 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
+
 #ifndef LIBPEPADAPTER_FRAMEWORK_HH
 #define LIBPEPADAPTER_FRAMEWORK_HH
 
