@@ -32,7 +32,9 @@
 // use set_enabled_<backend>(bool) to turn logging on/off per backend
 
 #ifdef NDEBUG
-    #define pEpLog(msg)  do{}while(0)
+    #define pEpLog(msg)                                                                            \
+        do {                                                                                       \
+        } while (0)
 #else
     #define pEpLog(msg) \
     do {                \
@@ -43,19 +45,18 @@
 #endif // NDEBUG
 
 namespace pEp {
-namespace Adapter {
-namespace pEpLog {
+    namespace Adapter {
+        namespace pEpLog {
 
-void log(std::string msg);
+            void log(std::string msg);
 
-void set_enabled(bool is_enabled);
+            void set_enabled(bool is_enabled);
 
-bool get_enabled();
+            bool get_enabled();
 
-} // pEpLog
-} // Adapter
-} // pEp
+        } // namespace pEpLog
+    }     // namespace Adapter
+} // namespace pEp
 
 
 #endif // LIBPEPADAPTER_PEPLOG_HH
-

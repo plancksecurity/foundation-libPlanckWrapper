@@ -3,45 +3,22 @@
 # This file may be used under the terms of the GNU General Public License version 3
 # see LICENSE.txt
 
-include Makefile.conf
+.PHONY: src test install uninstall clean
 
-TARGET=libpEpAdapter.a
+all: src
 
-.PHONY: install uninstall clean
+src:
+	$(MAKE) -C src
 
-SOURCE=$(wildcard *.cc)
-HEADERS=$(wildcard *.hh *.hxx)
-OBJECTS=$(subst .cc,.o,$(SOURCE))
-DEPENDS=$(subst .cc,.d,$(SOURCE))
-CXXFLAGS+= -MMD -MP
-
-all: $(TARGET)
-
-ifneq ($(MAKECMDGOALS),clean)
-    -include $(DEPENDS)
-endif
-
-lib: $(TARGET)
-
-all: lib
-
-test: lib
+test: src
 	$(MAKE) -C test
 
-$(TARGET): $(OBJECTS)
-	$(AR) -rc $@ $^
-
 clean:
-	rm -vf $(TARGET) $(OBJECTS) $(DEPENDS)
-	rm -f *.d.*
+	$(MAKE) -C src clean
 	$(MAKE) -C test clean
 
-install: $(TARGET)
-	mkdir -p $(PREFIX)/include/pEp
-	mkdir -p $(PREFIX)/lib
-	cp -v $(HEADERS) $(PREFIX)/include/pEp/
-	cp -v $(TARGET) $(PREFIX)/lib/
+install:
+	$(MAKE) -C src install
 
 uninstall:
-	cd $(PREFIX)/include/pEp && rm -vf $(HEADERS)
-	cd $(PREFIX)/lib && rm -vf $(TARGET)
+	$(MAKE) -C src uninstall

@@ -6,11 +6,15 @@
 #include <assert.h>
 #include <unistd.h>
 #include <sys/param.h>
+
+#include <pEpLog.hh>
+#include <Adapter.hh>
+#include <pEp/sync_api.h>
 #include <pEp/keymanagement.h>
-#include "pEpLog.hh"
+#include <pEp/message_api.h>
 
 using namespace std;
-using namespace pEp::Adapter;
+using namespace pEp;
 
 PEP_STATUS messageToSend(struct _message *msg)
 {
@@ -18,7 +22,7 @@ PEP_STATUS messageToSend(struct _message *msg)
     return PEP_STATUS_OK;
 }
 
-PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handshake_signal signal)
+PEP_STATUS notifyHandshake(::pEp_identity *me, ::pEp_identity *partner, ::sync_handshake_signal signal)
 {
     pEpLog("called()");
     return PEP_STATUS_OK;
@@ -26,14 +30,14 @@ PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, sync_handsha
 
 int main(int argc, char **argv)
 {
-    pEp::Test::setup(argc, argv);
+    Test::setup(argc, argv);
 
     // Create new identity
     pEpLog("updating or creating identity for me");
-    pEp_identity *me = new_identity("alice@peptest.ch", NULL, "23", "Who the F* is Alice");
+    ::pEp_identity *me = new_identity("alice@peptest.ch", NULL, "23", "Who the F* is Alice");
     assert(me);
-    PEP_STATUS status = myself(session(), me);
-    free_identity(me);
+    ::PEP_STATUS status = ::myself(Adapter::session(), me);
+    ::free_identity(me);
     pEp::throw_status(status);
 
     // start and stop sync repeatedly
@@ -44,10 +48,10 @@ int main(int argc, char **argv)
         pEpLog(i);
         pEpLog("SYNC START");
         pEpLog("starting the adapter including sync");
-        startup(messageToSend, notifyHandshake);
+        Adapter::startup(messageToSend, notifyHandshake);
         pEpLog("SYNC STOP");
         usleep(sleepuSec);
-        shutdown();
+        Adapter::shutdown();
     }
     return 0;
 }

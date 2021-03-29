@@ -8,17 +8,15 @@
 #include <condition_variable>
 #include <mutex>
 
-namespace utility
-{
-    template<class T, void(*Deleter)(T) = nullptr>
-    class locked_queue
-    {
-        typedef std::recursive_mutex     Mutex;
-        typedef std::unique_lock<Mutex>  Lock;
-        
-        int    _waiting = 0;
-        Mutex  _mtx;
-        std::condition_variable_any  _cv;
+namespace utility {
+    template<class T, void (*Deleter)(T) = nullptr>
+    class locked_queue {
+        typedef std::recursive_mutex Mutex;
+        typedef std::unique_lock<Mutex> Lock;
+
+        int _waiting = 0;
+        Mutex _mtx;
+        std::condition_variable_any _cv;
         std::deque<T> _q;
 
     public:
@@ -30,10 +28,8 @@ namespace utility
         void clear()
         {
             Lock L(_mtx);
-            if(Deleter != nullptr)
-            {
-                for(auto q : _q)
-                {
+            if (Deleter != nullptr) {
+                for (auto q : _q) {
                     Deleter(q);
                 }
             }
@@ -63,7 +59,7 @@ namespace utility
         T pop_back()
         {
             Lock L(_mtx);
-            _cv.wait(L, [&]{ return !_q.empty(); } );
+            _cv.wait(L, [&] { return !_q.empty(); });
             T r{std::move(_q.back())};
             _q.pop_back();
             return r;
@@ -74,7 +70,7 @@ namespace utility
         T pop_front()
         {
             Lock L(_mtx);
-            _cv.wait(L, [&]{ return !_q.empty(); } );
+            _cv.wait(L, [&] { return !_q.empty(); });
             T r{std::move(_q.front())};
             _q.pop_front();
             return r;
@@ -86,30 +82,28 @@ namespace utility
         {
             Lock L(_mtx);
             ++_waiting;
-            if(! _cv.wait_until(L, end_time, [this]{ return !_q.empty(); } ) )
-            {
+            if (!_cv.wait_until(L, end_time, [this] { return !_q.empty(); })) {
                 --_waiting;
                 return false;
             }
-            
+
             --_waiting;
             out = std::move(_q.back());
             _q.pop_back();
             return true;
         }
- 
+
         // returns true and set a copy of the first element and pop it from queue if there is any
         // returns false and leaves 'out' untouched if queue is empty even after 'end_time'
         bool try_pop_front(T& out, std::chrono::steady_clock::time_point end_time)
         {
             Lock L(_mtx);
             ++_waiting;
-            if(! _cv.wait_until(L, end_time, [this]{ return !_q.empty(); } ) )
-            {
+            if (!_cv.wait_until(L, end_time, [this] { return !_q.empty(); })) {
                 --_waiting;
                 return false;
             }
-            
+
             --_waiting;
             out = std::move(_q.front());
             _q.pop_front();
@@ -122,12 +116,11 @@ namespace utility
         {
             Lock L(_mtx);
             ++_waiting;
-            if(! _cv.wait_for(L, duration, [this]{ return !_q.empty(); } ) )
-            {
+            if (!_cv.wait_for(L, duration, [this] { return !_q.empty(); })) {
                 --_waiting;
                 return false;
             }
-            
+
             --_waiting;
             out = std::move(_q.front());
             _q.pop_front();

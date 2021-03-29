@@ -34,8 +34,7 @@ namespace pEp {
             ::messageToSend_t messageToSend,
             ::notifyHandshake_t notifyHandshake,
             proc on_startup = nullptr,
-            proc on_shutdown = nullptr
-        );
+            proc on_shutdown = nullptr);
         void remove(::messageToSend_t messageToSend);
 
         static void start_sync();
@@ -45,8 +44,8 @@ namespace pEp {
         static PEP_STATUS notifyHandshake(
             ::pEp_identity *me,
             ::pEp_identity *partner,
-            ::sync_handshake_signal signal
-        );
+            ::sync_handshake_signal signal);
+
     protected:
         void on_startup();
         void on_shutdown();
@@ -55,13 +54,12 @@ namespace pEp {
         PEP_STATUS _notifyHandshake(
             ::pEp_identity *me,
             ::pEp_identity *partner,
-            ::sync_handshake_signal signal
-        );
+            ::sync_handshake_signal signal);
 
-        friend const char *PassphraseCache::add(const std::string& passphrase);
+        friend const char *PassphraseCache::add(const std::string &passphrase);
     };
 
     extern CallbackDispatcher callback_dispatcher;
-}
+} // namespace pEp
 
 #endif // LIBPEPADAPTER_CALLBACK_DISPATCHER_HH

@@ -9,19 +9,19 @@
 pEp::PassphraseCache pEp::passphrase_cache;
 
 namespace pEp {
-    PassphraseCache::cache_entry::cache_entry(const std::string& p, time_point t) :
-            passphrase{p, 0, PassphraseCache::cache_entry::max_len}, tp{t}
-    { }
+    PassphraseCache::cache_entry::cache_entry(const std::string& p, time_point t)
+        : passphrase{p, 0, PassphraseCache::cache_entry::max_len}, tp{t}
+    {
+    }
 
-    PassphraseCache::PassphraseCache(size_t max_size, duration timeout) :
-            _max_size{max_size}, _timeout{timeout}, _which(_cache.end()),
-            first_time(true)
-    { }
+    PassphraseCache::PassphraseCache(size_t max_size, duration timeout)
+        : _max_size{max_size}, _timeout{timeout}, _which(_cache.end()), first_time(true)
+    {
+    }
 
-    PassphraseCache::PassphraseCache(const PassphraseCache& second) :
-            _cache{second._cache}, _max_size{second._max_size},
-            _timeout{second._timeout}, _stored{second._stored},
-            _which(_cache.end()), first_time(true)
+    PassphraseCache::PassphraseCache(const PassphraseCache& second)
+        : _cache{second._cache}, _max_size{second._max_size}, _timeout{second._timeout},
+          _stored{second._stored}, _which(_cache.end()), first_time(true)
     {
         cleanup();
     }
@@ -36,16 +36,16 @@ namespace pEp {
         return *this;
     }
 
-    const char *PassphraseCache::add(const std::string& passphrase)
+    const char* PassphraseCache::add(const std::string& passphrase)
     {
         if (!passphrase.empty()) {
-            const char *result = nullptr;
+            const char* result = nullptr;
             {
                 std::lock_guard<std::mutex> lock(_mtx);
 
                 while (_cache.size() >= _max_size)
                     _cache.pop_front();
-                
+
                 _cache.push_back({passphrase, clock::now()});
                 auto back = _cache.end();
                 assert(!_cache.empty());
@@ -55,11 +55,11 @@ namespace pEp {
             return result;
         }
 
-        static const char *empty = "";
+        static const char* empty = "";
         return empty;
     }
 
-    const char *PassphraseCache::add_stored(const std::string& passphrase)
+    const char* PassphraseCache::add_stored(const std::string& passphrase)
     {
         std::lock_guard<std::mutex> lock(_stored_mtx);
         _stored = passphrase;
@@ -81,7 +81,7 @@ namespace pEp {
             std::lock_guard<std::mutex> lock(_mtx);
             cleanup();
 
-            for (auto entry=_cache.begin(); entry!=_cache.end(); ++entry) {
+            for (auto entry = _cache.begin(); entry != _cache.end(); ++entry) {
                 if (callee(entry->passphrase)) {
                     refresh(entry);
                     return true;
@@ -104,7 +104,7 @@ namespace pEp {
         _cache.splice(_cache.end(), _cache, entry);
     }
 
-    const char *PassphraseCache::latest_passphrase(PassphraseCache& c)
+    const char* PassphraseCache::latest_passphrase(PassphraseCache& c)
     {
         if (c.first_time) {
             c.cleanup();
@@ -128,8 +128,8 @@ namespace pEp {
         return c._which->passphrase.c_str();
     }
 
-	PEP_STATUS PassphraseCache::config_next_passphrase(bool reset, PEP_SESSION session)
-	{
+    PEP_STATUS PassphraseCache::config_next_passphrase(bool reset, PEP_SESSION session)
+    {
         static pEp::PassphraseCache _copy;
         static bool new_copy = true;
 
@@ -146,16 +146,14 @@ namespace pEp {
         try {
             ::config_passphrase(session ? session : Adapter::session(), latest_passphrase(_copy));
             return PEP_STATUS_OK;
-        }
-        catch (pEp::PassphraseCache::Empty&) {
+        } catch (pEp::PassphraseCache::Empty&) {
             new_copy = true;
             return PEP_PASSPHRASE_REQUIRED;
-        }
-        catch (pEp::PassphraseCache::Exhausted&) {
+        } catch (pEp::PassphraseCache::Exhausted&) {
             new_copy = true;
             return PEP_WRONG_PASSPHRASE;
         }
-	}
+    }
 
     PEP_STATUS PassphraseCache::ensure_passphrase(PEP_SESSION session, std::string fpr)
     {
@@ -172,5 +170,4 @@ namespace pEp {
 
         return status;
     }
-};
-
+}; // namespace pEp

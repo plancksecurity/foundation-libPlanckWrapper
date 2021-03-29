@@ -1,9 +1,8 @@
 include ../Makefile.conf
 
-LDFLAGS=-L../ $(ENGINE_LIB)
+LDFLAGS=-L../src $(ENGINE_LIB)
 LDLIBS=-lstdc++ -lpEpEngine -lpEpAdapter
-CXXFLAGS+=-I../ $(ENGINE_INC) -std=c++11 -DENGINE_TEST=$(ENGINE_TEST)
-
+CXXFLAGS:=-I../src -DENGINE_TEST=$(ENGINE_TEST) $(CXXFLAGS)
 SRC=$(wildcard test_*.cc)
 TST=$(subst .cc,,$(SRC))
 
@@ -13,7 +12,7 @@ $(TST): framework.o
 
 .PHONY: clean rmtestdata
 
-clean:	
+clean:
 	rm -f $(TST)
 	rm -Rf *.dSYM
 	rm -f *.o

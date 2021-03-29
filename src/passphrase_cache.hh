@@ -20,7 +20,7 @@ namespace pEp {
 
         struct cache_entry {
             static const size_t max_len = 250 * 4;
-            cache_entry(const std::string&  p, time_point t);
+            cache_entry(const std::string& p, time_point t);
 
             std::string passphrase;
             time_point tp;
@@ -39,30 +39,30 @@ namespace pEp {
 
     public:
         struct Empty : public std::underflow_error {
-            Empty() : std::underflow_error("passphrase cache empty") { }
+            Empty() : std::underflow_error("passphrase cache empty") {}
         };
         struct Exhausted : public std::underflow_error {
-            Exhausted() : std::underflow_error("out of passphrases") { }
+            Exhausted() : std::underflow_error("out of passphrases") {}
         };
 
-        PassphraseCache(size_t max_size=20, duration timeout = std::chrono::minutes(10));
-        ~PassphraseCache() { }
+        PassphraseCache(size_t max_size = 20, duration timeout = std::chrono::minutes(10));
+        ~PassphraseCache() {}
         PassphraseCache(const PassphraseCache& second);
         PassphraseCache& operator=(const PassphraseCache& second);
 
         // adds the passphrase to the cache, which will timeout
         // returns a ptr to the passsword entry in the cache. Don't free() it!
-        const char *add(const std::string& passphrase);
+        const char* add(const std::string& passphrase);
 
         // adds the stored passphrase to the cache, which will not timeout
-        const char *add_stored(const std::string& passphrase);
+        const char* add_stored(const std::string& passphrase);
 
         // call this function inside the messageToSend() implementation of the adapter
         // this function is using latest_passphrase() to test one passphrase after the
         // other until the cache is exhausted
         // call with reset = true to reset the iterator
 
-        static PEP_STATUS config_next_passphrase(bool reset=false, PEP_SESSION session = NULL);
+        static PEP_STATUS config_next_passphrase(bool reset = false, PEP_SESSION session = NULL);
 
         // convenience functions
         // i.e.
@@ -71,10 +71,10 @@ namespace pEp {
         // status = ::encrypt_message(session, src, extra, dst, enc_format, flags)
         // using for_each_passphrase()
 
-        template<typename... A> PEP_STATUS api(PEP_STATUS f(PEP_SESSION, A...),
-                PEP_SESSION session, A... a);
+        template<typename... A>
+        PEP_STATUS api(PEP_STATUS f(PEP_SESSION, A...), PEP_SESSION session, A... a);
 
-        static const char *latest_passphrase(PassphraseCache& _cache);
+        static const char* latest_passphrase(PassphraseCache& _cache);
         using passphrase_callee = std::function<bool(std::string)>;
         bool for_each_passphrase(const passphrase_callee& callee);
         PEP_STATUS ensure_passphrase(PEP_SESSION session, std::string fpr);
@@ -85,7 +85,7 @@ namespace pEp {
     };
 
     extern PassphraseCache passphrase_cache;
-};
+}; // namespace pEp
 
 #include "passphrase_cache.hxx"
 
