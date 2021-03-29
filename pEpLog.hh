@@ -6,6 +6,9 @@
 
 #include <sstream>
 #include <thread>
+#ifdef ANDROID
+    #include <android/log.h>
+#endif
 
 // pEpLog
 // ======
@@ -31,10 +34,6 @@
 #ifdef NDEBUG
     #define pEpLog(msg)  do{}while(0)
 #else
-    #ifdef ANDROID
-        #include <android/log.h>
-    #endif
-
     #define pEpLog(msg) \
     do {                \
         std::stringstream msg_ss; \
