@@ -47,7 +47,7 @@ namespace pEp {
         ::messageToSend_t _messageToSend = nullptr;
         ::notifyHandshake_t _notifyHandshake = nullptr;
         bool _adapter_manages_sync_thread = false;
-        ::inject_sync_event_t _inject_action = _queue_sync_event;
+        ::inject_sync_event_t _inject_action = _inject_sync_event;
         std::thread _sync_thread;
         ::utility::locked_queue<SYNC_EVENT, ::free_Sync_event> sync_evt_q;
         std::mutex mut;
@@ -78,7 +78,7 @@ namespace pEp {
 //            std::lock_guard<mutex> lock(mut);
             _sync_mode = mode;
             if (_sync_mode == SyncModes::Sync) {
-                // init sesssion with inject_sync = process
+                // init session with inject_sync = process
                 // stop sync
                 session(release);
                 _inject_action = _process_sync_event;
@@ -94,7 +94,7 @@ namespace pEp {
                 // init session with inject_sync = queue
                 // start sync thread
                 session(release);
-                _inject_action = _queue_sync_event;
+                _inject_action = _inject_sync_event;
                 session(init);
                 if(!_adapter_manages_sync_thread) {
                     if (!is_sync_running()) {
@@ -113,7 +113,7 @@ namespace pEp {
                     // Adapter needs to shutdown sync thread
                 }
                 session(release);
-                _inject_action = _queue_sync_event;
+                _inject_action = _inject_sync_event;
                 session(init);
             }
             return;
@@ -130,8 +130,8 @@ namespace pEp {
             }
         }
 
-        // private
-        int _queue_sync_event(::SYNC_EVENT ev, void *management)
+        // public (json adapter needs it, but should use Session mgmt from libpEpAdapter eventually)
+        int _inject_sync_event(::SYNC_EVENT ev, void *management)
         {
             try {
                 if (ev == nullptr) {
@@ -207,7 +207,7 @@ namespace pEp {
             pEpLog("called");
             if (_sync_thread.joinable()) {
                 pEpLog("sync_is_running - injecting null event");
-                _queue_sync_event(nullptr, nullptr);
+                _inject_sync_event(nullptr, nullptr);
                 _sync_thread.join();
             }
         }
