@@ -7,22 +7,22 @@
 #include <vector>
 #include <memory>
 
-#include "Adapter.hh"
+#include <pEp/message.h>
 
 namespace pEp {
     namespace Test {
         using namespace std;
 
         // manually set up test
-        void setup(vector<string>& args);
+        void setup(vector<string> &args);
 
         // call this in main() for auto set up
-        void setup(int argc=1, char **argv=nullptr);
+        void setup(int argc = 1, char **argv = nullptr);
 
         void import_key_from_file(string filename);
 
         using Message = shared_ptr<::message>;
-        using Identity= shared_ptr<::pEp_identity>;
+        using Identity = shared_ptr<::pEp_identity>;
 
         // use this instead of constructor to auto assign ::free_message as
         // deleter
@@ -57,7 +57,7 @@ namespace pEp {
 
         extern Transport transport;
         extern string path;
-    };
-};
+    }; // namespace Test
+};     // namespace pEp
 
 #endif // LIBPEPADAPTER_FRAMEWORK_HH

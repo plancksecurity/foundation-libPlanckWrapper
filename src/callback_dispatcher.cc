@@ -14,18 +14,19 @@ namespace pEp {
         return callback_dispatcher._messageToSend(msg);
     }
 
-    PEP_STATUS CallbackDispatcher::notifyHandshake(::pEp_identity *me,
-            ::pEp_identity *partner, ::sync_handshake_signal signal)
+    PEP_STATUS CallbackDispatcher::notifyHandshake(
+        ::pEp_identity *me,
+        ::pEp_identity *partner,
+        ::sync_handshake_signal signal)
     {
         return callback_dispatcher._notifyHandshake(me, partner, signal);
     }
 
     void CallbackDispatcher::add(
-            ::messageToSend_t messageToSend,
-            ::notifyHandshake_t notifyHandshake,
-            proc on_startup,
-            proc shutdown
-        )
+        ::messageToSend_t messageToSend,
+        ::notifyHandshake_t notifyHandshake,
+        proc on_startup,
+        proc shutdown)
     {
         assert(messageToSend);
         if (!messageToSend) {
@@ -77,10 +78,12 @@ namespace pEp {
         pEpLog("called");
         callback_dispatcher.semaphore.go();
 
-        pEp::Adapter::startup<CallbackDispatcher>(CallbackDispatcher::messageToSend,
-                CallbackDispatcher::notifyHandshake, &callback_dispatcher,
-                &CallbackDispatcher::on_startup,
-                &CallbackDispatcher::on_shutdown);
+        pEp::Adapter::startup<CallbackDispatcher>(
+            CallbackDispatcher::messageToSend,
+            CallbackDispatcher::notifyHandshake,
+            &callback_dispatcher,
+            &CallbackDispatcher::on_startup,
+            &CallbackDispatcher::on_shutdown);
 
         pEpLog("all targets signal: SYNC_NOTIFY_START");
         for (auto target : callback_dispatcher.targets) {
@@ -143,8 +146,10 @@ namespace pEp {
         return PEP_STATUS_OK;
     }
 
-    PEP_STATUS CallbackDispatcher::_notifyHandshake(::pEp_identity *me,
-            ::pEp_identity *partner, ::sync_handshake_signal signal)
+    PEP_STATUS CallbackDispatcher::_notifyHandshake(
+        ::pEp_identity *me,
+        ::pEp_identity *partner,
+        ::sync_handshake_signal signal)
     {
         for (auto target : targets) {
             if (target.notifyHandshake) {
@@ -169,5 +174,4 @@ namespace pEp {
 
         return PEP_STATUS_OK;
     }
-};
-
+}; // namespace pEp
