@@ -1,5 +1,12 @@
 # 1st Party Dependencies
 ## Prefer git tags instead of SHA hashes when possible.
 
-pEpEngine=Release_2.1.23
-sequoia=365d00a08bec6a5a48d48a7c7893d78c27092b59
+# Change:
+# libpEpAdapter does not specify any dependencies atm.
+# libpEpAdapter is always being used as part of an adapter
+# This adapter has to specify the pEpEngine version .e.g
+
+
+# fdik: dep graph has to be taken from DEP file
+# fdik: dependencies need to be resolved recursively from top to bottom
+# fdik: stack then needs to be built from the bottom up
