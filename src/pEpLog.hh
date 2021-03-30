@@ -6,6 +6,9 @@
 
 #include <sstream>
 #include <thread>
+#ifdef ANDROID
+    #include <android/log.h>
+#endif
 
 // pEpLog
 // ======
@@ -33,17 +36,12 @@
         do {                                                                                       \
         } while (0)
 #else
-    #ifdef ANDROID
-        #include <android/log.h>
-    #endif
-
-    #define pEpLog(msg)                                                                            \
-        do {                                                                                       \
-            std::stringstream msg_ss;                                                              \
-            msg_ss << std::this_thread::get_id() << " - " << __FILE__ << "::" << __FUNCTION__      \
-                   << " - " << msg;                                                                \
-            pEp::Adapter::pEpLog::log(msg_ss.str());                                               \
-        } while (0)
+    #define pEpLog(msg) \
+    do {                \
+        std::stringstream msg_ss; \
+        msg_ss << std::this_thread::get_id() << " - " << __FILE__ << "::" << __FUNCTION__ << " - " << msg;                 \
+        pEp::Adapter::pEpLog::log(msg_ss.str()); \
+    } while(0)
 #endif // NDEBUG
 
 namespace pEp {

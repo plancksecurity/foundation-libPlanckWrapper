@@ -42,7 +42,7 @@ namespace pEp {
 
         void set_sync_mode(SyncModes mode);
 
-        int _queue_sync_event(::SYNC_EVENT ev, void *management);
+        int _inject_sync_event(::SYNC_EVENT ev, void *management);
         int _process_sync_event(::SYNC_EVENT ev, void *management);
 
         ::PEP_STATUS _ensure_passphrase(::PEP_SESSION session, const char *fpr);
