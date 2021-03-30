@@ -7,6 +7,10 @@
 #include <mutex>
 #include <atomic>
 
+#ifdef ANDROID
+    #include <android/log.h>
+#endif
+
 
 namespace pEp {
     namespace Adapter {
@@ -14,7 +18,7 @@ namespace pEp {
 
             std::mutex mtx;
 
-            std::atomic_bool is_enabled{false};
+            std::atomic_bool is_enabled{ false };
 
             void set_enabled(bool enabled)
             {
