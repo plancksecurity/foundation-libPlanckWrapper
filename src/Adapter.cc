@@ -202,12 +202,18 @@ namespace pEp {
         }
 
         // public
+        void inject_sync_shutdown() {
+            pEpLog("called");
+            _inject_sync_event(nullptr, nullptr);
+        }
+
+        // public
         void shutdown()
         {
             pEpLog("called");
             if (_sync_thread.joinable()) {
                 pEpLog("sync_is_running - injecting null event");
-                _inject_sync_event(nullptr, nullptr);
+                inject_sync_shutdown();
                 _sync_thread.join();
             }
         }

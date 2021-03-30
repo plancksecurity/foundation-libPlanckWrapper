@@ -77,6 +77,11 @@ namespace pEp {
 
         extern thread_local Session session;
 
+        // only injects a NULL event into sync_event_queue
+        // Use this if adapter_manages_sync_thread
+        // Inject first, then join your thread.
+        void inject_sync_shutdown();
+
         // injects a NULL event into sync_event_queue to denote sync thread to
         // shutdown, and joins & removes the sync thread
         void shutdown();
