@@ -18,14 +18,14 @@ LOCAL_CPPFLAGS += -std=c++14 -DANDROID_STL=c++_shared
 STUB = $(shell sh $(LOCAL_PATH)/../takeOutHeaderFiles.sh $(LOCAL_PATH)/../../../pEpEngine/ $(LOCAL_PATH)/../../)
 $(info $(STUB))
 
-LIB_PEP_ADAPTER_INCLUDE_FILES := $(wildcard $(LOCAL_PATH)/../../*.h*)
+LIB_PEP_ADAPTER_INCLUDE_FILES := $(wildcard $(LOCAL_PATH)/../../src/*.h*)
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../../../pEpEngine/build-android/include \
             $(LIB_PEP_ADAPTER_INCLUDE_FILES:%=%)
 
 LOCAL_EXPORT_C_INCLUDES += $(LOCAL_PATH)../include
 
-LOCAL_SRC_FILES += $(wildcard $(LOCAL_PATH)/../../*.cc)
+LOCAL_SRC_FILES += $(wildcard $(LOCAL_PATH)/../../src/*.cc)
 
 
 include $(BUILD_STATIC_LIBRARY)
