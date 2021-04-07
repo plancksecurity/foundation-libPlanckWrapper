@@ -18,72 +18,75 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Adapter.cc">
+    <ClCompile Include="..\src\Adapter.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\status_to_string.cc">
+    <ClCompile Include="..\src\call_with_lock.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\call_with_lock.cc">
+    <ClCompile Include="..\src\callback_dispatcher.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\slurp.cc">
+    <ClCompile Include="..\src\constant_time_algo.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\passphrase_cache.cc">
+    <ClCompile Include="..\src\message_cache.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\callback_dispatcher.cc">
+    <ClCompile Include="..\src\passphrase_cache.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\message_cache.cc">
+    <ClCompile Include="..\src\pEpLog.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\constant_time_algo.cc">
+    <ClCompile Include="..\src\slurp.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\pEpLog.cc">
+    <ClCompile Include="..\src\status_to_string.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Adapter.hh">
+    <ClInclude Include="..\src\call_with_lock.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\locked_queue.hh">
+    <ClInclude Include="..\src\Adapter.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pc_container.hh">
+    <ClInclude Include="..\src\Adapter.hxx">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Adapter.hxx">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\status_to_string.hh">
+    <ClInclude Include="..\src\callback_dispatcher.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\slurp.hh">
+    <ClInclude Include="..\src\constant_time_algo.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\passphrase_cache.hh">
+    <ClInclude Include="..\src\locked_queue.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\passphrase_cache.hxx">
+    <ClInclude Include="..\src\message_cache.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\callback_dispatcher.hh">
+    <ClInclude Include="..\src\passphrase_cache.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Semaphore.hh">
+    <ClInclude Include="..\src\passphrase_cache.hxx">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\message_cache.hh">
+    <ClInclude Include="..\src\pc_container.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\constant_time_algo.hh">
+    <ClInclude Include="..\src\pEpLog.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\pEpLog.hh">
+    <ClInclude Include="..\src\Semaphore.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\slurp.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\status_to_string.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
