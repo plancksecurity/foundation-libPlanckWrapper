@@ -21,16 +21,17 @@
 #include <pEp/sync_codec.h>
 #include <pEp/distribution_codec.h>
 
-#include "../src/Adapter.hh"
+#include "../../src/Adapter.hh"
 
 pEp::Test::Transport pEp::Test::transport;
 std::string pEp::Test::path;
 extern std::thread pEp::Adapter::_sync_thread;
 
+using namespace pEp;
+using namespace std;
+
 namespace pEp {
     namespace Test {
-        using namespace Adapter;
-
         void setup(vector<string> &args)
         {
 #ifdef WIN32
@@ -87,7 +88,7 @@ namespace pEp {
             ::identity_list *il = NULL;
             cout << key.c_str() << endl;
             cout << key.length() << endl;
-            ::PEP_STATUS status = ::import_key(session(), key.c_str(), key.length(), &il);
+            ::PEP_STATUS status = ::import_key(Adapter::session(), key.c_str(), key.length(), &il);
             throw_status(status);
             assert(status == PEP_KEY_IMPORTED);
             ::free_identity_list(il);
@@ -134,7 +135,7 @@ namespace pEp {
             stringlist_t *keylist;
             ::PEP_rating rating;
             ::PEP_decrypt_flags_t flags = 0;
-            ::PEP_STATUS status = ::decrypt_message(session(), msg.get(), &_dst, &keylist, &rating, &flags);
+            ::PEP_STATUS status = ::decrypt_message(Adapter::session(), msg.get(), &_dst, &keylist, &rating, &flags);
             throw_status(status);
 
             Message dst;
@@ -168,8 +169,9 @@ namespace pEp {
 
         void join_sync_thread()
         {
-            if (_sync_thread.joinable())
-                _sync_thread.join();
+            if (Adapter::_sync_thread.joinable()) {
+                Adapter::_sync_thread.join();
+            }
         }
 
         Message Transport::recv()
