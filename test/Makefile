@@ -13,14 +13,14 @@ SRC_FRAMEWORK=$(wildcard framework/*.cc)
 OBJ_FRAMEWORK=$(subst .cc,.o,$(SRC_FRAMEWORK))
 
 # Depends
-DEP_TEST=$(subst .cc,.d,$(SRC_TEST))
-DEP_FRAMEWORK=$(subst .cc,.d,$(SRC_FRAMEWORK))
-DEPENDS+= $(DEP_TEST) $(DEP_FRAMEWORK)
-CXXFLAGS+= -MMD -MP
-
-ifneq ($(MAKECMDGOALS),clean)
-    -include $(DEPENDS)
-endif
+#DEP_TEST=$(subst .cc,.d,$(SRC_TEST))
+#DEP_FRAMEWORK=$(subst .cc,.d,$(SRC_FRAMEWORK))
+#DEPENDS+=$(DEP_TEST)$(DEP_FRAMEWORK)
+#CXXFLAGS+= -MMD -MP
+#
+#ifneq ($(MAKECMDGOALS),clean)
+#    -include $(DEPENDS)
+#endif
 
 .PHONY: all clean rmtestdata
 .DEFAULT_GOAL := all
