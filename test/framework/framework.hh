@@ -10,20 +10,18 @@
 
 #include <pEp/message.h>
 
-using namespace std;
-
 namespace pEp {
     namespace Test {
         // manually set up test
-        void setup(vector<string> &args);
+        void setup(std::vector<std::string> &args);
 
         // call this in main() for auto set up
         void setup(int argc = 1, char **argv = nullptr);
 
-        void import_key_from_file(string filename);
+        void import_key_from_file(std::string filename);
 
-        using Message = shared_ptr<::message>;
-        using Identity = shared_ptr<::pEp_identity>;
+        using Message = std::shared_ptr<::message>;
+        using Identity = std::shared_ptr<::pEp_identity>;
 
         // use this instead of constructor to auto assign ::free_message as
         // deleter
@@ -34,20 +32,20 @@ namespace pEp {
         Identity make_identity(::pEp_identity *ident);
 
         // MIME parser
-        Message mime_parse(string text);
+        Message mime_parse(std::string text);
 
         // MIME composer
-        string mime_compose(Message msg);
+        std::string mime_compose(Message msg);
 
         // Sync and Distribution decoder
-        string make_pEp_msg(Message msg);
+        std::string make_pEp_msg(Message msg);
 
         // wait until Sync has shut down
         void join_sync_thread();
 
         struct Transport {
-            string inbox_path = "inbox";
-            string outbox_path = "outbox";
+            std::string inbox_path = "inbox";
+            std::string outbox_path = "outbox";
 
             // reads next message from inbox
             Message recv();
@@ -57,7 +55,7 @@ namespace pEp {
         };
 
         extern Transport transport;
-        extern string path;
+        extern std::string path;
     }; // namespace Test
 };     // namespace pEp
 
