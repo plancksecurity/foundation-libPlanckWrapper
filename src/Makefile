@@ -15,7 +15,8 @@ ifneq ($(MAKECMDGOALS),clean)
     -include $(DEPENDS)
 endif
 
-.PHONY: install uninstall clean
+.PHONY: all install uninstall clean
+.DEFAULT_GOAL := all
 
 all: $(TARGET)
 
