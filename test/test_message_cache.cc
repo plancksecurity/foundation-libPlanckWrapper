@@ -1,13 +1,15 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
-#include "framework.hh"
+#include "framework/framework.hh"
+
 #include <iostream>
 #include <cassert>
 #include <sys/param.h>
 #include <unistd.h>
-#include <message_cache.hh>
-#include <Adapter.hh>
+
+#include "../src/message_cache.hh"
+#include "../src/Adapter.hh"
 
 using namespace std;
 using namespace pEp;

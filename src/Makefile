@@ -6,7 +6,7 @@
 include ../Makefile.conf
 
 SOURCE=$(wildcard *.cc)
-HEADERS=$(wildcard *.hh *.hxx)
+HEADERS=$(wildcard *.hh *.hxx *.h)
 OBJECTS=$(subst .cc,.o,$(SOURCE))
 DEPENDS=$(subst .cc,.d,$(SOURCE))
 CXXFLAGS+= -MMD -MP

@@ -3,17 +3,24 @@ include ../Makefile.conf
 LDFLAGS=-L../src $(ENGINE_LIB)
 LDLIBS=-lstdc++ -lpEpEngine -lpEpAdapter
 CXXFLAGS:=-I../src -DENGINE_TEST=$(ENGINE_TEST) $(CXXFLAGS)
-SRC=$(wildcard test_*.cc)
-TST=$(subst .cc,,$(SRC))
 
-all: $(TST)
+SRC_TEST=$(wildcard test_*.cc)
+BIN_TEST=$(subst .cc,,$(SRC_TEST))
 
-$(TST): framework.o
+SRC_FRAMEWORK=$(wildcard framework/*.cc)
+OBJ_FRAMEWORK=$(subst .cc,.o,$(SRC_FRAMEWORK))
 
-.PHONY: clean rmtestdata
+.PHONY: all clean rmtestdata
+
+all: $(BIN_TEST)
+
+
+$(BIN_TEST): $(OBJ_FRAMEWORK)
+
 
 clean:
-	rm -f $(TST)
+	rm -f $(BIN_TEST)
+	rm -f $(OBJ_FRAMEWORK)
 	rm -Rf *.dSYM
 	rm -f *.o
 	rm -Rf /tmp/test_pEp.*

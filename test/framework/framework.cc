@@ -8,7 +8,6 @@
 #include <utility>
 #include <exception>
 #include <thread>
-
 #include <unistd.h>
 #include <assert.h>
 #include <stdlib.h>
@@ -22,7 +21,7 @@
 #include <pEp/sync_codec.h>
 #include <pEp/distribution_codec.h>
 
-#include <Adapter.hh>
+#include "../src/Adapter.hh"
 
 pEp::Test::Transport pEp::Test::transport;
 std::string pEp::Test::path;
@@ -74,8 +73,9 @@ namespace pEp {
         void setup(int argc, char **argv)
         {
             vector<string> args{ (size_t)argc };
-            for (int i = 0; i < argc; ++i)
+            for (int i = 0; i < argc; ++i) {
                 args[i] = argv[i];
+            }
 
             setup(args);
         }

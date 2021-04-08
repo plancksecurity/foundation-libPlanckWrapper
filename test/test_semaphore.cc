@@ -4,7 +4,8 @@
 #include <iostream>
 #include <thread>
 #include <unistd.h>
-#include "Semaphore.hh"
+
+#include "../src/Semaphore.hh"
 
 using namespace std;
 using namespace pEp;

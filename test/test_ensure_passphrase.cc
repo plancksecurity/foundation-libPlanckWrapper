@@ -1,6 +1,8 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
+#include "framework/framework.hh"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -10,15 +12,13 @@
 #include <string.h>
 #include <sys/param.h>
 
-#include "framework.hh"
-
-#include <passphrase_cache.hh>
-#include <status_to_string.hh>
-#include <Adapter.hh>
-
 #include <pEp/message_api.h>
 #include <pEp/keymanagement.h>
 #include <pEp/key_reset.h>
+
+#include "../src/passphrase_cache.hh"
+#include "../src/status_to_string.hh"
+#include "../src/Adapter.hh"
 
 using namespace pEp;
 using namespace std;

@@ -10,10 +10,10 @@
 
 #include <pEp/message.h>
 
+using namespace std;
+
 namespace pEp {
     namespace Test {
-        using namespace std;
-
         // manually set up test
         void setup(vector<string> &args);
 

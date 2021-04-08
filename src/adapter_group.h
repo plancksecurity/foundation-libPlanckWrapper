@@ -4,6 +4,8 @@
 #ifndef LIBPEPADAPTER_GROUP_HH
 #define LIBPEPADAPTER_GROUP_HH
 
+#include <pEp/message_api.h>
+#include <pEp/group.h>
 
 #ifdef __cplusplus
 extern "C" {
