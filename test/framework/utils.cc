@@ -3,7 +3,7 @@
 
 #include "utils.hh"
 
-#include <pEp/keymanagement.h>
+#include <pEp/identity_list.h>
 
 #include "../../src/Adapter.hh"
 #include "../../src/adapter_group.h"
@@ -58,6 +58,24 @@ namespace pEp {
                 return builder.str();
             }
 
+            std::string identitylist_to_string(::identity_list* idl, bool full, int indent)
+            {
+                stringstream builder;
+                if (idl != nullptr) {
+                    builder << endl;
+                    builder << std::string(indent, '\t') << "[" << endl;
+                    indent++;
+                    for (::identity_list * curr = idl; curr != nullptr; curr = curr->next) {
+                        builder << identity_to_string(curr->ident, full, indent) << endl;
+                    }
+                    indent--;
+                    builder << std::string(indent, '\t') << "]";
+                } else {
+                    builder << "NULL";
+                }
+
+                return builder.str();
+            }
 
             string member_to_string(::pEp_member* member, bool full, int indent)
             {
