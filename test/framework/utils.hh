@@ -11,6 +11,10 @@
 
 namespace pEp {
     namespace Test {
+        namespace Log {
+            void logH1(std::string msg);
+            void logH2(std::string msg);
+        }
         namespace Utils {
             std::string identity_to_string(::pEp_identity* ident, bool full = true, int indent = 0);
             std::string identitylist_to_string(::identity_list * idl, bool full = true, int indent = 0);

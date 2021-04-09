@@ -3,6 +3,8 @@
 
 #include "utils.hh"
 
+#include <iostream>
+
 #include <pEp/identity_list.h>
 
 #include "../../src/Adapter.hh"
@@ -13,6 +15,25 @@ using namespace pEp;
 
 namespace pEp {
     namespace Test {
+        namespace Log {
+            void logH1(string msg)
+            {
+                char decoration{ '=' };
+                cout << endl
+                     << endl
+                     << std::string(30, decoration) << ' ' << msg << ' '
+                     << std::string(30, decoration) << endl;
+            }
+
+            void logH2(string msg)
+            {
+                char decoration{ '-' };
+                cout << endl
+                     << std::string(10, decoration) << ' ' << msg << ' '
+                     << std::string(10, decoration) << endl;
+            }
+        } // namespace Log
+
         namespace Utils {
             string identity_to_string(::pEp_identity* ident, bool full, int indent)
             {
@@ -65,7 +86,7 @@ namespace pEp {
                     builder << endl;
                     builder << std::string(indent, '\t') << "[" << endl;
                     indent++;
-                    for (::identity_list * curr = idl; curr != nullptr; curr = curr->next) {
+                    for (::identity_list* curr = idl; curr != nullptr; curr = curr->next) {
                         builder << identity_to_string(curr->ident, full, indent) << endl;
                     }
                     indent--;
