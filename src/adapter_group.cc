@@ -71,25 +71,25 @@ DYNAMIC_API PEP_STATUS adapter_group_rating(
  *************************************************************************************************/
 
 
-DYNAMIC_API PEP_STATUS group_query_groups(PEP_SESSION session, identity_list **groups)
-{
-    pEpLog("called");
-    return PEP_STATUS_OK;
-}
-
-DYNAMIC_API PEP_STATUS
-group_query_manager(PEP_SESSION session, const pEp_identity *const group, pEp_identity **manager)
-{
-    pEpLog("called");
-    return PEP_STATUS_OK;
-}
-
-DYNAMIC_API PEP_STATUS
-group_query_members(PEP_SESSION session, const pEp_identity *const group, identity_list **members)
-{
-    pEpLog("called");
-    return PEP_STATUS_OK;
-}
+//DYNAMIC_API PEP_STATUS group_query_groups(PEP_SESSION session, identity_list **groups)
+//{
+//    pEpLog("called");
+//    return PEP_STATUS_OK;
+//}
+//
+//DYNAMIC_API PEP_STATUS
+//group_query_manager(PEP_SESSION session, const pEp_identity *const group, pEp_identity **manager)
+//{
+//    pEpLog("called");
+//    return PEP_STATUS_OK;
+//}
+//
+//DYNAMIC_API PEP_STATUS
+//group_query_members(PEP_SESSION session, const pEp_identity *const group, identity_list **members)
+//{
+//    pEpLog("called");
+//    return PEP_STATUS_OK;
+//}
 
 #ifdef __cplusplus
 }
