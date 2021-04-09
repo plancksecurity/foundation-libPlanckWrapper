@@ -31,12 +31,12 @@ extern "C" {
  *              The manager
  *
  *  @param[in]      session             associated session object
- *  @param[in]      group_identity      the pEp_identity object representing the group. Must contain at least
+ *  @param[in,out]  group_identity      the pEp_identity object representing the group. Must contain at least
  *                                      a user_id and address
- *  @param[in]      manager             the pEp_identity object representing the group's manager. Must contain
+ *  @param[in,out]  manager             the pEp_identity object representing the group's manager. Must contain
  *                                      a user_id and address, and there must be a default key for the manager
  *                                      present in the database
- *  @param[in]      memberlist          list of group members
+ *  @param[in,out]  member_ident_list   list of group member identities
  *  @param[in,out]  group               Optional reference for pointer to group object
  *                                      representing the created group.
  *                                      (When input is NULL, no object is created)
@@ -44,18 +44,24 @@ extern "C" {
  *  @retval         PEP_STATUS_OK       on success
  *                  error               on failure
  *
- *  @ownership      FIXME
+ *  @ownership      All input values stay with the caller
  *
- *  TODO: member_list *memberlist -> change to identity_list
+ *  @warning        starts a DB transaction - do not call from within a function which
+ *                  is already in the middle of another one.
+ *
+ *  @note           in,out fields are labelled as such because they get updated by update_identity()/myself()
+ *                  and have group flags added. group_identity may have its user_id freed and replaced
+ *                  with the canonical own user id.
  *
  */
 DYNAMIC_API PEP_STATUS adapter_group_create(
-        PEP_SESSION session,
-        pEp_identity *group_identity,
-        pEp_identity *manager,
-        member_list *memberlist,
-        pEp_group **group
+    PEP_SESSION session,
+    pEp_identity *group_identity,
+    pEp_identity *manager,
+    identity_list *memberlist,
+    pEp_group **group
 );
+
 
 /**
  *  <!--       adapter_group_join()       -->
