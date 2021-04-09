@@ -46,6 +46,7 @@ int main(int argc, char **argv)
 
     src->dir = ::PEP_dir_outgoing;
     ::message *dst = nullptr;
+    cout << "cache_encrypt_message()" << endl;
     status = MessageCache::cache_encrypt_message(
         Adapter::session(),
         src,
@@ -66,13 +67,14 @@ int main(int argc, char **argv)
     mime = nullptr;
     status = MessageCache::cache_mime_encode_message(MessageCache::msg_src, src, false, &mime, false);
     assert(status == PEP_STATUS_OK);
-
-    cout << mime << endl;
+    cout << "cache_mime_encode_message()" << endl;
+    cout << "mime: " << endl << mime << endl;
 
     // add to cache
 
     ::free_message(src);
     src = nullptr;
+    cout << "cache_mime_decode_message" << endl;
     status = MessageCache::cache_mime_decode_message(mime, strlen(mime), &src, &has_possible_pEp_msg);
     assert(status == PEP_STATUS_OK);
 
@@ -83,6 +85,7 @@ int main(int argc, char **argv)
     ::PEP_decrypt_flags_t flags = 0;
     ::stringlist_t *keylist = nullptr;
 
+    cout << "cache_decrypt_message" << endl;
     status = MessageCache::cache_decrypt_message(
         Adapter::session(),
         src,
@@ -99,12 +102,13 @@ int main(int argc, char **argv)
 
     free(mime);
     mime = nullptr;
+    cout << "cache_mime_encode_message" << endl;
     status = MessageCache::cache_mime_encode_message(MessageCache::msg_src, src, false, &mime, false);
 
     assert(src->longmsg == nullptr);
     assert(src->attachments == nullptr);
 
-    cout << mime << endl;
+    cout << "mime: " << endl << mime << endl;
 
     free(mime);
     ::free_message(src);
