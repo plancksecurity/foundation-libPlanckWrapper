@@ -24,3 +24,4 @@ test_library
 test_message_cache
 test_passphrase_cache
 test_semaphore
+test_lm_dummy
