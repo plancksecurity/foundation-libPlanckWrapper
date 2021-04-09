@@ -1,17 +1,18 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
-#include "framework.hh"
+#include "framework/framework.hh"
 #include <iostream>
 #include <assert.h>
 #include <unistd.h>
 #include <sys/param.h>
 
-#include <pEpLog.hh>
-#include <Adapter.hh>
 #include <pEp/sync_api.h>
 #include <pEp/keymanagement.h>
 #include <pEp/message_api.h>
+
+#include "../src/pEpLog.hh"
+#include "../src/Adapter.hh"
 
 using namespace std;
 using namespace pEp;

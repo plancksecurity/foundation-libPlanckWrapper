@@ -1,16 +1,16 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
-#include "framework.hh"
+#include "framework/framework.hh"
 
 #include <iostream>
 #include <unistd.h>
 #include <assert.h>
-
 #include <sys/param.h>
-#include <passphrase_cache.hh>
-#include <status_to_string.hh>
-#include <Adapter.hh>
+
+#include "../src/passphrase_cache.hh"
+#include "../src/status_to_string.hh"
+#include "../src/Adapter.hh"
 
 using namespace pEp;
 

@@ -6,7 +6,7 @@
 include ../Makefile.conf
 
 SOURCE=$(wildcard *.cc)
-HEADERS=$(wildcard *.hh *.hxx)
+HEADERS=$(wildcard *.hh *.hxx *.h)
 OBJECTS=$(subst .cc,.o,$(SOURCE))
 DEPENDS=$(subst .cc,.d,$(SOURCE))
 CXXFLAGS+= -MMD -MP
@@ -15,7 +15,8 @@ ifneq ($(MAKECMDGOALS),clean)
     -include $(DEPENDS)
 endif
 
-.PHONY: install uninstall clean
+.PHONY: all install uninstall clean
+.DEFAULT_GOAL := all
 
 all: $(TARGET)
 

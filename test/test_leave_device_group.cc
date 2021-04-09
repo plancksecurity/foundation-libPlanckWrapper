@@ -1,15 +1,16 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
+#include "framework/framework.hh"
+
 #include <iostream>
 #include <vector>
 #include <unistd.h>
 
-#include "framework.hh"
-#include <passphrase_cache.hh>
-#include <callback_dispatcher.hh>
-
 #include <pEp/sync_api.h>
+
+#include "../src/callback_dispatcher.hh"
+#include "../src/passphrase_cache.hh"
 
 using namespace std;
 using namespace pEp;
