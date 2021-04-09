@@ -8,6 +8,7 @@
 
 #include "../src/Adapter.hh"
 #include "../src/adapter_group.h"
+#include "../src/status_to_string.hh"
 
 using namespace std;
 using namespace pEp;
@@ -40,7 +41,7 @@ int main(int argc, char** argv)
     ::pEp_identity* carol = nullptr;
     ::PEP_STATUS status;
     {
-        pEpLog("creating identity Alice");
+        pEpLog("======== Alice myself()");
         alice = ::new_identity("alice@peptest.ch", NULL, "23", "Alice");
         assert(alice);
         alice->lang[0] = 'e';
@@ -49,26 +50,29 @@ int main(int argc, char** argv)
         cout << "Alice:" << Test::Utils::identity_to_string(alice, debug_info_full) << endl;
     }
     {
-        pEpLog("creating identity Bob");
-        bob = ::new_identity("bob@peptest.ch", NULL, "42", "Bob");
+        pEpLog("======== Bob update_identity()");
+        bob = ::new_identity("bob@peptest.ch", NULL, PEP_OWN_USERID, "Bob");
         assert(bob);
         bob->lang[0] = 'c';
         bob->lang[1] = 'r';
-        status = ::myself(Adapter::session(), bob);
+//        status = ::myself(Adapter::session(), bob);
+        status = ::update_identity(Adapter::session(),bob);
         assert(!status);
         cout << "Bob:" << Test::Utils::identity_to_string(bob, debug_info_full) << endl;
     }
     {
-        pEpLog("creating identity Carol");
-        carol = ::new_identity("carol@peptest.ch", NULL, "42", "Carol");
+        pEpLog("======== Carol update_identity()");
+        carol = ::new_identity("carol@peptest.ch", NULL, PEP_OWN_USERID, "Carol");
         assert(carol);
         carol->lang[0] = 'f';
         carol->lang[1] = 'n';
-        status = ::myself(Adapter::session(), carol);
+//        status = ::myself(Adapter::session(), carol);
+        status = ::update_identity(Adapter::session(),carol);
         assert(!status);
         cout << "Carol:" << Test::Utils::identity_to_string(carol, debug_info_full) << endl;
     }
     {
+        pEpLog("======== sync_initialize()");
         Adapter::sync_initialize(
             Adapter::SyncModes::Async,
             &test_messageToSend,
@@ -76,25 +80,26 @@ int main(int argc, char** argv)
             false);
     }
     {
+        pEpLog("======== adapter_group_create()");
         ::pEp_group* pep_grp1 = nullptr;
-        ::pEp_member* mb_bob = ::new_member(bob);
-        ::pEp_member* mb_carol = ::new_member(carol);
-        cout << "MEMBER: " << endl
-             << Test::Utils::member_to_string(mb_carol, debug_info_full) << endl;
 
+        // Members
         ::identity_list* idl = new_identity_list(bob);
         ::identity_list_add(idl, carol);
         cout << "IDL: " << Test::Utils::identitylist_to_string(idl, debug_info_full) << endl;
 
-        ::pEp_identity* grp_ident = ::new_identity("group1@peptest.ch", NULL, "12", "group1");
+        ::pEp_identity* grp_ident = ::new_identity("group1@peptest.ch", NULL, "432", "group1");
         assert(grp_ident);
         status = ::myself(Adapter::session(), grp_ident);
         assert(!status);
         cout << "grp_ident:" << Test::Utils::identity_to_string(grp_ident, debug_info_full) << endl;
         ::PEP_STATUS status = ::adapter_group_create(Adapter::session(), grp_ident, alice, idl, &pep_grp1);
+        cout << status_to_string(status) << endl;
         assert(!status);
+        assert(pep_grp1);
         cout << "GRP: " << Test::Utils::group_to_string(pep_grp1, debug_info_full) << endl;
     }
+
 
     Adapter::shutdown();
     return 0;
