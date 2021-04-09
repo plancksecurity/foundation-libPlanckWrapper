@@ -196,7 +196,7 @@ namespace pEp {
         return false;
     }
 
-    static ::message *empty_message_copy(const ::message *src, std::string _id = "")
+    static ::message *empty_message_copy(const ::message *src, std::string _id = "", bool get_longmsg = false)
     {
         if (!src)
             return nullptr;
@@ -207,12 +207,32 @@ namespace pEp {
 
         dst->id = dup(src->id);
 
-        if (!emptystr(src->shortmsg))
-            dst->shortmsg = dup(src->shortmsg);
-        else if (!emptystr(src->longmsg))
-            dst->longmsg = dup("pEp");
-        else if (!emptystr(src->longmsg_formatted))
-            dst->longmsg_formatted = dup("<pEp/>");
+        if (get_longmsg) {
+            if (!emptystr(src->shortmsg)) {
+                dst->shortmsg = dup(src->shortmsg);
+            }
+            // We need either longmsg or longmsg_formatted for a "message preview".
+            if (!emptystr(src->longmsg)) {
+                dst->longmsg = dup(src->longmsg);
+            } else {
+                if (!emptystr(src->longmsg_formatted)) {
+                    dst->longmsg_formatted = dup(src->longmsg_formatted);
+                }
+            }
+        } else {
+            // It is a pEp convention to return at least one of shortmsg, longmsg or longmsg_formatted.
+            if (!emptystr(src->shortmsg)) {
+                dst->shortmsg = dup(src->shortmsg);
+            } else {
+                if (!emptystr(src->longmsg)) {
+                    dst->longmsg = dup("pEp");
+                } else {
+                    if (!emptystr(src->longmsg_formatted)) {
+                        dst->longmsg_formatted = dup("<pEp/>");
+                    }
+                }
+            }
+        }
 
         // attachments are never copied
 
@@ -313,7 +333,7 @@ namespace pEp {
 
         ::message *_dst = nullptr;
         PEP_STATUS status = ::decrypt_message(session, src, &_dst, keylist, rating, flags);
-        *dst = empty_message_copy(_dst, _id);
+        *dst = empty_message_copy(_dst, _id, true);
 
         {
             std::lock_guard<std::mutex> l(_mtx);
