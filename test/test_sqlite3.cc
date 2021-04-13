@@ -33,9 +33,9 @@ static int callback(void *NotUsed, int argc, char **argv, char **azColName)
     return 0;
 }
 
-void execute_sql(string stmt)
+void execute_sql(const string &stmt)
 {
-//    pEpLog("execute_sql(\"" + stmt + "\")");
+    //    pEpLog("execute_sql(\"" + stmt + "\")");
     char *zErrMsg = nullptr;
     int rc = sqlite3_exec(db, stmt.c_str(), callback, 0, &zErrMsg);
     if (rc != SQLITE_OK) {
@@ -83,30 +83,18 @@ void create_tables()
     pEpLog("called");
     try {
         string sql;
-        sql = "CREATE TABLE IF NOT EXISTS identities("
-              "id           INTEGER PRIMARY KEY     AUTOINCREMENT,"
-              "address      TEXT    NOT NULL,"
-              "UNIQUE (address));";
 
+        sql = "CREATE TABLE IF NOT EXISTS lists("
+              "address      TEXT     NOT NULL,"
+              "manager_id   TEXT     NOT NULL,"
+              "PRIMARY KEY(address));";
         execute_sql(sql);
 
-        sql = "CREATE TABLE IF NOT EXISTS groups("
-              "id           INTEGER PRIMARY KEY     AUTOINCREMENT,"
-              "address      TEXT    NOT NULL,"
-              "manager_id   INT     NOT NULL,"
-              "UNIQUE (address),"
-              "FOREIGN KEY(manager_id) REFERENCES identities(id) ON DELETE RESTRICT);";
-
-        execute_sql(sql);
-
-        sql = "CREATE TABLE IF NOT EXISTS members("
-              "id           INTEGER PRIMARY KEY     AUTOINCREMENT,"
-              "group_id     INT     NOT NULL,"
-              "ident_id     INT     NOT NULL,"
-              "UNIQUE (group_id, ident_id),"
-              "FOREIGN KEY(group_id) REFERENCES groups(id) ON DELETE CASCADE,"
-              "FOREIGN KEY(ident_id) REFERENCES identities(id) ON DELETE RESTRICT);";
-
+        sql = "CREATE TABLE IF NOT EXISTS member_of("
+              "address      TEXT     NOT NULL,"
+              "list_address TEXT     NOT NULL,"
+              "PRIMARY KEY (address, list_address),"
+              "FOREIGN KEY(list_address) REFERENCES lists(address) ON DELETE CASCADE);";
         execute_sql(sql);
     } catch (...) {
         runtime_error e("create_tables() - failed with exception");
@@ -114,121 +102,69 @@ void create_tables()
     }
 }
 
-void prune_identities()
+void list_add(const string &addr_list, const string &addr_mgr)
 {
-    pEpLog("called");
+    pEpLog("list_add(addr_list: \"" + addr_list + "\"\taddr_mgr: \"" + addr_mgr + "\")");
     try {
-        string sql = "DELETE FROM identities WHERE identities.id NOT IN (SELECT ident_id FROM members) "
-                     "AND  identities.id NOT IN (SELECT manager_id FROM groups) ";
-        execute_sql(sql);
-    } catch (...) {
-        runtime_error e("prune_identities() - failed with exception");
-        throw_with_nested(e);
-    }
-}
-
-void insert_identity(string addr)
-{
-    pEpLog("insert_identity(addr: \"" + addr + "\")");
-    try {
-        string sql;
-        sql = "INSERT OR IGNORE INTO identities (address) VALUES ('" + addr + "');";
-        execute_sql(sql);
-    } catch (...) {
-        runtime_error e("insert_identity(" + addr + ") - failed with exception");
-        throw_with_nested(e);
-    }
-}
-
-void delete_identity(string addr)
-{
-    pEpLog("delete_identity(addr: \"" + addr + "\")");
-    try {
-        string sql;
-        sql = "DELETE FROM identities WHERE identities.address = '" + addr + "'";
-        execute_sql(sql);
-    } catch (...) {
-        throw_with_nested(runtime_error("delete_identity(" + addr + ") - failed with exception"));
-    }
-}
-
-void insert_group(string addr_grp, string addr_mgr)
-{
-    pEpLog("insert_group(addr_grp: \"" + addr_grp + "\"\taddr_mgr: \"" + addr_mgr + "\")");
-    try {
-        insert_identity(addr_mgr);
-        string sql = "INSERT INTO groups(address, manager_id)"
+        string sql = "INSERT INTO lists(address, manager_id)"
                      "VALUES ('" +
-                     addr_grp + "',(SELECT id FROM identities WHERE identities.address = '" +
-                     addr_mgr + "'));";
+                     addr_list + "','" + addr_mgr + "');";
         execute_sql(sql);
     } catch (...) {
-        prune_identities();
-        runtime_error e("insert_group(" + addr_grp + ", " + addr_mgr + ") - failed with exception");
+        runtime_error e(
+            "list_add(addr_list: \"" + addr_list + "\"\taddr_mgr: \"" + addr_mgr +
+            "\") - failed with exception");
         throw_with_nested(e);
     }
 }
 
-
-void delete_group(string addr)
+void list_delete(const string &addr_list)
 {
-    pEpLog("delete_group(addr: \"" + addr + "\")");
+    pEpLog("list_delete(addr_list: \"" + addr_list + "\")");
     try {
         string sql;
-        sql = "DELETE FROM groups WHERE groups.address = '" + addr + "'";
+        sql = "DELETE FROM lists WHERE lists.address = '" + addr_list + "'";
         execute_sql(sql);
-        // dont need to delete the group fk from members table since ON DELETE CASCADE
-        prune_identities();
     } catch (...) {
-        prune_identities();
-        runtime_error e("delete_group(" + addr + ") - failed with exception");
+        runtime_error e("list_delete(addr_list: \"" + addr_list + "\") - failed with exception");
         throw_with_nested(e);
     }
 }
 
-void insert_member(string addr_grp, string addr_member)
+void member_add(const string &addr_list, const string &addr_member)
 {
-    pEpLog("insert_member(addr_grp: \"" + addr_grp + "\"\taddr_member: \"" + addr_member + "\")");
+    pEpLog("member_add(addr_list: \"" + addr_list + "\", addr_member: \"" + addr_member + "\")");
     try {
-        insert_identity(addr_member);
-        string sql = "INSERT INTO members(group_id, ident_id)"
-                     "VALUES ("
-                     "(SELECT id FROM groups WHERE groups.address = '" +
-                     addr_grp +
-                     "'),"
-                     "(SELECT id FROM identities WHERE identities.address = '" +
-                     addr_member + "'));";
+        string sql = "INSERT INTO member_of(address, list_address)"
+                     "VALUES ('" +
+                     addr_member +
+                     "',"
+                     "'" +
+                     addr_list + "');";
         execute_sql(sql);
     } catch (...) {
-        prune_identities();
         runtime_error e(
-            "insert_member(" + addr_grp + ", " + addr_member + ") - failed with exception");
+            "member_add(addr_list: \"" + addr_list + "\", addr_member: \"" + addr_member +
+            "\") - failed with exception");
         throw_with_nested(e);
     }
 }
 
-void delete_member(string addr_grp, string addr_member)
+void member_remove(const string &addr_list, const string &addr_member)
 {
-    pEpLog("delete_member(addr_grp: \"" + addr_grp + "\",addr_member: '\"" + addr_member + "\")");
+    pEpLog("member_remove(addr_list: \"" + addr_list + "\", addr_member: '\"" + addr_member + "\")");
     try {
         string sql;
-        sql = "DELETE FROM members WHERE"
-              "(members.ident_id = (SELECT id FROM identities WHERE identities.address = '" +
-              addr_member +
-              "'))"
-              "AND (members.group_id = (SELECT id FROM groups WHERE groups.address = '" +
-              addr_grp + "'));";
+        sql = "DELETE FROM member_of WHERE"
+              "(member_of.address = '" +
+              addr_member + "') AND (member_of.list_address = '" + addr_list + "');";
         execute_sql(sql);
-        prune_identities();
     } catch (...) {
-        prune_identities();
         runtime_error e(
-            "delete_member(" + addr_grp + ", " + addr_member + ") - failed with exception");
+            "member_remove(" + addr_list + ", " + addr_member + ") - failed with exception");
         throw_with_nested(e);
     }
 }
-
-
 
 int main(int argc, char *argv[])
 {
@@ -238,35 +174,32 @@ int main(int argc, char *argv[])
     try {
         delete_db();
         create_or_open_db();
+        cin >> dummy_in;
         db_config();
         create_tables();
 
-        insert_group("grp1@peptest.org", "alice@peptest.org");
-        insert_group("grp2@peptest.org", "alice@peptest.org");
+        list_add("grp1@peptest.org", "alice@peptest.org");
+        list_add("grp2@peptest.org", "alice@peptest.org");
 
         try {
-            insert_group("grp1@peptest.org", "bob@peptest.org");
+            list_add("grp1@peptest.org", "bob@peptest.org");
             assert(false);
         } catch (const exception &e) {
             print_exception(e);
         }
 
         cin >> dummy_in;
-        insert_member("grp1@peptest.org", "bob@peptest.org");
-        insert_member("grp1@peptest.org", "carol@peptest.org");
-        insert_member("grp1@peptest.org", "joe@peptest.org");
+        member_add("grp1@peptest.org", "bob@peptest.org");
+        member_add("grp1@peptest.org", "carol@peptest.org");
+        member_add("grp1@peptest.org", "joe@peptest.org");
 
         cin >> dummy_in;
-        delete_group("grp1@peptest.org");
+        member_remove("grp1@peptest.org", "joe@peptest.org");
 
         cin >> dummy_in;
-        try {
-            delete_identity("alice@peptest.org");
-            assert(false);
-        } catch (const exception &e) {
-            print_exception(e);
-        }
+        list_delete("grp1@peptest.org");
 
+        cin >> dummy_in;
     } catch (const exception &e) {
         print_exception(e);
     }
