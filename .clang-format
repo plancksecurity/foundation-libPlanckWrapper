@@ -39,3 +39,4 @@ AccessModifierOffset: -4
 AllowShortBlocksOnASingleLine: Always
 IndentPPDirectives: BeforeHash
 Cpp11BracedListStyle: false
+BreakStringLiterals: false
