@@ -37,7 +37,7 @@ namespace pEp {
 #ifdef ANDROID
                     __android_log_print(ANDROID_LOG_DEBUG, "pEpDebugLog", "%s", msg.c_str());
 #else
-                    std::cout << msg << std::endl; //std::endl also flushes
+                    std::cerr << msg << std::endl; //std::endl also flushes
 #endif
                 }
             }
