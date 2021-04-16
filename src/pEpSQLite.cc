@@ -20,7 +20,8 @@ namespace pEp {
         int rc{::sqlite3_open(db_path.c_str(), &db)};
 
         if (rc) {
-            runtime_error e{string("Can't open database (" + db_path + "):" + ::sqlite3_errmsg(db))};
+            ::sqlite3_close(db);
+            runtime_error e{string("Can't open database (" + db_path + "): " + ::sqlite3_errmsg(db))};
             throw (e);
         }
     }
@@ -62,14 +63,19 @@ namespace pEp {
 
     ResultSet pEpSQLite::execute(const string& stmt)
     {
-        pEpLogClass("called");
-        this->resultset.clear();
-        char *zErrMsg = nullptr;
-        int rc = ::sqlite3_exec(db, stmt.c_str(), (int (*)(void *, int, char **, char **)) &callback, this, &zErrMsg);
-        if (rc != SQLITE_OK) {
-            runtime_error e{string("execute: " + string(::sqlite3_errmsg(db)) + ":" + string(zErrMsg))};
-            ::sqlite3_free(zErrMsg);
+        if(db == nullptr) {
+            runtime_error e{string("execute(): - Error: db is not open")};
             throw (e);
+        } else {
+            pEpLogClass("called");
+            this->resultset.clear();
+            char *zErrMsg = nullptr;
+            int rc = ::sqlite3_exec(db, stmt.c_str(), (int (*)(void *, int, char **, char **)) &callback, this, &zErrMsg);
+            if (rc != SQLITE_OK) {
+                runtime_error e{string("execute: " + string(::sqlite3_errmsg(db)) + ":" + string(zErrMsg))};
+                ::sqlite3_free(zErrMsg);
+                throw (e);
+            }
         }
         return resultset;
     }
