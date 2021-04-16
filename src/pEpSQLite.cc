@@ -40,8 +40,8 @@ namespace pEp {
     void pEpSQLite::delete_db()
     {
         pEpLogClass("called");
-        remove(db_path.c_str());
-        if (errno) {
+        int status = remove(db_path.c_str());
+        if (status) {
             runtime_error e{string("could not delete db (" + db_path + "): " + strerror(errno))};
             throw (e);
         }
