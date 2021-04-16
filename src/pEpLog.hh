@@ -72,9 +72,9 @@ namespace pEp {
 // pEpLogger can only print the "thread - file::class::function - <message>" format using this macro
 // WARNING: Some magic is needed
 // Usage:
-// Just create your logger member in your class (public)
+// create your logger obj in your class as a public member (usually)
 // Adapter::pEpLog::pEpLogger logger{"<CLASSNAME>", enabled: true|false};
-// then, create an alias for your logger called "m4gic_logger_n4ame"
+// then, create an alias for your logger called "m4gic_logger_n4ame" as a private member
 // Adapter::pEpLog::pEpLogger& m4gic_logger_n4ame = logger;
 // Thats all.
 // Now in your implementation, to log a message you just write:
