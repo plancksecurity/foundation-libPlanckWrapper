@@ -18,7 +18,7 @@ namespace pEp {
         namespace Log {
             void logH1(string msg)
             {
-                char decoration{ '=' };
+                char decoration{'='};
                 cout << endl
                      << endl
                      << std::string(30, decoration) << ' ' << msg << ' '
@@ -27,7 +27,7 @@ namespace pEp {
 
             void logH2(string msg)
             {
-                char decoration{ '-' };
+                char decoration{'-'};
                 cout << endl
                      << std::string(10, decoration) << ' ' << msg << ' '
                      << std::string(10, decoration) << endl;
@@ -35,7 +35,7 @@ namespace pEp {
         } // namespace Log
 
         namespace Utils {
-            string identity_to_string(::pEp_identity* ident, bool full, int indent)
+            string identity_to_string(::pEp_identity *ident, bool full, int indent)
             {
 
                 stringstream builder;
@@ -79,14 +79,14 @@ namespace pEp {
                 return builder.str();
             }
 
-            std::string identitylist_to_string(::identity_list* idl, bool full, int indent)
+            std::string identitylist_to_string(::identity_list *idl, bool full, int indent)
             {
                 stringstream builder;
                 if (idl != nullptr) {
                     builder << endl;
                     builder << std::string(indent, '\t') << "[" << endl;
                     indent++;
-                    for (::identity_list* curr = idl; curr != nullptr; curr = curr->next) {
+                    for (::identity_list *curr = idl; curr != nullptr; curr = curr->next) {
                         builder << identity_to_string(curr->ident, full, indent) << endl;
                     }
                     indent--;
@@ -98,7 +98,7 @@ namespace pEp {
                 return builder.str();
             }
 
-            string member_to_string(::pEp_member* member, bool full, int indent)
+            string member_to_string(::pEp_member *member, bool full, int indent)
             {
                 stringstream builder;
                 if (member != nullptr) {
@@ -116,14 +116,14 @@ namespace pEp {
                 return builder.str();
             }
 
-            string memberlist_to_string(::member_list* mbl, bool full, int indent)
+            string memberlist_to_string(::member_list *mbl, bool full, int indent)
             {
                 stringstream builder;
                 if (mbl != nullptr) {
                     builder << endl;
                     builder << std::string(indent, '\t') << "[" << endl;
                     indent++;
-                    for (member_list* curr_member = mbl; curr_member != nullptr;
+                    for (member_list *curr_member = mbl; curr_member != nullptr;
                          curr_member = curr_member->next) {
                         builder << member_to_string(curr_member->member, full, indent) << endl;
                     }
@@ -136,7 +136,7 @@ namespace pEp {
                 return builder.str();
             }
 
-            string group_to_string(::pEp_group* group, bool full, int indent)
+            string group_to_string(::pEp_group *group, bool full, int indent)
             {
                 stringstream builder;
                 if (group != nullptr) {
@@ -160,6 +160,18 @@ namespace pEp {
 
                 return builder.str();
             }
+
+            void print_exception(const exception& e, int level)
+            {
+                cerr << string(level, ' ') << "exception: " << e.what() << endl;
+                try {
+                    rethrow_if_nested(e);
+                } catch (const exception& e) {
+                    print_exception(e, level + 1);
+                } catch (...) {
+                }
+            }
+
         } // namespace Utils
     }     // namespace Test
 } // namespace pEp
