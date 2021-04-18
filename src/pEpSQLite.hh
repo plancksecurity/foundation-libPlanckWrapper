@@ -3,7 +3,7 @@
 #ifndef LIBPEPADAPTER_PEPSQLITE_HH
 #define LIBPEPADAPTER_PEPSQLITE_HH
 
-#include "sqlite3.h"
+#include "internal/sqlite3.h"
 #include "pEpLog.hh"
 #include <iostream>
 #include <vector>
