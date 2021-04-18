@@ -1,51 +1,18 @@
 #include "test_pEpSQLite.hh"
-#include "../src/sqlite3.h"
-#include "../src/pEpLog.hh"
 #include "../src/pEpSQLite.hh"
+#include "../src/pEpLog.hh"
 #include "framework/utils.hh"
-#include <exception>
-#include <iostream>
+
 #include <fstream>
-#include <cstdio>
 
 using namespace std;
 using namespace pEp;
 using namespace pEp::Test;
-
-using namespace Test::Log;
-
-ofstream file_create(const string& filename)
-{
-    ofstream outfile{ filename };
-    return outfile;
-}
-
-bool file_exists(const string& filename)
-{
-
-    ifstream ifile(filename.c_str());
-    return (bool)ifile;
-}
-
-void file_delete(const string& filename)
-{
-    int status = remove(filename.c_str());
-    if (status) {
-        runtime_error e{ string("file_delete(\"" + filename + "\") -  " + strerror(errno)) };
-        throw(e);
-    }
-}
-
+using namespace pEp::Test::Log;
+using namespace pEp::Test::Utils;
 
 namespace pEp {
     namespace Test {
-        // Util
-        void ensure_file_not_existing(string path)
-        {
-            while (file_exists(path)) {
-                file_delete(path);
-            }
-        }
         // --------------------------------- FIXTURES ---------------------------------
         // filenames
         string fixture_db_filename_new()
@@ -82,7 +49,7 @@ namespace pEp {
             //            pEpLog("called");
             string path = fixture_db_filename_new();
             //            cout << "fixture: \"" << path << "\" not existing" << endl;
-            ensure_file_not_existing(path);
+            file_ensure_not_existing(path);
             return path;
         }
 
@@ -91,7 +58,7 @@ namespace pEp {
             //            pEpLog("called");
             string path = "existing.db";
             //            cout << "fixture: \"" << path << "\" not existing" << endl;
-            ensure_file_not_existing(path);
+            file_ensure_not_existing(path);
             return path;
         }
 
@@ -100,7 +67,7 @@ namespace pEp {
             //            pEpLog("called");
             //            cout << "creating corrupt db" << endl;
             string path = fixture_db_filename_corrupt();
-            ensure_file_not_existing(path);
+            file_ensure_not_existing(path);
             ofstream db_corrupt = file_create(path);
             db_corrupt << "G4rbage" << endl;
             db_corrupt.close();

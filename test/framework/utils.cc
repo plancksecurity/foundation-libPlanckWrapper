@@ -4,6 +4,8 @@
 #include "utils.hh"
 
 #include <iostream>
+#include <iostream>
+#include <fstream>
 
 #include <pEp/identity_list.h>
 
@@ -18,7 +20,7 @@ namespace pEp {
         namespace Log {
             void logH1(string msg)
             {
-                char decoration{'='};
+                char decoration{ '=' };
                 cout << endl
                      << endl
                      << std::string(30, decoration) << ' ' << msg << ' '
@@ -27,7 +29,7 @@ namespace pEp {
 
             void logH2(string msg)
             {
-                char decoration{'-'};
+                char decoration{ '-' };
                 cout << endl
                      << std::string(10, decoration) << ' ' << msg << ' '
                      << std::string(10, decoration) << endl;
@@ -35,9 +37,9 @@ namespace pEp {
         } // namespace Log
 
         namespace Utils {
+
             string identity_to_string(::pEp_identity *ident, bool full, int indent)
             {
-
                 stringstream builder;
                 if (ident != nullptr) {
                     if (full) {
@@ -161,17 +163,48 @@ namespace pEp {
                 return builder.str();
             }
 
-            void print_exception(const exception& e, int level)
+            void print_exception(const exception &e, int level)
             {
                 cerr << string(level, ' ') << "exception: " << e.what() << endl;
                 try {
                     rethrow_if_nested(e);
-                } catch (const exception& e) {
+                } catch (const exception &e) {
                     print_exception(e, level + 1);
                 } catch (...) {
                 }
             }
 
-        } // namespace Utils
+            // File utils
+            ofstream file_create(const string &filename)
+            {
+                ofstream outfile{ filename };
+                return outfile;
+            }
+
+            bool file_exists(const string &filename)
+            {
+
+                ifstream ifile(filename.c_str());
+                return (bool)ifile;
+            }
+
+            void file_delete(const string &filename)
+            {
+                int status = remove(filename.c_str());
+                if (status) {
+                    runtime_error e{ string(
+                        "file_delete(\"" + filename + "\") -  " + strerror(errno)) };
+                    throw(e);
+                }
+            }
+
+            void file_ensure_not_existing(string path)
+            {
+                while (file_exists(path)) {
+                    file_delete(path);
+                }
+            }
+
+} // namespace Utils
     }     // namespace Test
 } // namespace pEp
