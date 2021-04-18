@@ -11,18 +11,18 @@ namespace pEp {
 
     pEpSQLite::pEpSQLite(std::string db_path) : db_path(db_path)
     {
-        pEpLogClass("called with: db_path = "+ db_path +"");
+        pEpLogClass("called with: db_path = " + db_path + "");
     }
 
     void pEpSQLite::create_or_open_db()
     {
         pEpLogClass("called");
-        int rc{::sqlite3_open(db_path.c_str(), &db)};
+        int rc{ ::sqlite3_open(db_path.c_str(), &db) };
 
         if (rc) {
-            ::sqlite3_close(db);
-            runtime_error e{string("Can't open database (" + db_path + "): " + ::sqlite3_errmsg(db))};
-            throw (e);
+            runtime_error e{ string("Can't open database (" + db_path + "): " + ::sqlite3_errmsg(db)) };
+            close_db();
+            throw(e);
         }
     }
 
@@ -35,16 +35,30 @@ namespace pEp {
     void pEpSQLite::close_db()
     {
         pEpLogClass("called");
-        ::sqlite3_close(db);
+        if (db != nullptr) {
+            ::sqlite3_close(db);
+            db = nullptr;
+        }
     }
+
+    bool pEpSQLite::is_open()
+    {
+        if (db == nullptr) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 
     void pEpSQLite::delete_db()
     {
         pEpLogClass("called");
+        close_db();
         int status = remove(db_path.c_str());
         if (status) {
-            runtime_error e{string("could not delete db (" + db_path + "): " + strerror(errno))};
-            throw (e);
+            runtime_error e{ string("could not delete db (" + db_path + "): " + strerror(errno)) };
+            throw(e);
         }
     }
 
@@ -52,43 +66,56 @@ namespace pEp {
     {
         RSRecord record;
         for (int col = 0; col < argc; col++) {
-            const string key = string{azColName[col]};
+            const string key = string{ azColName[col] };
             // TODO: NULL is not correct, could be a valid value
-            const string val = string{argv[col] ? argv[col] : "NULL"};
-            record.insert({key, val});
+            const string val = string{ argv[col] ? argv[col] : "NULL" };
+            record.insert({ key, val });
         }
         (static_cast<pEpSQLite *>(obj))->resultset.push_back(record);
         return 0;
     }
 
-    ResultSet pEpSQLite::execute(const string& stmt)
+    ResultSet pEpSQLite::execute(const string &stmt)
     {
-        if(db == nullptr) {
-            runtime_error e{string("execute(): - Error: db is not open")};
-            throw (e);
+        if (!is_open()) {
+            runtime_error e{ string("execute(): - Error: db is not open") };
+            throw(e);
         } else {
             pEpLogClass("called");
             this->resultset.clear();
             char *zErrMsg = nullptr;
-            int rc = ::sqlite3_exec(db, stmt.c_str(), (int (*)(void *, int, char **, char **)) &callback, this, &zErrMsg);
+            int rc = ::sqlite3_exec(
+                db,
+                stmt.c_str(),
+                (int (*)(void *, int, char **, char **)) & callback,
+                this,
+                &zErrMsg);
             if (rc != SQLITE_OK) {
-                runtime_error e{string("execute: " + string(::sqlite3_errmsg(db)) + ":" + string(zErrMsg))};
+                runtime_error e{ string(
+                    "execute: " + string(::sqlite3_errmsg(db)) + ":" + string(zErrMsg)) };
                 ::sqlite3_free(zErrMsg);
-                throw (e);
+                throw(e);
             }
         }
         return resultset;
     }
 
-    string pEpSQLite::resultset_to_string(const ResultSet& rs)
+    string pEpSQLite::to_string(const RSRecord &rec)
     {
-        pEpLogClass("called");
         stringstream ss;
+        for (const auto &col : rec) {
+            ss << "[\"" << col.first << "\"] = \"" << col.second << "\"" << endl;
+        }
+        return ss.str();
+    }
+
+    string pEpSQLite::to_string(const ResultSet &rs)
+    {
+        stringstream ss;
+        ss << "ROWCOUNT: " << rs.size() << endl;
         int i = 0;
-        for (const RSRecord& rec : rs) {
-            for (const auto& item : rec) {
-                ss << "RESULTSET[" << i << "][" << item.first << "] = " << item.second << "\"" << endl;
-            }
+        for (const RSRecord &rec : rs) {
+            ss << "ROW[" << i << "]" << endl << to_string(rec);
             i++;
         }
         return ss.str();
@@ -99,4 +126,4 @@ namespace pEp {
         pEpLogClass("called");
         close_db();
     }
-}
+} // namespace pEp

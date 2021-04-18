@@ -26,13 +26,17 @@ namespace pEp {
         // Will not create any dirs
         void create_or_open_db();
         void close_db();
+        bool is_open();
 
         // Delete the database file
         void delete_db();
         ResultSet execute(const std::string& stmt);
-        std::string resultset_to_string(const ResultSet& rs);
 
-        // logging
+        // Utils
+        static std::string to_string(const RSRecord& rec);
+        static std::string to_string(const ResultSet& rs);
+
+        // Logging
         static bool log_enabled;
         Adapter::pEpLog::pEpLogger logger{"pEpSQLite", log_enabled};
         ~pEpSQLite();
