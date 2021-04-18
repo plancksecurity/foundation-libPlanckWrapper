@@ -695,5 +695,9 @@ int main(int argc, char* argv[])
     test_is_open_after_close();
     test_is_open_after_delete_on_open();
     test_is_open_after_delete_on_closed();
+
+    file_ensure_not_existing(fixture_db_filename_new());
+    file_ensure_not_existing(fixture_db_filename_corrupt());
+    file_ensure_not_existing(fixture_db_filename_existing_and_verified());
     return 0;
 }
