@@ -10,7 +10,7 @@ namespace pEp {
     namespace Test {
         namespace Utils {
             template<typename T>
-            std::string vector_to_string(std::vector<T> v)
+            std::string to_string(std::vector<T> v)
             {
                 std::stringstream ss;
                 for (const T& elem : v) {

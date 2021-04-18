@@ -35,8 +35,8 @@ bool debug_info_full = true;
 ::PEP_STATUS test_notifyHandshake(::pEp_identity* _me, ::pEp_identity* _partner, sync_handshake_signal signal)
 {
     cout << "called" << endl;
-    cout << "me: " << Test::Utils::identity_to_string(_me, false) << endl;
-    cout << "partner: " << Test::Utils::identity_to_string(_partner, false) << endl;
+    cout << "me: " << Test::Utils::to_string(_me, false) << endl;
+    cout << "partner: " << Test::Utils::to_string(_partner, false) << endl;
     cout << "Signal: " << signal << endl;
 
     return PEP_STATUS_OK;
@@ -56,7 +56,7 @@ void test_create_alice_me()
     status = ::myself(Adapter::session(), alice);
     cout << "STATUS: " << status_to_string(status) << endl;
     assert(!status);
-    cout << "Alice:" << Test::Utils::identity_to_string(alice, debug_info_full) << endl;
+    cout << "Alice:" << Test::Utils::to_string(alice, debug_info_full) << endl;
 }
 
 void test_create_bob_partner()
@@ -69,7 +69,7 @@ void test_create_bob_partner()
     status = ::update_identity(Adapter::session(), bob);
     cout << "STATUS: " << status_to_string(status) << endl;
     assert(!status);
-    cout << "Bob:" << Test::Utils::identity_to_string(bob, debug_info_full) << endl;
+    cout << "Bob:" << Test::Utils::to_string(bob, debug_info_full) << endl;
 }
 
 void test_create_carol_partner()
@@ -82,7 +82,7 @@ void test_create_carol_partner()
     status = ::update_identity(Adapter::session(), carol);
     cout << "STATUS: " << status_to_string(status) << endl;
     assert(!status);
-    cout << "Carol:" << Test::Utils::identity_to_string(carol, debug_info_full) << endl;
+    cout << "Carol:" << Test::Utils::to_string(carol, debug_info_full) << endl;
 }
 
 void test_setup_and_start_sync()
@@ -94,7 +94,7 @@ void test_setup_and_start_sync()
 void test_group_create(::identity_list* idl)
 {
     logH2("test_group_create");
-    cout << "IDL: " << Test::Utils::identitylist_to_string(idl, debug_info_full) << endl;
+    cout << "IDL: " << Test::Utils::to_string(idl, debug_info_full) << endl;
 
     cout << "create group identity" << endl;
     grp_ident = ::new_identity("group1@peptest.ch", NULL, "432", "group1");
@@ -102,7 +102,7 @@ void test_group_create(::identity_list* idl)
     status = ::myself(Adapter::session(), grp_ident);
     cout << "STATUS: " << status_to_string(status) << endl;
     assert(!status);
-    cout << "grp_ident:" << Test::Utils::identity_to_string(grp_ident, debug_info_full) << endl;
+    cout << "grp_ident:" << Test::Utils::to_string(grp_ident, debug_info_full) << endl;
 
     cout << "adapter_group_create()" << endl;
     ::pEp_group* pep_grp1 = nullptr;
@@ -110,7 +110,7 @@ void test_group_create(::identity_list* idl)
     cout << "STATUS: " << status_to_string(status) << endl;
     assert(!status);
     assert(pep_grp1);
-    cout << "GRP: " << Test::Utils::group_to_string(pep_grp1, debug_info_full) << endl;
+    cout << "GRP: " << Test::Utils::to_string(pep_grp1, debug_info_full) << endl;
 }
 
 void test_group_invite_member(::pEp_identity* ident)

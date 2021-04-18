@@ -38,7 +38,7 @@ namespace pEp {
 
         namespace Utils {
 
-            string identity_to_string(::pEp_identity *ident, bool full, int indent)
+            string to_string(::pEp_identity *ident, bool full, int indent)
             {
                 stringstream builder;
                 if (ident != nullptr) {
@@ -81,7 +81,7 @@ namespace pEp {
                 return builder.str();
             }
 
-            std::string identitylist_to_string(::identity_list *idl, bool full, int indent)
+            std::string to_string(::identity_list *idl, bool full, int indent)
             {
                 stringstream builder;
                 if (idl != nullptr) {
@@ -89,7 +89,7 @@ namespace pEp {
                     builder << std::string(indent, '\t') << "[" << endl;
                     indent++;
                     for (::identity_list *curr = idl; curr != nullptr; curr = curr->next) {
-                        builder << identity_to_string(curr->ident, full, indent) << endl;
+                        builder << to_string(curr->ident, full, indent) << endl;
                     }
                     indent--;
                     builder << std::string(indent, '\t') << "]";
@@ -100,14 +100,14 @@ namespace pEp {
                 return builder.str();
             }
 
-            string member_to_string(::pEp_member *member, bool full, int indent)
+            string to_string(::pEp_member *member, bool full, int indent)
             {
                 stringstream builder;
                 if (member != nullptr) {
                     builder << std::string(indent, '\t') << "{" << endl;
                     indent++;
                     builder << std::string(indent, '\t')
-                            << "ident: " << identity_to_string(member->ident, full, indent) << endl;
+                            << "ident: " << to_string(member->ident, full, indent) << endl;
                     builder << std::string(indent, '\t') << "joined: " << member->joined << endl;
                     indent--;
                     builder << std::string(indent, '\t') << "}";
@@ -118,7 +118,7 @@ namespace pEp {
                 return builder.str();
             }
 
-            string memberlist_to_string(::member_list *mbl, bool full, int indent)
+            string to_string(::member_list *mbl, bool full, int indent)
             {
                 stringstream builder;
                 if (mbl != nullptr) {
@@ -127,7 +127,7 @@ namespace pEp {
                     indent++;
                     for (member_list *curr_member = mbl; curr_member != nullptr;
                          curr_member = curr_member->next) {
-                        builder << member_to_string(curr_member->member, full, indent) << endl;
+                        builder << to_string(curr_member->member, full, indent) << endl;
                     }
                     indent--;
                     builder << std::string(indent, '\t') << "]";
@@ -138,7 +138,7 @@ namespace pEp {
                 return builder.str();
             }
 
-            string group_to_string(::pEp_group *group, bool full, int indent)
+            string to_string(::pEp_group *group, bool full, int indent)
             {
                 stringstream builder;
                 if (group != nullptr) {
@@ -146,13 +146,13 @@ namespace pEp {
                     builder << std::string(indent, '\t') << "{" << endl;
                     indent++;
                     builder << std::string(indent, '\t') << "group_identity: "
-                            << identity_to_string(group->group_identity, full, indent) << endl;
+                            << to_string(group->group_identity, full, indent) << endl;
                     builder << std::string(indent, '\t')
-                            << "manager: " << identity_to_string(group->manager, full, indent)
+                            << "manager: " << to_string(group->manager, full, indent)
                             << endl;
                     builder << std::string(indent, '\t') << "active: " << group->active << endl;
                     builder << std::string(indent, '\t')
-                            << "members: " << memberlist_to_string(group->members, full, indent)
+                            << "members: " << to_string(group->members, full, indent)
                             << endl;
                     indent--;
                     builder << std::string(indent, '\t') << "]";
@@ -205,6 +205,6 @@ namespace pEp {
                 }
             }
 
-} // namespace Utils
+        } // namespace Utils
     }     // namespace Test
 } // namespace pEp
