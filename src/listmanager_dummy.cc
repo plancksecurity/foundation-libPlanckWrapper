@@ -99,7 +99,12 @@ namespace pEp {
     void ListManagerDummy::list_add(const std::string& addr_list, const std::string& addr_mgr)
     {
         pEpLogClass("list_add(addr_list: \"" + addr_list + "\", addr_mgr: \"" + addr_mgr + "\")");
-        ensure_db_initialized();
+        if (list_exists(addr_list)) {
+            AlreadyExistsException e{ "list_add(addr_list: \"" + addr_list + "\", addr_mgr: \"" +
+                                      addr_mgr + "\") - List already exists" };
+            throw e;
+        }
+
         try {
             string sql = "INSERT INTO lists(address, moderator_address) VALUES ('" + addr_list +
                          "','" + addr_mgr + "');";
@@ -116,7 +121,12 @@ namespace pEp {
     void ListManagerDummy::list_delete(const std::string& addr_list)
     {
         pEpLogClass("list_delete(addr_list: \"" + addr_list + "\")");
-        ensure_db_initialized();
+        if (!list_exists(addr_list)) {
+            DoesNotExistException e{ "list_delete(addr_list: \"" + addr_list +
+                                     "\") - List does not exist" };
+            throw e;
+        }
+
         try {
             string sql;
             sql = "DELETE FROM lists WHERE lists.address = '" + addr_list + "';";
@@ -133,7 +143,12 @@ namespace pEp {
     {
         pEpLogClass(
             "member_add(addr_list: \"" + addr_list + "\", addr_member: \"" + addr_member + "\")");
-        ensure_db_initialized();
+        if (member_exists(addr_list, addr_member)) {
+            AlreadyExistsException e{ "member_add(addr_list: \"" + addr_list + "\", addr_member: \"" +
+                                      addr_member + "\") - member already exists" };
+            throw e;
+        }
+
         try {
             string sql = "INSERT INTO member_of(address, list_address) VALUES ('" + addr_member +
                          "', '" + addr_list + "');";
@@ -150,7 +165,13 @@ namespace pEp {
     {
         pEpLogClass(
             "member_remove(addr_list: \"" + addr_list + "\", addr_member: '\"" + addr_member + "\")");
-        ensure_db_initialized();
+        if (!member_exists(addr_list, addr_member)) {
+            DoesNotExistException e{ "member_remove(addr_list: \"" + addr_list +
+                                     "\", addr_member: '\"" + addr_member +
+                                     "\") - member does not exist" };
+            throw e;
+        }
+
         try {
             string sql;
             sql = "DELETE FROM member_of WHERE (member_of.address = '" + addr_member +
@@ -191,7 +212,12 @@ namespace pEp {
     std::string ListManagerDummy::moderator(const std::string& addr_list)
     {
         pEpLogClass("moderator(list_address:\"" + addr_list + "\")");
-        ensure_db_initialized();
+        if (!list_exists(addr_list)) {
+            DoesNotExistException e{ "moderator(list_address:\"" + addr_list +
+                                     "\") - List does not exist" };
+            throw e;
+        }
+
         string ret;
         ResultSet rs;
 
@@ -220,7 +246,12 @@ namespace pEp {
     std::vector<std::string> ListManagerDummy::members(const std::string& addr_list)
     {
         pEpLogClass("members(list_address:\"" + addr_list + "\")");
-        ensure_db_initialized();
+        if (!list_exists(addr_list)) {
+            DoesNotExistException e{ "members(list_address:\"" + addr_list +
+                                     "\") - List does not exist" };
+            throw e;
+        }
+
         vector<string> ret;
         ResultSet rs;
 
