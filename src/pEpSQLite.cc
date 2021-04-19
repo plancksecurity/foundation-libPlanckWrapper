@@ -132,6 +132,32 @@ namespace pEp {
         return ss.str();
     }
 
+    //Helper
+    int pEpSQLite::eval_sql_count(const ResultSet& rs, const string& countfieldname)
+    {
+        int rescount = 0;
+        // Get row
+        RSRecord rec{};
+        if (rs.size() != 1) {
+            runtime_error e{ "ListManagerDummy: eval_sql_count() - row count != 1" };
+            throw_with_nested(e);
+        }
+        try {
+            rec = rs.at(0);
+        } catch (...) {
+            runtime_error e{ "ListManagerDummy: eval_sql_count() - cant get row nr 0" };
+            throw_with_nested(e);
+        }
+        // Get field
+        try {
+            rescount = stoi(rec.at(countfieldname));
+        } catch (...) {
+            runtime_error e{ "ListManagerDummy: eval_sql_count() - field not existing" };
+            throw_with_nested(e);
+        }
+        return rescount;
+    }
+
     pEpSQLite::~pEpSQLite()
     {
         pEpLogClass("called");

@@ -35,6 +35,7 @@ namespace pEp {
         // Utils
         static std::string to_string(const RSRecord& rec);
         static std::string to_string(const ResultSet& rs);
+        static int eval_sql_count(const ResultSet& rs, const std::string& countfieldname);
 
         // Logging
         static bool log_enabled;
