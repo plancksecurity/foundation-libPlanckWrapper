@@ -171,33 +171,6 @@ PEP_STATUS adapter_group_remove_member(
         pEp_identity *group_member
 );
 
-/**
- *  <!--       adapter_group_rating()       -->
- *
- *  @brief      Get the rating for this group - if the caller is the manager, this will return the aggregate rating
- *              of group members. For members, this will return the rating of the group_identity
- *
- *  @param[in]      session             associated session object
- *  @param[in]      group_identity      the pEp_identity object representing the group. Must contain at least
- *                                      a user_id and address
- *  @param[in]      manager             the pEp_identity object representing the member to remove. Must contain
- *                                      a user_id and address
- *  @param[out]     rating              the group rating
- *
- *  @retval         PEP_STATUS_OK       on success
- *                  error               on failure
- *
- *  @ownership      FIXME
- *
- */
-DYNAMIC_API PEP_STATUS adapter_group_rating(
-        PEP_SESSION session,
-        pEp_identity *group_identity,
-        pEp_identity *manager,
-        PEP_rating *rating
-);
-
-
 
 /*************************************************************************************************
  * Group query functions
@@ -219,10 +192,7 @@ DYNAMIC_API PEP_STATUS adapter_group_rating(
  *
  */
 
-//DYNAMIC_API PEP_STATUS group_query_groups(
-//        PEP_SESSION session,
-//        identity_list **groups
-//);
+DYNAMIC_API PEP_STATUS group_query_groups(PEP_SESSION session, identity_list **groups);
 
 /**
  *  <!--       group_query_manager()       -->
@@ -240,11 +210,11 @@ DYNAMIC_API PEP_STATUS adapter_group_rating(
  *
  */
 
-//DYNAMIC_API PEP_STATUS group_query_manager(
-//        PEP_SESSION session,
-//        const pEp_identity *const group,
-//        pEp_identity **manager
-//);
+DYNAMIC_API PEP_STATUS group_query_manager(
+        PEP_SESSION session,
+        const pEp_identity *const group,
+        pEp_identity **manager
+);
 
 /**
  *  <!--       group_query_members()       -->
@@ -262,11 +232,11 @@ DYNAMIC_API PEP_STATUS adapter_group_rating(
  *
  */
 
-//DYNAMIC_API PEP_STATUS group_query_members(
-//        PEP_SESSION session,
-//        const pEp_identity *const group,
-//        identity_list **members
-//);
+DYNAMIC_API PEP_STATUS group_query_members(
+        PEP_SESSION session,
+        const pEp_identity *const group,
+        identity_list **members
+);
 
 
 #ifdef __cplusplus

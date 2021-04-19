@@ -56,40 +56,30 @@ PEP_STATUS adapter_group_remove_member(
     return ::group_remove_member(session, group_identity, group_member);
 }
 
-DYNAMIC_API PEP_STATUS adapter_group_rating(
-    PEP_SESSION session,
-    pEp_identity *group_identity,
-    pEp_identity *manager,
-    PEP_rating *rating)
-{
-    pEpLog("called");
-    return ::group_rating(session, group_identity, manager, rating);
-}
 
 /*************************************************************************************************
  * Group query functions
  *************************************************************************************************/
 
+DYNAMIC_API PEP_STATUS group_query_groups(PEP_SESSION session, identity_list **groups)
+{
+    pEpLog("called");
+    return PEP_STATUS_OK;
+}
 
-//DYNAMIC_API PEP_STATUS group_query_groups(PEP_SESSION session, identity_list **groups)
-//{
-//    pEpLog("called");
-//    return PEP_STATUS_OK;
-//}
-//
-//DYNAMIC_API PEP_STATUS
-//group_query_manager(PEP_SESSION session, const pEp_identity *const group, pEp_identity **manager)
-//{
-//    pEpLog("called");
-//    return PEP_STATUS_OK;
-//}
-//
-//DYNAMIC_API PEP_STATUS
-//group_query_members(PEP_SESSION session, const pEp_identity *const group, identity_list **members)
-//{
-//    pEpLog("called");
-//    return PEP_STATUS_OK;
-//}
+DYNAMIC_API PEP_STATUS
+group_query_manager(PEP_SESSION session, const pEp_identity *const group, pEp_identity **manager)
+{
+    pEpLog("called");
+    return PEP_STATUS_OK;
+}
+
+DYNAMIC_API PEP_STATUS
+group_query_members(PEP_SESSION session, const pEp_identity *const group, identity_list **members)
+{
+    pEpLog("called");
+    return PEP_STATUS_OK;
+}
 
 #ifdef __cplusplus
 }
