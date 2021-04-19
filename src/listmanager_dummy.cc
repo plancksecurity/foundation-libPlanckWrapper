@@ -21,7 +21,7 @@ namespace pEp {
                 db.create_or_open_db();
             } catch (...) {
                 db.close_db();
-                runtime_error e("ensure_db_initialized() - error opening db");
+                runtime_error e("ListManagerDummy - error opening db");
                 throw_with_nested(e);
             }
         }
@@ -31,7 +31,7 @@ namespace pEp {
                 create_tables();
             } catch (...) {
                 db.close_db();
-                runtime_error e("ensure_db_initialized() - db init failed");
+                runtime_error e("ListManagerDummy - db init failed");
                 throw_with_nested(e);
             }
             is_db_initialized = true;
@@ -46,7 +46,7 @@ namespace pEp {
             sql = "PRAGMA foreign_keys=ON";
             db.execute(sql);
         } catch (...) {
-            runtime_error e("db_config() - failed with exception");
+            runtime_error e("ListManagerDummy - db config failed");
             throw_with_nested(e);
         }
     }
@@ -70,7 +70,7 @@ namespace pEp {
                   "FOREIGN KEY(list_address) REFERENCES lists(address) ON DELETE CASCADE);";
             db.execute(sql);
         } catch (...) {
-            runtime_error e("create_tables() - failed with exception");
+            runtime_error e("ListManagerDummy - create tables failed");
             throw_with_nested(e);
         }
     }
@@ -89,7 +89,7 @@ namespace pEp {
         try {
             db.delete_db();
         } catch (...) {
-            runtime_error e("delete_db() - failed with exception");
+            runtime_error e("ListManagerDummy: delete_db() failed");
             throw_with_nested(e);
         }
     }
@@ -106,8 +106,8 @@ namespace pEp {
             db.execute(sql);
         } catch (...) {
             runtime_error e(
-                "list_add(addr_list: \"" + addr_list + "\"\taddr_mgr: \"" + addr_mgr +
-                "\") - failed with exception");
+                "ListManagerDummy: list_add(addr_list: \"" + addr_list + "\"\taddr_mgr: \"" +
+                addr_mgr + "\") - failed with exception");
             throw_with_nested(e);
         }
     }
@@ -122,7 +122,9 @@ namespace pEp {
             sql = "DELETE FROM lists WHERE lists.address = '" + addr_list + "';";
             db.execute(sql);
         } catch (...) {
-            runtime_error e("list_delete(addr_list: \"" + addr_list + "\") - failed with exception");
+            runtime_error e(
+                "ListManagerDummy: list_delete(addr_list: \"" + addr_list +
+                "\") - failed with exception");
             throw_with_nested(e);
         }
     }
@@ -139,8 +141,8 @@ namespace pEp {
             db.execute(sql);
         } catch (...) {
             runtime_error e(
-                "member_add(addr_list: \"" + addr_list + "\", addr_member: \"" + addr_member +
-                "\") - failed with exception");
+                "ListManagerDummy: member_add(addr_list: \"" + addr_list + "\", addr_member: \"" +
+                addr_member + "\") - failed with exception");
             throw_with_nested(e);
         }
     }
@@ -158,7 +160,8 @@ namespace pEp {
             db.execute(sql);
         } catch (...) {
             runtime_error e(
-                "member_remove(" + addr_list + ", " + addr_member + ") - failed with exception");
+                "ListManagerDummy: member_remove(" + addr_list + ", " + addr_member +
+                ") - failed with exception");
             throw_with_nested(e);
         }
     }
@@ -176,7 +179,7 @@ namespace pEp {
             sql = "SELECT address FROM lists";
             rs = db.execute(sql);
         } catch (...) {
-            runtime_error e("lists() -  failed with exception");
+            runtime_error e("ListManagerDummy: lists() failed");
             throw_with_nested(e);
         }
 
@@ -190,7 +193,7 @@ namespace pEp {
     // public
     std::string ListManagerDummy::moderator(const std::string& list_address)
     {
-        pEpLogClass("called");
+        pEpLogClass("moderator(list_address:\"" + list_address + "\")");
         ensure_db_initialized();
         string ret;
         ResultSet rs;
@@ -202,7 +205,8 @@ namespace pEp {
                   list_address + "';";
             rs = db.execute(sql);
         } catch (...) {
-            runtime_error e("lists() -  failed with exception");
+            runtime_error e(
+                "ListManagerDummy: moderator(list_address:\"" + list_address + "\") - failed");
             throw_with_nested(e);
         }
 
@@ -218,7 +222,7 @@ namespace pEp {
     // public
     std::vector<std::string> ListManagerDummy::members(const std::string& list_address)
     {
-        pEpLogClass("called");
+        pEpLogClass("members(list_address:\"" + list_address + "\")");
         ensure_db_initialized();
         vector<string> ret;
         ResultSet rs;
@@ -230,7 +234,7 @@ namespace pEp {
                   list_address + "'";
             rs = db.execute(sql);
         } catch (...) {
-            runtime_error e("lists() -  failed with exception");
+            runtime_error e("ListManagerDummy: members(list_address:\"" + list_address + "\")");
             throw_with_nested(e);
         }
 
