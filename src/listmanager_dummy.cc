@@ -244,6 +244,76 @@ namespace pEp {
         return ret;
     }
 
+    bool ListManagerDummy::list_exists(const std::string& addr_list)
+    {
+        pEpLogClass("list_exists(addr_list:\"" + addr_list + "\")");
+        bool ret{ false };
+        ensure_db_initialized();
+
+        ResultSet rs;
+        int rescount = 0;
+        try {
+            string sql;
+            sql = "SELECT COUNT(address) AS rescount "
+                  "FROM lists "
+                  "WHERE address = '" +
+                  addr_list + "';";
+            rs = db.execute(sql);
+            rescount = pEpSQLite::eval_sql_count(rs, "rescount");
+        } catch (...) {
+            DBException e{ "ListManagerDummy: list_exists(addr_list:\"" + addr_list + "\")" };
+            throw_with_nested(e);
+        }
+        // Check FATAL inconsistency
+        if (rescount > 1) {
+            DBException e{ "ListManagerDummy: list_exists(addr_list:\"" + addr_list +
+                           "\") - FATAL DB CONSTRAINT ERROR: list exists more than once" };
+            throw_with_nested(e);
+        }
+
+        if (rescount == 1) {
+            ret = true;
+        }
+        return ret;
+    }
+
+    bool ListManagerDummy::member_exists(const std::string& addr_list, const std::string& addr_member)
+    {
+        pEpLogClass(
+            "member_exists(addr_list:\"" + addr_list + "\", addr_member:\"" + addr_member + "\")");
+        bool ret{ false };
+        ensure_db_initialized();
+
+        ResultSet rs;
+        int rescount = 0;
+        try {
+            string sql;
+            sql = "SELECT COUNT(address) AS rescount "
+                  "FROM member_of "
+                  "WHERE (address = '" +
+                  addr_member + "' AND list_address = '" + addr_list + "');";
+            rs = db.execute(sql);
+            rescount = pEpSQLite::eval_sql_count(rs, "rescount");
+        } catch (...) {
+            DBException e{ "member_exists(addr_list:\"" + addr_list + "\", addr_member:\"" +
+                           addr_member + "\")" };
+            throw_with_nested(e);
+        }
+        // Check FATAL inconsistency
+        if (rescount > 1) {
+            DBException e{ "member_exists(addr_list:\"" + addr_list + "\", addr_member:\"" +
+                           addr_member +
+                           "\") - FATAL DB CONSTRAINT ERROR: list exists more than once" };
+            throw_with_nested(e);
+        }
+
+        if (rescount == 1) {
+            ret = true;
+        }
+        return ret;
+    }
+
+
     // public
     ListManagerDummy::~ListManagerDummy()
     {

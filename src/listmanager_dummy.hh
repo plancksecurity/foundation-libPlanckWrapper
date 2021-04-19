@@ -21,8 +21,10 @@ namespace pEp {
         void member_remove(const std::string& addr_list, const std::string& addr_member);
         // Query
         std::vector<std::string> lists();
-        std::string moderator(const std::string& list_address);
-        std::vector<std::string> members(const std::string& list_address);
+        std::string moderator(const std::string& addr_list);
+        std::vector<std::string> members(const std::string& addr_list);
+        bool list_exists(const std::string& addr_list);
+        bool member_exists(const std::string& addr_list, const std::string& addr_member);
         // db
         void close_db();
         void delete_db();
