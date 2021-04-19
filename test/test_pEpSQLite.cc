@@ -404,7 +404,7 @@ namespace pEp {
                     to_string(i) + "');");
                 //                cout << "RESULT: " << endl << pEpSQLite::to_string(rs) << endl;
                 if (i % 2) {
-                    if (rs.size() != 0) {
+                    if (!rs.empty()) {
                         runtime_error e{ "Exception verifying database content" };
                         throw(e);
                     }

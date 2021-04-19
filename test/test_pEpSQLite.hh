@@ -51,7 +51,6 @@ namespace pEp {
         pEpSQLite fixture_db_open_after_close();
         // tables
         pEpSQLite fixture_db_open_with_tables_of_new();
-        pEpSQLite fixture_db_open_with_tables_of_corrupt();
         // content
         pEpSQLite fixture_db_open_with_tables_and_content();
         // delete
