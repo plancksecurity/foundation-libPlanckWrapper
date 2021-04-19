@@ -66,7 +66,7 @@ namespace pEp {
                 this->set_instancename(to_string(auto_instance_nr));
             }
 
-            void pEpLogger::log(const string& msg)
+            void pEpLogger::log(const string& msg) const
             {
                 std::stringstream msg_;
                 msg_ << std::this_thread::get_id();
@@ -76,34 +76,34 @@ namespace pEp {
                 this->logRaw(msg_.str());
             }
 
-            void pEpLogger::logRaw(const string& msg)
+            void pEpLogger::logRaw(const string& msg) const
             {
                 if (this->is_enabled) {
                     _log(msg);
                 }
             }
 
-            void pEpLogger::set_enabled(const bool& is_enabled)
+            void pEpLogger::set_enabled(const bool& enabled)
             {
-                this->is_enabled = is_enabled;
+                this->is_enabled = enabled;
             }
 
-            bool pEpLogger::get_enabled()
+            bool pEpLogger::get_enabled() const
             {
                 return this->is_enabled;
             }
 
-            string pEpLogger::get_classname()
+            string pEpLogger::get_classname() const
             {
                 return this->classname;
             }
 
-            void pEpLogger::set_instancename(const string& instancename)
+            void pEpLogger::set_instancename(const string& name)
             {
-                this->instancename = instancename;
+                this->instancename = name;
             }
 
-            string pEpLogger::get_instancename()
+            string pEpLogger::get_instancename() const
             {
                 return this->instancename;
             }

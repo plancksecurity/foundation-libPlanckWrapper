@@ -91,7 +91,7 @@ namespace pEp {
             msg_ << " - " << this->m4gic_logger_n4ame.get_classname();                               \
             msg_ << "[" << this->m4gic_logger_n4ame.get_instancename() << "]";            \
             msg_ << "::" << __FUNCTION__; \
-            msg_ << " - " << msg;                                                                \
+            msg_ << " - " << (msg);                                                                \
             this->m4gic_logger_n4ame.logRaw(msg_.str());                                               \
         } while (0)
 #endif // NDEBUG
@@ -119,15 +119,15 @@ namespace pEp {
                 pEpLogger() = delete;
                 pEpLogger(const std::string& classname, const bool& enabled);
                 // Print a logging message in the format "thread - classname[instancename] - <msg>"
-                void log(const std::string& msg);
+                void log(const std::string& msg) const;
                 // Prints just "<msg>"
-                void logRaw(const std::string& msg);
-                void set_enabled(const bool& is_enabled);
-                bool get_enabled();
-                std::string get_classname();
+                void logRaw(const std::string& msg) const;
+                void set_enabled(const bool& enabled);
+                bool get_enabled() const;
+                std::string get_classname() const;
                 // If never set, the default instancename is a unique number
-                void set_instancename(const std::string& instancename);
-                std::string get_instancename();
+                void set_instancename(const std::string& name);
+                std::string get_instancename() const;
             private:
                 static int auto_instance_nr;
                 bool is_enabled;
