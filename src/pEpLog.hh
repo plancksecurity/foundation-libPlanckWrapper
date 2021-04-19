@@ -27,29 +27,29 @@
 
 // pEpLog is to be used in a non-class/object context
 #ifdef NDEBUG
-#define pEpLog(msg)                                                                            \
+    #define pEpLog(msg)                                                                            \
         do {                                                                                       \
         } while (0)
 #else
-#define pEpLog(msg)                                                                            \
+    #define pEpLog(msg)                                                                            \
         do {                                                                                       \
-            std::stringstream msg_;                                                              \
-            msg_ << std::this_thread::get_id();                                               \
-            msg_ << " - " << __FILE__ << "::" << __FUNCTION__;      \
-            msg_ << " - " << msg;                                                                \
-            pEp::Adapter::pEpLog::log(msg_.str());                                               \
+            std::stringstream msg_;                                                                \
+            msg_ << std::this_thread::get_id();                                                    \
+            msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                     \
+            msg_ << " - " << msg;                                                                  \
+            pEp::Adapter::pEpLog::log(msg_.str());                                                 \
         } while (0)
 #endif // NDEBUG
 
 // pEpLogRaw the same as pEpLog, but does not print anything except the supplied msg
 #ifdef NDEBUG
-#define pEpLogRaw(msg)                                                                            \
+    #define pEpLogRaw(msg)                                                                         \
         do {                                                                                       \
         } while (0)
 #else
-#define pEpLogRaw(msg)                                                                            \
+    #define pEpLogRaw(msg)                                                                         \
         do {                                                                                       \
-            pEp::Adapter::pEpLog::log(msg_.str());                                               \
+            pEp::Adapter::pEpLog::log(msg_.str());                                                 \
         } while (0)
 #endif // NDEBUG
 
@@ -60,12 +60,11 @@ namespace pEp {
             void log(const std::string& msg);
             void set_enabled(const bool& is_enabled);
             bool get_enabled();
-        } // pEp
-    } // Adapter
-} // pEpLog
+        } // namespace pEpLog
+    }     // namespace Adapter
+} // namespace pEp
 
 // --------------------------------------------------------------------------------------------------
-
 
 
 // pEpLogClass is to be used in a class
@@ -80,19 +79,19 @@ namespace pEp {
 // Now in your implementation, to log a message you just write:
 // pEpLogClass("my great logging message");
 #ifdef NDEBUG
-#define pEpLogClass(msg)                                                                            \
+    #define pEpLogClass(msg)                                                                       \
         do {                                                                                       \
         } while (0)
 #else
-#define pEpLogClass(msg)                                                                            \
+    #define pEpLogClass(msg)                                                                       \
         do {                                                                                       \
-            std::stringstream msg_;                                                              \
-            msg_ << std::this_thread::get_id();                                               \
-            msg_ << " - " << this->m4gic_logger_n4ame.get_classname();                               \
-            msg_ << "[" << this->m4gic_logger_n4ame.get_instancename() << "]";            \
-            msg_ << "::" << __FUNCTION__; \
+            std::stringstream msg_;                                                                \
+            msg_ << std::this_thread::get_id();                                                    \
+            msg_ << " - " << this->m4gic_logger_n4ame.get_classname();                             \
+            msg_ << "[" << this->m4gic_logger_n4ame.get_instancename() << "]";                     \
+            msg_ << "::" << __FUNCTION__;                                                          \
             msg_ << " - " << (msg);                                                                \
-            this->m4gic_logger_n4ame.logRaw(msg_.str());                                               \
+            this->m4gic_logger_n4ame.logRaw(msg_.str());                                           \
         } while (0)
 #endif // NDEBUG
 
@@ -101,13 +100,13 @@ namespace pEp {
 // You also need to set up the logger in your class as for pEpLogClass
 // The only advantage of this macro is that is compiled away to nothing with NDEBUG
 #ifdef NDEBUG
-#define pEpLogRawClass(msg)                                                                            \
+    #define pEpLogRawClass(msg)                                                                    \
         do {                                                                                       \
         } while (0)
 #else
-#define pEpLogRawClass(msg)                                                                            \
+    #define pEpLogRawClass(msg)                                                                    \
         do {                                                                                       \
-            this->m4gic_logger_n4ame.logRaw(msg_.str());                                               \
+            this->m4gic_logger_n4ame.logRaw(msg_.str());                                           \
         } while (0)
 #endif // NDEBUG
 
@@ -128,6 +127,7 @@ namespace pEp {
                 // If never set, the default instancename is a unique number
                 void set_instancename(const std::string& name);
                 std::string get_instancename() const;
+
             private:
                 static int auto_instance_nr;
                 bool is_enabled;
@@ -135,7 +135,7 @@ namespace pEp {
                 std::string instancename;
             };
         } // namespace pEpLog
-    } // namespace Adapter
+    }     // namespace Adapter
 } // namespace pEp
 
 
