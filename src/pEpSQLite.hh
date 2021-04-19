@@ -19,14 +19,14 @@ namespace pEp {
         pEpSQLite() = delete;
 
         // The database file as a constant for the obj lifetime
-        pEpSQLite(std::string db_path);
-        std::string get_db_path();
+        explicit pEpSQLite(const std::string& db_path);
+        std::string get_db_path() const;
 
         // Creates the database file not existsing
         // Will not create any dirs
         void create_or_open_db();
         void close_db();
-        bool is_open();
+        bool is_open() const;
 
         // Delete the database file
         void delete_db();

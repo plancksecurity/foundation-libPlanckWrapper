@@ -9,7 +9,7 @@ using namespace std;
 namespace pEp {
     bool pEpSQLite::log_enabled = false;
 
-    pEpSQLite::pEpSQLite(std::string db_path) : db_path(db_path)
+    pEpSQLite::pEpSQLite(const std::string& db_path) : db_path(db_path)
     {
         pEpLogClass("called with: db_path = " + db_path + "");
     }
@@ -26,7 +26,7 @@ namespace pEp {
         }
     }
 
-    string pEpSQLite::get_db_path()
+    string pEpSQLite::get_db_path() const
     {
         pEpLogClass("called");
         return db_path;
@@ -41,7 +41,7 @@ namespace pEp {
         }
     }
 
-    bool pEpSQLite::is_open()
+    bool pEpSQLite::is_open() const
     {
         if (db == nullptr) {
             return false;
