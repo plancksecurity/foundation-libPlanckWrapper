@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstdio>
 #include <stdexcept>
+#include <string>
 
 using namespace std;
 
@@ -11,7 +12,7 @@ namespace pEp {
 
     pEpSQLite::pEpSQLite(const std::string &db_path) : db_path(db_path)
     {
-        pEpLogClass("called with: db_path = " + db_path + "");
+        pEpLogClass("called with db_path: " + db_path + "");
     }
 
     void pEpSQLite::create_or_open_db()
@@ -20,7 +21,9 @@ namespace pEp {
         int rc{ ::sqlite3_open(db_path.c_str(), &db) };
 
         if (rc) {
-            runtime_error e{ string("Can't open database (" + db_path + "): " + ::sqlite3_errmsg(db)) };
+            runtime_error e{ "pEpSQLite: create_or_open_db(\"" + db_path +
+                             "\") - failed with sqlite3 error: " + std::to_string(rc) + " - " +
+                             ::sqlite3_errmsg(db) };
             close_db();
             throw(e);
         }
@@ -57,7 +60,8 @@ namespace pEp {
         close_db();
         int status = remove(db_path.c_str());
         if (status) {
-            runtime_error e{ string("could not delete db (" + db_path + "): " + strerror(errno)) };
+            runtime_error e{ "pEpSQLite: delete_db(\"" + db_path + "\"): failed with error: " +
+                             std::to_string(status) + " - " + strerror(errno) };
             throw(e);
         }
     }
@@ -78,7 +82,7 @@ namespace pEp {
     ResultSet pEpSQLite::execute(const string &stmt)
     {
         if (!is_open()) {
-            runtime_error e{ string("execute(): - Error: db is not open") };
+            DBNotOpenException e{ "pEpSQLite: execute() failed - db is not open:" };
             throw(e);
         } else {
             pEpLogClass("called");
@@ -91,8 +95,14 @@ namespace pEp {
                 this,
                 &zErrMsg);
             if (rc != SQLITE_OK) {
-                runtime_error e{ string(
-                    "execute: " + string(::sqlite3_errmsg(db)) + ":" + string(zErrMsg)) };
+                if (rc == SQLITE_CONSTRAINT) {
+                    ConstraintException e{ "pEpSQLite: execute() failed with sqlite error: " +
+                                           std::to_string(rc) + " - " + string(zErrMsg) };
+                    ::sqlite3_free(zErrMsg);
+                    throw(e);
+                }
+                runtime_error e{ "pEpSQLite: execute() failed with sqlite error: " +
+                                 std::to_string(rc) + " - " + string(zErrMsg) };
                 ::sqlite3_free(zErrMsg);
                 throw(e);
             }
@@ -100,6 +110,7 @@ namespace pEp {
         return resultset;
     }
 
+    // Utils
     string pEpSQLite::to_string(const RSRecord &rec)
     {
         stringstream ss;

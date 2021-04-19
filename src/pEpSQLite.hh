@@ -48,6 +48,16 @@ namespace pEp {
         Adapter::pEpLog::pEpLogger& m4gic_logger_n4ame = logger;
         static int callback(void* obj, int argc, char** argv, char** azColName);
     };
+
+    class DBNotOpenException : public std::runtime_error {
+    public:
+        DBNotOpenException(const std::string& string) : runtime_error(string) {}
+    };
+
+    class ConstraintException : public std::runtime_error {
+    public:
+        ConstraintException(const std::string& string) : runtime_error(string) {}
+    };
 } // namespace pEp
 
 #endif // LIBPEPADAPTER_PEPSQLITE_HH
