@@ -12,19 +12,20 @@
 namespace pEp {
     class ListManagerDummy {
     public:
-        ListManagerDummy(const std::string& db_path);
+        ListManagerDummy() = delete;
+        explicit ListManagerDummy(const std::string& db_path);
         // Update
-        void list_add(const std::string& addr_list, const std::string& addr_mgr);
+        void list_add(const std::string& addr_list, const std::string& addr_mgr) ;
         void list_delete(const std::string& addr_list);
         void member_add(const std::string& addr_list, const std::string& addr_member);
         void member_remove(const std::string& addr_list, const std::string& addr_member);
         // Query
         std::vector<std::string> lists();
-        std::string moderator(std::string list_address);
-        std::vector<std::string> members(std::string list_address);
+        std::string moderator(const std::string& list_address);
+        std::vector<std::string> members(const std::string& list_address);
         // db
-        void close_db();
-        void delete_db();
+        void close_db() const;
+        void delete_db() const;
         // Logging
         static bool log_enabled;
         Adapter::pEpLog::pEpLogger logger{"ListManagerDummy", log_enabled};

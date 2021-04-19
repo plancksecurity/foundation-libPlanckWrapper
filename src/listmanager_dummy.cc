@@ -76,14 +76,14 @@ namespace pEp {
     }
 
     // public
-    void ListManagerDummy::close_db()
+    void ListManagerDummy::close_db() const
     {
         pEpLogClass("called");
         db.close_db();
     }
 
     // public
-    void ListManagerDummy::delete_db()
+    void ListManagerDummy::delete_db() const
     {
         pEpLogClass("called");
         try {
@@ -188,7 +188,7 @@ namespace pEp {
     }
 
     // public
-    std::string ListManagerDummy::moderator(std::string list_address)
+    std::string ListManagerDummy::moderator(const std::string& list_address)
     {
         pEpLogClass("called");
         ensure_db_initialized();
@@ -216,7 +216,7 @@ namespace pEp {
     }
 
     // public
-    std::vector<std::string> ListManagerDummy::members(std::string list_address)
+    std::vector<std::string> ListManagerDummy::members(const std::string& list_address)
     {
         pEpLogClass("called");
         ensure_db_initialized();
