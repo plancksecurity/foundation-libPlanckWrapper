@@ -38,14 +38,15 @@ namespace pEp {
 
         // Logging
         static bool log_enabled;
-        Adapter::pEpLog::pEpLogger logger{"pEpSQLite", log_enabled};
+        Adapter::pEpLog::pEpLogger logger{ "pEpSQLite", log_enabled };
         ~pEpSQLite();
+
     private:
-        ::sqlite3 *db = nullptr;
+        ::sqlite3* db = nullptr;
         std::string db_path;
         ResultSet resultset;
         Adapter::pEpLog::pEpLogger& m4gic_logger_n4ame = logger;
-        static int callback(void *obj, int argc, char **argv, char **azColName);
+        static int callback(void* obj, int argc, char** argv, char** azColName);
     };
 } // namespace pEp
 

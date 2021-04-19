@@ -9,7 +9,7 @@ using namespace std;
 namespace pEp {
     bool pEpSQLite::log_enabled = false;
 
-    pEpSQLite::pEpSQLite(const std::string& db_path) : db_path(db_path)
+    pEpSQLite::pEpSQLite(const std::string &db_path) : db_path(db_path)
     {
         pEpLogClass("called with: db_path = " + db_path + "");
     }
