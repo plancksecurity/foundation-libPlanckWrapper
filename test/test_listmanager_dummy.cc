@@ -4,6 +4,18 @@
 #include <exception>
 #include <map>
 
+#ifndef ASSERT_EXCEPT
+    #define ASSERT_EXCEPT(func)                                                                    \
+        do {                                                                                       \
+            try {                                                                                  \
+                (func);                                                                            \
+                assert(false);                                                                     \
+            } catch (const exception& e) {                                                         \
+                Test::Utils::print_exception(e);                                                   \
+            }                                                                                      \
+        } while (0)
+#endif
+
 using namespace std;
 using namespace pEp;
 using namespace Test::Log;
@@ -22,23 +34,19 @@ struct model_test_lmd {
     string joe;
     string db_path;
     vector<lm_list> lists;
+    vector<string> lists_addr() const
+    {
+        vector<string> ret;
+        for (const lm_list& l : this->lists) {
+            ret.push_back(l.addr);
+        }
+        return ret;
+    }
 };
 
-model_test_lmd model;
-
-
-vector<string> list_of_lists(const vector<lm_list>& lists)
+void apply_model(ListManagerDummy& lmd, const model_test_lmd& model)
 {
-    vector<string> ret;
-    for (const lm_list& l : lists) {
-        ret.push_back(l.addr);
-    }
-    return ret;
-}
-
-void apply_model(ListManagerDummy& lmd)
-{
-    logH2("Adding model");
+    cout << "apply_model()" << endl;
     for (const lm_list& l : model.lists) {
         lmd.list_add(l.addr, l.mod);
         for (const string& m : l.members) {
@@ -47,114 +55,222 @@ void apply_model(ListManagerDummy& lmd)
     }
 }
 
-void verify_model(ListManagerDummy& lmd)
+void verify_model(ListManagerDummy& lmd, const model_test_lmd& model)
 {
-    logH2("Verifying model");
-    cout << "Verifying lists" << endl;
-    assert(list_of_lists(model.lists) == lmd.lists());
-    cout << "Verifying members" << endl;
+    cout << "verify_model()" << endl;
+    assert((model.lists_addr()) == lmd.lists());
     for (const lm_list& l : model.lists) {
         assert(l.members == lmd.members(l.addr));
     }
-    cout << "Verifying moderators" << endl;
     for (const lm_list& l : model.lists) {
         assert(l.mod == lmd.moderator(l.addr));
     }
 }
 
-void recreate_apply_and_verify_model(ListManagerDummy& lmd)
+void recreate_apply_and_verify_model(ListManagerDummy& lmd, const model_test_lmd& model)
 {
-    logH2("test delete_db()");
     try {
         lmd.delete_db();
     } catch (const exception& e) {
-        print_exception(e);
     }
     assert(!file_exists(model.db_path));
-    apply_model(lmd);
-    verify_model(lmd);
+    apply_model(lmd, model);
+    verify_model(lmd, model);
+}
+
+model_test_lmd create_default_model()
+{
+    model_test_lmd model;
+    model.db_path = "test_lmd.db";
+    model.alice = "alice@peptest.org";
+    model.bob = "bob@peptest.org";
+    model.carol = "carol@peptest.org";
+    model.joe = "joe@peptest.org";
+
+    lm_list l1;
+    l1.addr = "list1@peptest.org";
+    l1.mod = model.alice;
+    l1.members.push_back(model.bob);
+    l1.members.push_back(model.carol);
+
+    lm_list l2;
+    l2.addr = "list2@peptest.org";
+    l2.mod = model.alice;
+    l2.members.push_back(model.bob);
+    l2.members.push_back(model.carol);
+    l2.members.push_back(model.joe);
+
+    lm_list l3;
+    l3.addr = "list3@peptest.org";
+    l3.mod = model.bob;
+    l3.members.push_back(model.carol);
+    l3.members.push_back(model.joe);
+
+    model.lists.push_back(l1);
+    model.lists.push_back(l2);
+    model.lists.push_back(l3);
+    return model;
+}
+
+model_test_lmd create_model_bad_path()
+{
+    model_test_lmd model = create_default_model();
+    model.db_path = "/wont_create_dirs/bad.db";
+    return model;
 }
 
 int main(int argc, char* argv[])
 {
-    try {
-        ListManagerDummy::log_enabled = true;
+    //        pEpSQLite::log_enabled = true;
+    ListManagerDummy::log_enabled = false;
 
-        {
-            model.db_path = "test_lmd.db";
-            model.alice = "alice@peptest.org";
-            model.bob = "bob@peptest.org";
-            model.carol = "carol@peptest.org";
-            model.joe = "joe@peptest.org";
+    logH1("Testing SUCCESS conditions");
+    {
+        logH2("Test create new db");
+        model_test_lmd model = create_default_model();
+        ListManagerDummy lmd(model.db_path);
+        recreate_apply_and_verify_model(lmd, model);
+    }
+    {
+        logH2("Test re-open db");
+        model_test_lmd model = create_default_model();
+        assert(file_exists(model.db_path));
+        ListManagerDummy lmd(model.db_path);
+        verify_model(lmd, model);
 
-            lm_list l1;
-            l1.addr = "list1@peptest.org";
-            l1.mod = model.alice;
-            l1.members.push_back(model.bob);
-            l1.members.push_back(model.carol);
+        logH2("Test list_delete");
+        lmd.list_delete(model.lists.at(2).addr);
+        model.lists.pop_back();
+        verify_model(lmd, model);
 
-            lm_list l2;
-            l2.addr = "list2@peptest.org";
-            l2.mod = model.alice;
-            l2.members.push_back(model.bob);
-            l2.members.push_back(model.carol);
-            l2.members.push_back(model.joe);
+        logH2("Test auto reopen after close()");
+        lmd.close_db();
 
-            lm_list l3;
-            l3.addr = "list3@peptest.org";
-            l3.mod = model.bob;
-            l3.members.push_back(model.carol);
-            l3.members.push_back(model.joe);
+        logH2("Test member_remove");
+        lmd.member_remove(model.lists.at(0).addr, model.lists.at(0).members.at(1));
+        model.lists.at(0).members.pop_back();
+        verify_model(lmd, model);
 
-            model.lists.push_back(l1);
-            model.lists.push_back(l2);
-            model.lists.push_back(l3);
+        logH2("Test list_exists() - true");
+        assert(lmd.list_exists(model.lists.at(0).addr));
+
+        logH2("Test list_exists() - false");
+        assert(!lmd.list_exists("does_not_exist_for_sure"));
+
+        logH2("Test member_exists() - true");
+        assert(lmd.member_exists(model.lists.at(0).addr, model.lists.at(0).members.at(0)));
+
+        logH2("Test member_exists() - false");
+        assert(!lmd.member_exists(model.lists.at(0).addr, "does_not_exist_for_sure"));
+
+        logH2("Test delete_db");
+        lmd.delete_db();
+        assert(!file_exists(model.db_path));
+    }
+
+    logH1("Testing ERROR conditions");
+    {
+        logH2("Testing success on close_db() on model_bad_path");
+        model_test_lmd model = create_model_bad_path();
+        ListManagerDummy lmd(model.db_path);
+        lmd.close_db();
+    }
+    {
+        logH2("Testing exception on delete_db() on model_bad_path");
+        model_test_lmd model = create_model_bad_path();
+        ListManagerDummy lmd(model.db_path);
+        ASSERT_EXCEPT(lmd.delete_db());
+    }
+    {
+        logH2("Testing exception on lists() on: on model_bad_path");
+        model_test_lmd model = create_default_model();
+        model.db_path = "/wont_create_dirs/bad.db";
+        ListManagerDummy lmd(model.db_path);
+        ASSERT_EXCEPT(lmd.lists());
+    }
+    {
+        logH2("Testing list_add() AlreadyExistsException");
+        model_test_lmd model = create_default_model();
+        ListManagerDummy lmd(model.db_path);
+        recreate_apply_and_verify_model(lmd, model);
+        try {
+            lmd.list_add(model.lists.at(0).addr, "any");
+            assert(false);
+        } catch (const AlreadyExistsException& e) {
+            print_exception(e);
+        } catch (...) {
+            cout << "NEVER SEEEE" << endl;
+            assert(false);
         }
-
-        {
-            logH1("Test create new db");
-            ListManagerDummy lmd(model.db_path);
-            recreate_apply_and_verify_model(lmd);
+    }
+    {
+        logH2("Testing list_delete() DoesNotExistException");
+        model_test_lmd model = create_default_model();
+        ListManagerDummy lmd(model.db_path);
+        recreate_apply_and_verify_model(lmd, model);
+        try {
+            lmd.list_delete("does_not_exist_for_sure");
+            assert(false);
+        } catch (const DoesNotExistException& e) {
+            print_exception(e);
+        } catch (...) {
+            assert(false);
         }
-        {
-            logH1("Test re-open db");
-            assert(file_exists(model.db_path));
-            ListManagerDummy lmd(model.db_path);
-            verify_model(lmd);
-
-            logH1("Test list_delete");
-            lmd.list_delete(model.lists.at(2).addr);
-            model.lists.pop_back();
-            verify_model(lmd);
-
-            logH1("Test auto reopen after close()");
-            lmd.close_db();
-
-            logH1("Test member_remove");
-            lmd.member_remove(model.lists.at(0).addr, model.lists.at(0).members.at(1));
-            model.lists.at(0).members.pop_back();
-            verify_model(lmd);
-
-            logH1("Test delete_db");
-            lmd.delete_db();
-            assert(!file_exists(model.db_path));
+    }
+    {
+        logH2("Testing member_add() AlreadyExistsException");
+        model_test_lmd model = create_default_model();
+        ListManagerDummy lmd(model.db_path);
+        recreate_apply_and_verify_model(lmd, model);
+        try {
+            lmd.member_add(model.lists.at(0).addr, model.lists.at(0).members.at(0));
+            assert(false);
+        } catch (const AlreadyExistsException& e) {
+            print_exception(e);
+        } catch (...) {
+            assert(false);
         }
-        {
-            logH1("Testing error conditions");
-            ListManagerDummy lmd(model.db_path);
-            recreate_apply_and_verify_model(lmd);
-
-            //TODO: Continue with error conditions
-            // * bad path
-            // * list_add - list already exists
-            // * list_delete - no such list
-            // * member_add - member already exists
-            // * member_remove - no such member
-            // * moderator - no such list
-            // * members - no such list
+    }
+    {
+        logH2("Testing member_remove() DoesNotExistException");
+        model_test_lmd model = create_default_model();
+        ListManagerDummy lmd(model.db_path);
+        recreate_apply_and_verify_model(lmd, model);
+        try {
+            lmd.member_remove(model.lists.at(0).addr, "does_not_exist_for_sure");
+            assert(false);
+        } catch (const DoesNotExistException& e) {
+            print_exception(e);
+        } catch (...) {
+            assert(false);
         }
-
-    } catch (const exception& e) {
-        print_exception(e);
+    }
+    {
+        logH2("Testing moderator() DoesNotExistException");
+        model_test_lmd model = create_default_model();
+        ListManagerDummy lmd(model.db_path);
+        recreate_apply_and_verify_model(lmd, model);
+        try {
+            lmd.moderator("does_not_exist_for_sure");
+            assert(false);
+        } catch (const DoesNotExistException& e) {
+            print_exception(e);
+        } catch (...) {
+            assert(false);
+        }
+    }
+    {
+        logH2("Testing members() DoesNotExistException");
+        model_test_lmd model = create_default_model();
+        ListManagerDummy lmd(model.db_path);
+        recreate_apply_and_verify_model(lmd, model);
+        try {
+            lmd.members("does_not_exist_for_sure");
+            assert(false);
+        } catch (const DoesNotExistException& e) {
+            print_exception(e);
+        } catch (...) {
+            assert(false);
+        }
     }
 }
