@@ -88,8 +88,7 @@ namespace pEp {
         do {                                                                                       \
             std::stringstream msg_;                                                              \
             msg_ << std::this_thread::get_id();                                               \
-            msg_ << " - " << __FILE__;                                                            \
-            msg_ << "::" << this->m4gic_logger_n4ame.get_classname();                               \
+            msg_ << " - " << this->m4gic_logger_n4ame.get_classname();                               \
             msg_ << "[" << this->m4gic_logger_n4ame.get_instancename() << "]";            \
             msg_ << "::" << __FUNCTION__; \
             msg_ << " - " << msg;                                                                \
