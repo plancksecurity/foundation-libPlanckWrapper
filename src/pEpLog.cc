@@ -8,7 +8,7 @@
 #include <atomic>
 
 #ifdef ANDROID
-#include <android/log.h>
+    #include <android/log.h>
 #endif
 
 using namespace std;
@@ -19,7 +19,7 @@ namespace pEp {
 
             // NON CLASS
             mutex mtx;
-            atomic_bool is_enabled{false};
+            atomic_bool is_enabled{ false };
 
             void set_enabled(const bool& enabled)
             {
@@ -48,9 +48,9 @@ namespace pEp {
                     _log(msg);
                 }
             }
-        }
-    }
-}
+        } // namespace pEpLog
+    }     // namespace Adapter
+} // namespace pEp
 
 namespace pEp {
     namespace Adapter {
@@ -58,9 +58,8 @@ namespace pEp {
             // Class pEpLogger
 
             int pEpLogger::auto_instance_nr = 0;
-            pEpLogger::pEpLogger(const string& classname, const bool& enabled)
-                    : classname(classname),
-                      is_enabled(enabled)
+            pEpLogger::pEpLogger(const string& classname, const bool& enabled) :
+                classname(classname), is_enabled(enabled)
             {
                 auto_instance_nr++;
                 this->set_instancename(to_string(auto_instance_nr));
@@ -108,5 +107,5 @@ namespace pEp {
                 return this->instancename;
             }
         } // namespace pEpLog
-    } // namespace Adapter
+    }     // namespace Adapter
 } // namespace pEp
