@@ -39,6 +39,19 @@ namespace pEp {
         void create_tables();
         Adapter::pEpLog::pEpLogger& m4gic_logger_n4ame = logger;
     };
+
+    class DBException : public std::runtime_error {
+    public:
+        DBException(const std::string& string) : runtime_error(string) {}
+    };
+    class DoesNotExistException : public std::runtime_error {
+    public:
+        DoesNotExistException(const std::string& string) : runtime_error(string) {}
+    };
+    class AlreadyExistsException : public std::runtime_error {
+    public:
+        AlreadyExistsException(const std::string& string) : runtime_error(string) {}
+    };
 } // namespace pEp
 
 #endif // LIBPEPADAPTER_LISTMANAGER_DUMMY_HH
