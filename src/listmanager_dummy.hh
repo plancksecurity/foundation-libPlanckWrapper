@@ -15,7 +15,7 @@ namespace pEp {
         ListManagerDummy() = delete;
         explicit ListManagerDummy(const std::string& db_path);
         // Update
-        void list_add(const std::string& addr_list, const std::string& addr_mgr) ;
+        void list_add(const std::string& addr_list, const std::string& addr_mgr);
         void list_delete(const std::string& addr_list);
         void member_add(const std::string& addr_list, const std::string& addr_member);
         void member_remove(const std::string& addr_list, const std::string& addr_member);
@@ -28,11 +28,12 @@ namespace pEp {
         void delete_db();
         // Logging
         static bool log_enabled;
-        Adapter::pEpLog::pEpLogger logger{"ListManagerDummy", log_enabled};
+        Adapter::pEpLog::pEpLogger logger{ "ListManagerDummy", log_enabled };
         ~ListManagerDummy();
+
     private:
         pEpSQLite db;
-        bool is_db_initialized {false};
+        bool is_db_initialized{ false };
         void ensure_db_initialized();
         void db_config();
         void create_tables();
