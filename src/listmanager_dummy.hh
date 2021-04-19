@@ -24,8 +24,8 @@ namespace pEp {
         std::string moderator(const std::string& list_address);
         std::vector<std::string> members(const std::string& list_address);
         // db
-        void close_db() const;
-        void delete_db() const;
+        void close_db();
+        void delete_db();
         // Logging
         static bool log_enabled;
         Adapter::pEpLog::pEpLogger logger{"ListManagerDummy", log_enabled};

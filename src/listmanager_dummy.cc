@@ -76,14 +76,14 @@ namespace pEp {
     }
 
     // public
-    void ListManagerDummy::close_db() const
+    void ListManagerDummy::close_db()
     {
         pEpLogClass("called");
         db.close_db();
     }
 
     // public
-    void ListManagerDummy::delete_db() const
+    void ListManagerDummy::delete_db()
     {
         pEpLogClass("called");
         try {
