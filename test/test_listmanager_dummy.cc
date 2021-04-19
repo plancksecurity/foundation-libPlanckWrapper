@@ -30,7 +30,7 @@ model_test_lmd model;
 vector<string> list_of_lists(const vector<lm_list>& lists)
 {
     vector<string> ret;
-    for (lm_list l : lists) {
+    for (const lm_list& l : lists) {
         ret.push_back(l.addr);
     }
     return ret;
@@ -39,9 +39,9 @@ vector<string> list_of_lists(const vector<lm_list>& lists)
 void apply_model(ListManagerDummy& lmd)
 {
     logH2("Adding model");
-    for (lm_list l : model.lists) {
+    for (const lm_list& l : model.lists) {
         lmd.list_add(l.addr, l.mod);
-        for (string m : l.members) {
+        for (const string& m : l.members) {
             lmd.member_add(l.addr, m);
         }
     }
@@ -53,11 +53,11 @@ void verify_model(ListManagerDummy& lmd)
     cout << "Verifying lists" << endl;
     assert(list_of_lists(model.lists) == lmd.lists());
     cout << "Verifying members" << endl;
-    for (lm_list l : model.lists) {
+    for (const lm_list& l : model.lists) {
         assert(l.members == lmd.members(l.addr));
     }
     cout << "Verifying moderators" << endl;
-    for (lm_list l : model.lists) {
+    for (const lm_list& l : model.lists) {
         assert(l.mod == lmd.moderator(l.addr));
     }
 }
