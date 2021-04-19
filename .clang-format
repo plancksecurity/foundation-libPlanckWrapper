@@ -1,6 +1,6 @@
 BasedOnStyle: LLVM
 Language: Cpp
-Standard: c++14
+Standard: c++11
 DerivePointerAlignment: true
 SortIncludes: false
 ReflowComments: false
