@@ -2,6 +2,7 @@
 *.a
 *.d
 *.swp
+.DS_Store
 ws
 test_adapter
 .gnupg
@@ -24,3 +25,8 @@ test_library
 test_message_cache
 test_passphrase_cache
 test_semaphore
+test_lm_dummy
+test_sqlite3
+test_pEpsqlite
+test_listmanager_dummy
+*.db

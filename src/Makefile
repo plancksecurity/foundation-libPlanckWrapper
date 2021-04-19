@@ -5,10 +5,13 @@
 
 include ../Makefile.conf
 
-SOURCE=$(wildcard *.cc)
+SRC_CXX=$(wildcard *.cc)
+SRC_C=$(wildcard *.c)
 HEADERS=$(wildcard *.hh *.hxx *.h)
-OBJECTS=$(subst .cc,.o,$(SOURCE))
-DEPENDS=$(subst .cc,.d,$(SOURCE))
+OBJ_CXX=$(subst .cc,.o,$(SRC_CXX))
+OBJ_C=$(subst .c,.o,$(SRC_C))
+OBJECTS=$(OBJ_CXX) $(OBJ_C)
+DEPENDS=$(subst .cc,.d,$(SRC_CXX))
 CXXFLAGS+= -MMD -MP
 
 ifneq ($(MAKECMDGOALS),clean)
