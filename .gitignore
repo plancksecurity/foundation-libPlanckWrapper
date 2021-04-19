@@ -28,4 +28,5 @@ test_semaphore
 test_lm_dummy
 test_sqlite3
 test_pEpsqlite
+test_listmanager_dummy
 *.db
