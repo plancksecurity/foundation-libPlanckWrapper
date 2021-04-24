@@ -4,15 +4,22 @@
 #include "framework/framework.hh"
 #include "framework/utils.hh"
 
-#include <iostream>
+//#include <iostream>
 
 #include "../src/Adapter.hh"
-#include "../src/adapter_group.h"
+
+#include "../src/grp_update_interface.hh"
+#include "../src/grp_update_drv_engine.hh"
+#include "../src/grp_update_drv_dummy.hh"
+//#include "../src/adapter_group.h"
 #include "../src/status_to_string.hh"
+
+#include <pEp/pEpEngine.h>
+#include <pEp/message_api.h>
 
 using namespace std;
 using namespace pEp;
-using namespace pEp::Test::Log;
+using namespace pEp::Adapter::pEpLog;
 
 bool debug_info_full = true;
 ::pEp_identity* alice = nullptr;
@@ -21,23 +28,27 @@ bool debug_info_full = true;
 ::pEp_identity* grp_ident = nullptr;
 ::PEP_STATUS status;
 
+string dummy_in;
+
+GroupUpdateInterface* gu = nullptr;
+
 /*
  * Callbacks
  */
 
 ::PEP_STATUS test_messageToSend(::message* _msg)
 {
-    cout << "called" << endl;
-    cout << Test::make_pEp_msg(Test::make_message(_msg));
+    log("called");
+    log(Test::make_pEp_msg(Test::make_message(_msg)));
     return PEP_STATUS_OK;
 }
 
 ::PEP_STATUS test_notifyHandshake(::pEp_identity* _me, ::pEp_identity* _partner, sync_handshake_signal signal)
 {
-    cout << "called" << endl;
-    cout << "me: " << Test::Utils::to_string(_me, false) << endl;
-    cout << "partner: " << Test::Utils::to_string(_partner, false) << endl;
-    cout << "Signal: " << signal << endl;
+    log("called");
+    log("me: " + Test::Utils::to_string(_me, false));
+    log("partner: " + Test::Utils::to_string(_partner, false));
+    log("Signal: " + string{ ::sync_handshake_signal_to_string(signal) });
 
     return PEP_STATUS_OK;
 }
@@ -48,15 +59,16 @@ bool debug_info_full = true;
 
 void test_create_alice_me()
 {
+    //    Adapter::session(pEp::Adapter::release);
     logH2("test_create_alice_me");
     alice = ::new_identity("alice@peptest.ch", NULL, "23", "Alice");
     assert(alice);
     alice->lang[0] = 'e';
     alice->lang[1] = 'n';
     status = ::myself(Adapter::session(), alice);
-    cout << "STATUS: " << status_to_string(status) << endl;
+    log("STATUS: " + status_to_string(status));
     assert(!status);
-    cout << "Alice:" << Test::Utils::to_string(alice, debug_info_full) << endl;
+    log("Alice:" + Test::Utils::to_string(alice, debug_info_full));
 }
 
 void test_create_bob_partner()
@@ -67,9 +79,9 @@ void test_create_bob_partner()
     bob->lang[0] = 'c';
     bob->lang[1] = 'r';
     status = ::update_identity(Adapter::session(), bob);
-    cout << "STATUS: " << status_to_string(status) << endl;
+    log("STATUS: " + status_to_string(status));
     assert(!status);
-    cout << "Bob:" << Test::Utils::to_string(bob, debug_info_full) << endl;
+    log("Bob:" + Test::Utils::to_string(bob, debug_info_full));
 }
 
 void test_create_carol_partner()
@@ -80,9 +92,9 @@ void test_create_carol_partner()
     carol->lang[0] = 'f';
     carol->lang[1] = 'n';
     status = ::update_identity(Adapter::session(), carol);
-    cout << "STATUS: " << status_to_string(status) << endl;
+    log("STATUS: " + status_to_string(status));
     assert(!status);
-    cout << "Carol:" << Test::Utils::to_string(carol, debug_info_full) << endl;
+    log("Carol:" + Test::Utils::to_string(carol, debug_info_full));
 }
 
 void test_setup_and_start_sync()
@@ -91,49 +103,47 @@ void test_setup_and_start_sync()
     Adapter::sync_initialize(Adapter::SyncModes::Async, &test_messageToSend, &test_notifyHandshake, false);
 }
 
-void test_group_create(::identity_list* idl)
+void test_group_create(::identity_list& idl)
 {
     logH2("test_group_create");
-    cout << "IDL: " << Test::Utils::to_string(idl, debug_info_full) << endl;
+    log("IDL: " + Test::Utils::to_string(&idl, debug_info_full));
 
-    cout << "create group identity" << endl;
+    log("create group identity");
     grp_ident = ::new_identity("group1@peptest.ch", NULL, "432", "group1");
     assert(grp_ident);
     status = ::myself(Adapter::session(), grp_ident);
-    cout << "STATUS: " << status_to_string(status) << endl;
+    log("STATUS: " + status_to_string(status));
     assert(!status);
-    cout << "grp_ident:" << Test::Utils::to_string(grp_ident, debug_info_full) << endl;
+    log("grp_ident:" + Test::Utils::to_string(grp_ident, debug_info_full));
 
-    cout << "adapter_group_create()" << endl;
-    ::pEp_group* pep_grp1 = nullptr;
-    status = ::adapter_group_create(Adapter::session(), grp_ident, alice, idl, &pep_grp1);
-    cout << "STATUS: " << status_to_string(status) << endl;
+    log("adapter_group_create()");
+    status = gu->adapter_group_create(Adapter::session(), grp_ident, alice, &idl);
+    log("STATUS: " + status_to_string(status));
     assert(!status);
-    assert(pep_grp1);
-    cout << "GRP: " << Test::Utils::to_string(pep_grp1, debug_info_full) << endl;
 }
 
-void test_group_invite_member(::pEp_identity* ident)
+void test_group_invite_member(::pEp_identity& ident)
 {
     logH2("test_group_invite_member");
-    status = ::adapter_group_invite_member(Adapter::session(), grp_ident, ident);
-    cout << "STATUS: " << status_to_string(status) << endl;
+    assert(grp_ident);
+    status = gu->adapter_group_invite_member(Adapter::session(), grp_ident, &ident);
+    log("STATUS: " + status_to_string(status));
     assert(!status);
 }
 
-void test_group_join(::pEp_identity* ident)
+void test_group_join(::pEp_identity& ident)
 {
     logH2("test_group_join");
-    status = ::adapter_group_join(Adapter::session(), grp_ident, ident);
-    cout << "STATUS: " << status_to_string(status) << endl;
+    status = gu->adapter_group_join(Adapter::session(), grp_ident, &ident);
+    log("STATUS: " + status_to_string(status));
     assert(!status);
 }
 
-void test_group_remove_member(::pEp_identity* ident)
+void test_group_remove_member(::pEp_identity& ident)
 {
     logH2("test_group_remove_member");
-    status = ::adapter_group_remove_member(Adapter::session(), grp_ident, ident);
-    cout << "STATUS: " << status_to_string(status) << endl;
+    status = gu->adapter_group_remove_member(Adapter::session(), grp_ident, &ident);
+    log("STATUS: " + status_to_string(status));
     assert(!status);
 }
 
@@ -141,19 +151,19 @@ void test_group_rating()
 {
     logH2("test_group_rating");
     // Rating
-    ::PEP_rating* rating = nullptr;
-    cout << "adapter_group_rating()" << endl;
-    status = ::group_rating(Adapter::session(), grp_ident, alice, rating);
-    cout << "STATUS: " << status_to_string(status) << endl;
+    ::PEP_rating rating;
+    log("adapter_group_rating()");
+    status = ::group_rating(Adapter::session(), grp_ident, alice, &rating);
+    log("STATUS: " + status_to_string(status));
     assert(!status);
-    cout << "Rating: " << rating << endl;
+    log("Rating: " + string{::rating_to_string(rating)});
 }
 
 void test_group_dissolve()
 {
     logH2("test_group_dissolve");
-    status = ::adapter_group_dissolve(Adapter::session(), grp_ident, alice);
-    cout << "STATUS: " << status_to_string(status) << endl;
+    status = gu->adapter_group_dissolve(Adapter::session(), grp_ident, alice);
+    log("STATUS: " + status_to_string(status));
     assert(!status);
 }
 
@@ -191,30 +201,43 @@ int main(int argc, char** argv)
     Adapter::pEpLog::set_enabled(false);
     debug_info_full = true;
 
+    GroupUpdateDriverDummy gud{ "test.db" };
+    GroupUpdateDriverEngine gue{};
+
+    //    gu = &gud;
+    gu = &gue;
+
     // Setup Test Context
     test_create_alice_me();
+    log("PERUSERDIR: " + string(::per_user_directory()));
+    //    Test::Utils::file_delete(::per_user_directory());
+    //    cin >> dummy_in;
+
+    test_create_alice_me();
+
     test_create_bob_partner();
     test_create_carol_partner();
     test_setup_and_start_sync();
-
 
     logH1("1. Create group");
     ::identity_list* initial_memberlist = nullptr;
     initial_memberlist = new_identity_list(bob);
     ::identity_list_add(initial_memberlist, carol);
-    test_group_create(initial_memberlist);
+    test_group_create(*initial_memberlist);
+    log("USER DIR: " + string{ ::per_user_directory() });
     logH1("2. Add Bob");
-    //    test_group_invite_member(bob); // Fails
-    //    test_group_join(bob); // Fails
+    test_group_invite_member(*bob); // Fails
+                                    //        test_group_join(bob); // Fails
     logH1("3. Add Carol");
     //    test_group_invite_member(carol);
     //    test_group_join(carol);
     logH1("4. Remove Carol");
-    //    test_group_remove_member(carol);
+    test_group_remove_member(*carol);
     logH1("5. Rating");
-    //    test_group_rating(); // Failing
+    test_group_rating();
     logH1("6. Dissolve");
     test_group_dissolve();
+
 
     Adapter::shutdown();
     return 0;
