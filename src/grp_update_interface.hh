@@ -14,8 +14,7 @@ namespace pEp {
             PEP_SESSION session,
             pEp_identity *group_identity,
             pEp_identity *manager,
-            identity_list *memberlist,
-            pEp_group **group) = 0;
+            identity_list *memberlist) = 0;
 
         virtual PEP_STATUS adapter_group_join(
             PEP_SESSION session,

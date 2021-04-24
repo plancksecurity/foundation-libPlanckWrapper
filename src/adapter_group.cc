@@ -18,7 +18,14 @@ using namespace std;
 using namespace pEp;
 
 //Listmanager config
-string lm_dummy_db_path = "listman_dummy.db";
+string lm_dummy_db_filename = "listman_dummy.db";
+
+#ifdef WIN32
+string lm_dummy_db_path = string(::per_user_directory()) + "\\" + listman_db_filename;
+#else
+string lm_dummy_db_path = string(::per_user_directory()) + "/" + lm_dummy_db_filename;
+#endif
+
 
 /*************************************************************************************************
 * Group management functions
@@ -27,32 +34,26 @@ string lm_dummy_db_path = "listman_dummy.db";
 GroupUpdateDriverEngine group_update_driver_engine{};
 GroupUpdateInterface *gu_engine = &group_update_driver_engine;
 // Listmanager Driver
-GroupUpdateDriverDummy group_update_driver_dummy{lm_dummy_db_path};
+GroupUpdateDriverDummy group_update_driver_dummy{ lm_dummy_db_path };
 GroupUpdateInterface *gu_listman = &group_update_driver_dummy;
 
 DYNAMIC_API PEP_STATUS adapter_group_create(
     PEP_SESSION session,
     pEp_identity *group_identity,
     pEp_identity *manager,
-    identity_list *memberlist,
-    pEp_group **group)
+    identity_list *memberlist)
 {
     pEpLog("called");
 
     // Do listmanager
-    PEP_STATUS status = gu_listman->adapter_group_create(
-        session,
-        group_identity,
-        manager,
-        memberlist,
-        group);
+    PEP_STATUS status = gu_listman->adapter_group_create(session, group_identity, manager, memberlist);
 
     if (status != PEP_STATUS_OK) {
         return status;
     }
 
     // Do engine
-    status = gu_engine->adapter_group_create(session, group_identity, manager, memberlist, group);
+    status = gu_engine->adapter_group_create(session, group_identity, manager, memberlist);
     if (status != PEP_STATUS_OK) {
         // Rollback listman
         PEP_STATUS rb_stat = gu_listman->adapter_group_dissolve(session, group_identity, manager);
@@ -169,7 +170,7 @@ PEP_STATUS adapter_group_remove_member(
  * Group query functions
  *************************************************************************************************/
 // Listmanager Driver
-GroupQueryDriverDummy group_query_driver_dummy{lm_dummy_db_path};
+GroupQueryDriverDummy group_query_driver_dummy{ lm_dummy_db_path };
 GroupQueryInterface *gq_listman = &group_query_driver_dummy;
 
 DYNAMIC_API PEP_STATUS group_query_groups(PEP_SESSION session, identity_list **groups)

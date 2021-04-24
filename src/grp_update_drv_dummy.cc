@@ -18,13 +18,12 @@ namespace pEp {
         PEP_SESSION session,
         pEp_identity *group_identity,
         pEp_identity *manager,
-        identity_list *memberlist,
-        pEp_group **group)
+        identity_list *memberlist)
     {
         pEpLogClass("called");
         string addr_list = group_identity->address;
         string addr_manager = manager->address;
-        lmd.list_add(addr_list,addr_manager);
+        lmd.list_add(addr_list, addr_manager);
         // TODO:ADD MEMBERLIST
 
         return PEP_STATUS_OK;

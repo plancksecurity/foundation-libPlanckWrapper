@@ -12,11 +12,10 @@ namespace pEp {
         PEP_SESSION session,
         pEp_identity *group_identity,
         pEp_identity *manager,
-        identity_list *memberlist,
-        pEp_group **group)
+        identity_list *memberlist)
     {
         pEpLogClass("called");
-        return ::group_create(session, group_identity, manager, memberlist, group);
+        return ::group_create(session, group_identity, manager, memberlist, nullptr);
     }
 
     PEP_STATUS GroupUpdateDriverEngine::adapter_group_join(

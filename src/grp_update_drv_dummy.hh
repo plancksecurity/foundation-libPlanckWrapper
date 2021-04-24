@@ -12,14 +12,13 @@ namespace pEp {
     class GroupUpdateDriverDummy : public GroupUpdateInterface {
     public:
         GroupUpdateDriverDummy() = delete;
-        GroupUpdateDriverDummy(const std::string& db_path);
+        GroupUpdateDriverDummy(const std::string &db_path);
 
         PEP_STATUS adapter_group_create(
             PEP_SESSION session,
             pEp_identity *group_identity,
             pEp_identity *manager,
-            identity_list *memberlist,
-            pEp_group **group) override;
+            identity_list *memberlist) override;
 
         PEP_STATUS adapter_group_join(
             PEP_SESSION session,
