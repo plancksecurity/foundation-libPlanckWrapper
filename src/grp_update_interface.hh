@@ -16,10 +16,13 @@ namespace pEp {
             pEp_identity *manager,
             identity_list *memberlist) noexcept = 0;
 
-        virtual PEP_STATUS adapter_group_join(
-            PEP_SESSION session,
-            pEp_identity *group_identity,
-            pEp_identity *as_member) noexcept = 0;
+        // JOIN does not exist in listmanagers
+        // For LIB-16 - Store groups a user is part of and provide a method to query them
+        // We need to create a separate DB _if_ we dont store it in the engine
+//        virtual PEP_STATUS adapter_group_join(
+//            PEP_SESSION session,
+//            pEp_identity *group_identity,
+//            pEp_identity *as_member) noexcept = 0;
 
         virtual PEP_STATUS adapter_group_dissolve(
             PEP_SESSION session,

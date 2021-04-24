@@ -20,10 +20,10 @@ namespace pEp {
             pEp_identity *manager,
             identity_list *memberlist) noexcept override;
 
-        PEP_STATUS adapter_group_join(
-            PEP_SESSION session,
-            pEp_identity *group_identity,
-            pEp_identity *as_member) noexcept override;
+//        PEP_STATUS adapter_group_join(
+//            PEP_SESSION session,
+//            pEp_identity *group_identity,
+//            pEp_identity *as_member) noexcept override;
 
         PEP_STATUS adapter_group_dissolve(
             PEP_SESSION session,

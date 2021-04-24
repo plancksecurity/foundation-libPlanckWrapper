@@ -18,14 +18,14 @@ namespace pEp {
         return ::group_create(session, group_identity, manager, memberlist, nullptr);
     }
 
-    PEP_STATUS GroupUpdateDriverEngine::adapter_group_join(
-        PEP_SESSION session,
-        pEp_identity *group_identity,
-        pEp_identity *as_member) noexcept
-    {
-        pEpLogClass("called");
-        return ::group_join(session, group_identity, as_member);
-    }
+//    PEP_STATUS GroupUpdateDriverEngine::adapter_group_join(
+//        PEP_SESSION session,
+//        pEp_identity *group_identity,
+//        pEp_identity *as_member) noexcept
+//    {
+//        pEpLogClass("called");
+//        return ::group_join(session, group_identity, as_member);
+//    }
 
     PEP_STATUS GroupUpdateDriverEngine::adapter_group_dissolve(
         PEP_SESSION session,

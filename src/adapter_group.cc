@@ -65,29 +65,29 @@ DYNAMIC_API PEP_STATUS adapter_group_create(
     return status;
 }
 
-DYNAMIC_API PEP_STATUS
-adapter_group_join(PEP_SESSION session, pEp_identity *group_identity, pEp_identity *as_member)
-{
-    pEpLog("called");
-    // Do listmanager
-    PEP_STATUS status = gu_listman->adapter_group_join(session, group_identity, as_member);
-    if (status != PEP_STATUS_OK) {
-        return status;
-    }
-
-    // Do engine
-    status = gu_engine->adapter_group_join(session, group_identity, as_member);
-    if (status != PEP_STATUS_OK) {
-        // Rollback listman
-        //TODO: ????
-        //        PEP_STATUS rb_stat = gu_listman->adapter_group_dissolve(session, group_identity, manager);
-        //        if (rb_stat != PEP_STATUS_OK) {
-        //            //FATAL ERROR ON ROLLBACK
-        //            status = (PEP_STATUS)-9999;
-        //        }
-    }
-    return status;
-}
+//DYNAMIC_API PEP_STATUS
+//adapter_group_join(PEP_SESSION session, pEp_identity *group_identity, pEp_identity *as_member)
+//{
+//    pEpLog("called");
+//    // Do listmanager
+//    PEP_STATUS status = gu_listman->adapter_group_join(session, group_identity, as_member);
+//    if (status != PEP_STATUS_OK) {
+//        return status;
+//    }
+//
+//    // Do engine
+//    status = gu_engine->adapter_group_join(session, group_identity, as_member);
+//    if (status != PEP_STATUS_OK) {
+//        // Rollback listman
+//        //TODO: ????
+//        //        PEP_STATUS rb_stat = gu_listman->adapter_group_dissolve(session, group_identity, manager);
+//        //        if (rb_stat != PEP_STATUS_OK) {
+//        //            //FATAL ERROR ON ROLLBACK
+//        //            status = (PEP_STATUS)-9999;
+//        //        }
+//    }
+//    return status;
+//}
 
 DYNAMIC_API PEP_STATUS
 adapter_group_dissolve(PEP_SESSION session, pEp_identity *group_identity, pEp_identity *manager)
