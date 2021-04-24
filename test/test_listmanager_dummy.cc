@@ -35,7 +35,7 @@ struct model_test_lmd {
 
 void apply_model(ListManagerDummy& lmd, const model_test_lmd& model)
 {
-    log("apply_model()");
+//    log("apply_model()");
     for (const lm_list& l : model.lists) {
         lmd.list_add(l.addr, l.mod);
         for (const string& m : l.members) {
@@ -46,7 +46,7 @@ void apply_model(ListManagerDummy& lmd, const model_test_lmd& model)
 
 void verify_model(ListManagerDummy& lmd, const model_test_lmd& model)
 {
-    log("verify_model()");
+//    log("verify_model()");
     assert((model.lists_addr()) == lmd.lists());
     for (const lm_list& l : model.lists) {
         assert(l.members == lmd.members(l.addr));
@@ -177,6 +177,8 @@ int main(int argc, char* argv[])
         ListManagerDummy lmd(model.db_path);
         ASSERT_EXCEPT(lmd.lists());
     }
+    // ------------------------------------------------------------------------------------
+    logH1("list_add() Error conditions");
     {
         logH2("Testing list_add() AlreadyExistsException");
         model_test_lmd model = create_default_model();
@@ -191,6 +193,8 @@ int main(int argc, char* argv[])
             assert(false);
         }
     }
+    // ------------------------------------------------------------------------------------
+    logH1("list_delete() Error conditions");
     {
         logH2("Testing list_delete() DoesNotExistException");
         model_test_lmd model = create_default_model();
@@ -205,6 +209,8 @@ int main(int argc, char* argv[])
             assert(false);
         }
     }
+    // ------------------------------------------------------------------------------------
+    logH1("member_add() Error conditions");
     {
         logH2("Testing member_add() AlreadyExistsException");
         model_test_lmd model = create_default_model();
@@ -220,7 +226,23 @@ int main(int argc, char* argv[])
         }
     }
     {
-        logH2("Testing member_remove() DoesNotExistException");
+        logH2("Testing member_add() to not existing list - DoesNotExistException");
+        model_test_lmd model = create_default_model();
+        ListManagerDummy lmd(model.db_path);
+        recreate_apply_and_verify_model(lmd, model);
+        try {
+            lmd.member_add("does_not_exist_for_sure", model.lists.at(0).members.at(0));
+            assert(false);
+        } catch (const DoesNotExistException& e) {
+            log(nested_exception_to_string(e));
+        } catch (...) {
+            assert(false);
+        }
+    }
+    // ------------------------------------------------------------------------------------
+    logH1("member_remove() Error conditions");
+    {
+        logH2("Testing member_remove() not existing member - DoesNotExistException");
         model_test_lmd model = create_default_model();
         ListManagerDummy lmd(model.db_path);
         recreate_apply_and_verify_model(lmd, model);
@@ -233,6 +255,22 @@ int main(int argc, char* argv[])
             assert(false);
         }
     }
+    {
+        logH2("Testing member_remove() not existing group - DoesNotExistException");
+        model_test_lmd model = create_default_model();
+        ListManagerDummy lmd(model.db_path);
+        recreate_apply_and_verify_model(lmd, model);
+        try {
+            lmd.member_remove("does_not_exist_for_sure", model.lists.at(0).members.at(0));
+            assert(false);
+        } catch (const DoesNotExistException& e) {
+            log(nested_exception_to_string(e));
+        } catch (...) {
+            assert(false);
+        }
+    }
+    // ------------------------------------------------------------------------------------
+    logH1("moderator() Error conditions");
     {
         logH2("Testing moderator() DoesNotExistException");
         model_test_lmd model = create_default_model();
@@ -247,6 +285,8 @@ int main(int argc, char* argv[])
             assert(false);
         }
     }
+    // ------------------------------------------------------------------------------------
+    logH1("members() Error conditions");
     {
         logH2("Testing members() DoesNotExistException");
         model_test_lmd model = create_default_model();
@@ -261,4 +301,6 @@ int main(int argc, char* argv[])
             assert(false);
         }
     }
+
+    logH1("All Tests SUCCESSFUL");
 }
