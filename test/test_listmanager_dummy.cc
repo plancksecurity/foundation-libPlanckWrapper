@@ -203,7 +203,7 @@ int main(int argc, char* argv[])
         try {
             lmd.list_delete("does_not_exist_for_sure");
             assert(false);
-        } catch (const DoesNotExistException& e) {
+        } catch (const ListDoesNotExistException& e) {
             log(nested_exception_to_string(e));
         } catch (...) {
             assert(false);
@@ -233,7 +233,7 @@ int main(int argc, char* argv[])
         try {
             lmd.member_add("does_not_exist_for_sure", model.lists.at(0).members.at(0));
             assert(false);
-        } catch (const DoesNotExistException& e) {
+        } catch (const ListDoesNotExistException& e) {
             log(nested_exception_to_string(e));
         } catch (...) {
             assert(false);
@@ -249,7 +249,7 @@ int main(int argc, char* argv[])
         try {
             lmd.member_remove(model.lists.at(0).addr, "does_not_exist_for_sure");
             assert(false);
-        } catch (const DoesNotExistException& e) {
+        } catch (const MemberDoesNotExistException& e) {
             log(nested_exception_to_string(e));
         } catch (...) {
             assert(false);
@@ -263,7 +263,7 @@ int main(int argc, char* argv[])
         try {
             lmd.member_remove("does_not_exist_for_sure", model.lists.at(0).members.at(0));
             assert(false);
-        } catch (const DoesNotExistException& e) {
+        } catch (const ListDoesNotExistException& e) {
             log(nested_exception_to_string(e));
         } catch (...) {
             assert(false);
@@ -279,7 +279,7 @@ int main(int argc, char* argv[])
         try {
             lmd.moderator("does_not_exist_for_sure");
             assert(false);
-        } catch (const DoesNotExistException& e) {
+        } catch (const ListDoesNotExistException& e) {
             log(nested_exception_to_string(e));
         } catch (...) {
             assert(false);
@@ -295,7 +295,7 @@ int main(int argc, char* argv[])
         try {
             lmd.members("does_not_exist_for_sure");
             assert(false);
-        } catch (const DoesNotExistException& e) {
+        } catch (const ListDoesNotExistException& e) {
             log(nested_exception_to_string(e));
         } catch (...) {
             assert(false);

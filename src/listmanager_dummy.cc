@@ -122,7 +122,7 @@ namespace pEp {
     {
         pEpLogClass("list_delete(addr_list: \"" + addr_list + "\")");
         if (!list_exists(addr_list)) {
-            DoesNotExistException e{ "list_delete(addr_list: \"" + addr_list +
+            ListDoesNotExistException e{ "list_delete(addr_list: \"" + addr_list +
                                      "\") - List does not exist" };
             throw e;
         }
@@ -144,7 +144,7 @@ namespace pEp {
         pEpLogClass(
             "member_add(addr_list: \"" + addr_list + "\", addr_member: \"" + addr_member + "\")");
         if (!list_exists(addr_list)) {
-            DoesNotExistException e{ "member_add(addr_list: \"" + addr_list + "\", addr_member: \"" +
+            ListDoesNotExistException e{ "member_add(addr_list: \"" + addr_list + "\", addr_member: \"" +
                                      addr_member + "\") - list does not exist" };
             throw e;
         }
@@ -172,14 +172,14 @@ namespace pEp {
         pEpLogClass(
             "member_remove(addr_list: \"" + addr_list + "\", addr_member: '\"" + addr_member + "\")");
         if (!list_exists(addr_list)) {
-            DoesNotExistException e{ "member_remove(addr_list: \"" + addr_list +
+            ListDoesNotExistException e{ "member_remove(addr_list: \"" + addr_list +
                                      "\", addr_member: '\"" + addr_member +
                                      "\") - list does not exist" };
             throw e;
         }
 
         if (!member_exists(addr_list, addr_member)) {
-            DoesNotExistException e{ "member_remove(addr_list: \"" + addr_list +
+            MemberDoesNotExistException e{ "member_remove(addr_list: \"" + addr_list +
                                      "\", addr_member: '\"" + addr_member +
                                      "\") - member does not exist" };
             throw e;
@@ -226,7 +226,7 @@ namespace pEp {
     {
         pEpLogClass("moderator(list_address:\"" + addr_list + "\")");
         if (!list_exists(addr_list)) {
-            DoesNotExistException e{ "moderator(list_address:\"" + addr_list +
+            ListDoesNotExistException e{ "moderator(list_address:\"" + addr_list +
                                      "\") - List does not exist" };
             throw e;
         }
@@ -260,7 +260,7 @@ namespace pEp {
     {
         pEpLogClass("members(list_address:\"" + addr_list + "\")");
         if (!list_exists(addr_list)) {
-            DoesNotExistException e{ "members(list_address:\"" + addr_list +
+            ListDoesNotExistException e{ "members(list_address:\"" + addr_list +
                                      "\") - List does not exist" };
             throw e;
         }

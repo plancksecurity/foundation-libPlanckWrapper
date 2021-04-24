@@ -46,9 +46,13 @@ namespace pEp {
     public:
         DBException(const std::string& string) : runtime_error(string) {}
     };
-    class DoesNotExistException : public std::runtime_error {
+    class ListDoesNotExistException : public std::runtime_error {
     public:
-        DoesNotExistException(const std::string& string) : runtime_error(string) {}
+        ListDoesNotExistException(const std::string& string) : runtime_error(string) {}
+    };
+    class MemberDoesNotExistException : public std::runtime_error {
+    public:
+        MemberDoesNotExistException(const std::string& string) : runtime_error(string) {}
     };
     class AlreadyExistsException : public std::runtime_error {
     public:
