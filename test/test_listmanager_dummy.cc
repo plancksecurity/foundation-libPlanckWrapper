@@ -4,21 +4,10 @@
 #include <exception>
 #include <map>
 
-#ifndef ASSERT_EXCEPT
-    #define ASSERT_EXCEPT(func)                                                                    \
-        do {                                                                                       \
-            try {                                                                                  \
-                (func);                                                                            \
-                assert(false);                                                                     \
-            } catch (const exception& e) {                                                         \
-                pEp::Test::Log::log(nested_exception_to_string(e));                                \
-            }                                                                                      \
-        } while (0)
-#endif
 
 using namespace std;
 using namespace pEp;
-using namespace pEp::Test::Log;
+using namespace pEp::Adapter::pEpLog;
 using namespace pEp::Test::Utils;
 
 struct lm_list {
