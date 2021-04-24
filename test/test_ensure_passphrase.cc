@@ -3,21 +3,21 @@
 
 #include "framework/framework.hh"
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <unistd.h>
+//#include <iostream>
+//#include <fstream>
+//#include <sstream>
+//#include <unistd.h>
 #include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/param.h>
+//#include <stdlib.h>
+//#include <string.h>
+//#include <sys/param.h>
 
-#include <pEp/message_api.h>
+//#include <pEp/message_api.h>
 #include <pEp/keymanagement.h>
 #include <pEp/key_reset.h>
 
 #include "../src/passphrase_cache.hh"
-#include "../src/status_to_string.hh"
+//#include "../src/status_to_string.hh"
 #include "../src/Adapter.hh"
 
 using namespace pEp;
