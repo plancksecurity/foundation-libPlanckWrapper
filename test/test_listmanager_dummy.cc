@@ -11,15 +11,15 @@
                 (func);                                                                            \
                 assert(false);                                                                     \
             } catch (const exception& e) {                                                         \
-                Test::Utils::print_exception(e);                                                   \
+                pEp::Test::Log::log(nested_exception_to_string(e));                                \
             }                                                                                      \
         } while (0)
 #endif
 
 using namespace std;
 using namespace pEp;
-using namespace Test::Log;
-using namespace Test::Utils;
+using namespace pEp::Test::Log;
+using namespace pEp::Test::Utils;
 
 struct lm_list {
     string addr;
@@ -46,7 +46,7 @@ struct model_test_lmd {
 
 void apply_model(ListManagerDummy& lmd, const model_test_lmd& model)
 {
-    cout << "apply_model()" << endl;
+    log("apply_model()");
     for (const lm_list& l : model.lists) {
         lmd.list_add(l.addr, l.mod);
         for (const string& m : l.members) {
@@ -57,7 +57,7 @@ void apply_model(ListManagerDummy& lmd, const model_test_lmd& model)
 
 void verify_model(ListManagerDummy& lmd, const model_test_lmd& model)
 {
-    cout << "verify_model()" << endl;
+    log("verify_model()");
     assert((model.lists_addr()) == lmd.lists());
     for (const lm_list& l : model.lists) {
         assert(l.members == lmd.members(l.addr));
@@ -197,9 +197,8 @@ int main(int argc, char* argv[])
             lmd.list_add(model.lists.at(0).addr, "any");
             assert(false);
         } catch (const AlreadyExistsException& e) {
-            print_exception(e);
+            log(nested_exception_to_string(e));
         } catch (...) {
-            cout << "NEVER SEEEE" << endl;
             assert(false);
         }
     }
@@ -212,7 +211,7 @@ int main(int argc, char* argv[])
             lmd.list_delete("does_not_exist_for_sure");
             assert(false);
         } catch (const DoesNotExistException& e) {
-            print_exception(e);
+            log(nested_exception_to_string(e));
         } catch (...) {
             assert(false);
         }
@@ -226,7 +225,7 @@ int main(int argc, char* argv[])
             lmd.member_add(model.lists.at(0).addr, model.lists.at(0).members.at(0));
             assert(false);
         } catch (const AlreadyExistsException& e) {
-            print_exception(e);
+            log(nested_exception_to_string(e));
         } catch (...) {
             assert(false);
         }
@@ -240,7 +239,7 @@ int main(int argc, char* argv[])
             lmd.member_remove(model.lists.at(0).addr, "does_not_exist_for_sure");
             assert(false);
         } catch (const DoesNotExistException& e) {
-            print_exception(e);
+            log(nested_exception_to_string(e));
         } catch (...) {
             assert(false);
         }
@@ -254,7 +253,7 @@ int main(int argc, char* argv[])
             lmd.moderator("does_not_exist_for_sure");
             assert(false);
         } catch (const DoesNotExistException& e) {
-            print_exception(e);
+            log(nested_exception_to_string(e));
         } catch (...) {
             assert(false);
         }
@@ -268,7 +267,7 @@ int main(int argc, char* argv[])
             lmd.members("does_not_exist_for_sure");
             assert(false);
         } catch (const DoesNotExistException& e) {
-            print_exception(e);
+            log(nested_exception_to_string(e));
         } catch (...) {
             assert(false);
         }
