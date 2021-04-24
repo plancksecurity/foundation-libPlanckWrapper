@@ -1,4 +1,5 @@
 #include "../src/listmanager_dummy.hh"
+#include "../src/utils.hh"
 #include "framework/utils.hh"
 #include <iostream>
 #include <exception>
@@ -8,7 +9,7 @@
 using namespace std;
 using namespace pEp;
 using namespace pEp::Adapter::pEpLog;
-using namespace pEp::Test::Utils;
+using namespace pEp::Utils;
 
 struct lm_list {
     string addr;
@@ -256,7 +257,7 @@ int main(int argc, char* argv[])
         }
     }
     {
-        logH2("Testing member_remove() not existing group - DoesNotExistException");
+        logH2("Testing member_remove() not existing list - DoesNotExistException");
         model_test_lmd model = create_default_model();
         ListManagerDummy lmd(model.db_path);
         recreate_apply_and_verify_model(lmd, model);

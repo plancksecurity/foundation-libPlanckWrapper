@@ -1,5 +1,6 @@
 #include "test_pEpSQLite.hh"
 #include "../src/pEpSQLite.hh"
+#include "../src/utils.hh"
 #include "framework/utils.hh"
 
 #include <fstream>
@@ -7,7 +8,7 @@
 using namespace std;
 using namespace pEp;
 using namespace pEp::Test;
-using namespace pEp::Test::Utils;
+using namespace pEp::Utils;
 
 namespace pEp {
     namespace Test {

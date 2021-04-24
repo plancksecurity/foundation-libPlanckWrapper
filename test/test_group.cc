@@ -7,6 +7,7 @@
 //#include <iostream>
 
 #include "../src/Adapter.hh"
+#include "../src/utils.hh"
 
 #include "../src/grp_update_interface.hh"
 #include "../src/grp_update_drv_engine.hh"
@@ -46,8 +47,8 @@ GroupUpdateInterface* gu = nullptr;
 ::PEP_STATUS test_notifyHandshake(::pEp_identity* _me, ::pEp_identity* _partner, sync_handshake_signal signal)
 {
     log("called");
-    log("me: " + Test::Utils::to_string(_me, false));
-    log("partner: " + Test::Utils::to_string(_partner, false));
+    log("me: " + pEp::Utils::to_string(_me, false));
+    log("partner: " + pEp::Utils::to_string(_partner, false));
     log("Signal: " + string{ ::sync_handshake_signal_to_string(signal) });
 
     return PEP_STATUS_OK;
@@ -68,7 +69,7 @@ void test_create_alice_me()
     status = ::myself(Adapter::session(), alice);
     log("STATUS: " + status_to_string(status));
     assert(!status);
-    log("Alice:" + Test::Utils::to_string(alice, debug_info_full));
+    log("Alice:" + pEp::Utils::to_string(alice, debug_info_full));
 }
 
 void test_create_bob_partner()
@@ -81,7 +82,7 @@ void test_create_bob_partner()
     status = ::update_identity(Adapter::session(), bob);
     log("STATUS: " + status_to_string(status));
     assert(!status);
-    log("Bob:" + Test::Utils::to_string(bob, debug_info_full));
+    log("Bob:" + pEp::Utils::to_string(bob, debug_info_full));
 }
 
 void test_create_carol_partner()
@@ -94,7 +95,7 @@ void test_create_carol_partner()
     status = ::update_identity(Adapter::session(), carol);
     log("STATUS: " + status_to_string(status));
     assert(!status);
-    log("Carol:" + Test::Utils::to_string(carol, debug_info_full));
+    log("Carol:" + pEp::Utils::to_string(carol, debug_info_full));
 }
 
 void test_setup_and_start_sync()
@@ -106,7 +107,7 @@ void test_setup_and_start_sync()
 void test_group_create(::identity_list& idl)
 {
     logH2("test_group_create");
-    log("IDL: " + Test::Utils::to_string(&idl, debug_info_full));
+    log("IDL: " + pEp::Utils::to_string(&idl, debug_info_full));
 
     log("create group identity");
     grp_ident = ::new_identity("group1@peptest.ch", NULL, "432", "group1");
@@ -114,7 +115,7 @@ void test_group_create(::identity_list& idl)
     status = ::myself(Adapter::session(), grp_ident);
     log("STATUS: " + status_to_string(status));
     assert(!status);
-    log("grp_ident:" + Test::Utils::to_string(grp_ident, debug_info_full));
+    log("grp_ident:" + pEp::Utils::to_string(grp_ident, debug_info_full));
 
     log("adapter_group_create()");
     status = gu->adapter_group_create(Adapter::session(), grp_ident, alice, &idl);
@@ -131,13 +132,13 @@ void test_group_invite_member(::pEp_identity& ident)
     assert(!status);
 }
 
-void test_group_join(::pEp_identity& ident)
-{
-    logH2("test_group_join");
-    status = gu->adapter_group_join(Adapter::session(), grp_ident, &ident);
-    log("STATUS: " + status_to_string(status));
-    assert(!status);
-}
+//void test_group_join(::pEp_identity& ident)
+//{
+//    logH2("test_group_join");
+//    status = gu->adapter_group_join(Adapter::session(), grp_ident, &ident);
+//    log("STATUS: " + status_to_string(status));
+//    assert(!status);
+//}
 
 void test_group_remove_member(::pEp_identity& ident)
 {
@@ -210,7 +211,7 @@ int main(int argc, char** argv)
     // Setup Test Context
     test_create_alice_me();
     log("PERUSERDIR: " + string(::per_user_directory()));
-    //    Test::Utils::file_delete(::per_user_directory());
+    //    pEp::Utils::file_delete(::per_user_directory());
     //    cin >> dummy_in;
 
     test_create_alice_me();
