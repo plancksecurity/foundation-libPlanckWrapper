@@ -4,20 +4,74 @@
 #ifndef LIBPEPADAPTER_UTILS_HH
 #define LIBPEPADAPTER_UTILS_HH
 
+#include "../../src/pEpLog.hh"
 #include <string>
 #include <pEp/message.h>
 #include <pEp/identity_list.h>
 #include <pEp/group.h>
 #include <exception>
 
+// ------------------------------------------------------------------------------------------------
+
+#ifndef ASSERT_EXCEPT
+    #define ASSERT_EXCEPT(func)                                                                    \
+        do {                                                                                       \
+            try {                                                                                  \
+                (func);                                                                            \
+                assert(false);                                                                     \
+            } catch (const exception &e) {                                                         \
+                pEp::Adapter::pEpLog::log(nested_exception_to_string(e));                          \
+            }                                                                                      \
+        } while (0)
+#endif
+
+// ------------------------------------------------------------------------------------------------
+// Logging macros for testing
+// ------------------------------------------------------------------------------------------------
+// Use the macros if you need the message to be prefixed with "thread - __FILE__::__FUNTION__"
+// OTHERWISE, just use the logging functions from pEp::Adapter::pEpLog
+
+// TESTLOG - logformat "thread - __FILE__::__FUNTION__ - <message>"
+// To be used in a non-class/object context
+#ifndef TESTLOG
+    #define TESTLOG(msg)                                                                           \
+        do {                                                                                       \
+            std::stringstream msg_;                                                                \
+            msg_ << std::this_thread::get_id();                                                    \
+            msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                     \
+            msg_ << " - " << msg;                                                                  \
+            pEp::Adapter::pEpLog::log(msg_.str());                                                 \
+        } while (0)
+#endif // TESTLOG
+
+// TESTLOGH1 - logformat "Thread - __FILE__::__FUNTION__ - <=============== message ==============>"
+#ifndef TESTLOGH1
+    #define TESTLOGH1(msg)                                                                         \
+        do {                                                                                       \
+            std::stringstream msg_;                                                                \
+            msg_ << std::this_thread::get_id();                                                    \
+            msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                     \
+            msg_ << " - " << pEp::Adapter::pEpLog::decorateH1(msg);                                \
+            pEp::Adapter::pEpLog::log(msg_.str());                                                 \
+        } while (0)
+#endif // TESTLOGH1
+
+// TESTLOGH2 - logformat "Thread - __FILE__::__FUNTION__ - <--------------- message -------------->"
+#ifndef TESTLOGH2
+    #define TESTLOGH2(msg)                                                                         \
+        do {                                                                                       \
+            std::stringstream msg_;                                                                \
+            msg_ << std::this_thread::get_id();                                                    \
+            msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                     \
+            msg_ << " - " << pEp::Adapter::pEpLog::decorateH2(msg);                                \
+            pEp::Adapter::pEpLog::log(msg_.str());                                                 \
+        } while (0)
+#endif // TESTLOGH2
+
+// ------------------------------------------------------------------------------------------------
+
 namespace pEp {
     namespace Test {
-        namespace Log {
-            void log(const std::string &msg);
-            void logH1(const std::string &msg);
-            void logH2(const std::string &msg);
-            void lograw(const std::string &msg);
-        } // namespace Log
         namespace Utils {
             // pEpEngine datatypes to string
             std::string to_string(const ::pEp_identity *const ident, bool full = true, int indent = 0);

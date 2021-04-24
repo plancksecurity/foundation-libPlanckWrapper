@@ -17,40 +17,6 @@ using namespace pEp;
 
 namespace pEp {
     namespace Test {
-        namespace Log {
-            void log(const string &msg)
-            {
-                lograw(msg + "\n");
-            }
-
-            void logH1(const string &msg)
-            {
-                stringstream tmp;
-                char decoration{ '=' };
-                tmp << endl
-                    << endl
-                    << std::string(30, decoration) << ' ' << msg << ' '
-                    << std::string(30, decoration) << endl;
-                lograw(tmp.str());
-            }
-
-            void logH2(const string &msg)
-            {
-                stringstream tmp;
-                char decoration{ '-' };
-                tmp << endl
-                    << std::string(10, decoration) << ' ' << msg << ' '
-                    << std::string(10, decoration) << endl;
-                lograw(tmp.str());
-            }
-
-            void lograw(const string &msg)
-            {
-                cerr << msg;
-            }
-
-        } // namespace Log
-
         namespace Utils {
 
             string to_string(const ::pEp_identity *const ident, bool full, int indent)
