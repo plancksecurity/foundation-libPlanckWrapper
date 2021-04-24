@@ -18,27 +18,42 @@ using namespace pEp;
 namespace pEp {
     namespace Test {
         namespace Log {
-            void logH1(string msg)
+            void log(const string &msg)
             {
-                char decoration{ '=' };
-                cout << endl
-                     << endl
-                     << std::string(30, decoration) << ' ' << msg << ' '
-                     << std::string(30, decoration) << endl;
+                lograw(msg + "\n");
             }
 
-            void logH2(string msg)
+            void logH1(const string &msg)
             {
-                char decoration{ '-' };
-                cout << endl
-                     << std::string(10, decoration) << ' ' << msg << ' '
-                     << std::string(10, decoration) << endl;
+                stringstream tmp;
+                char decoration{ '=' };
+                tmp << endl
+                    << endl
+                    << std::string(30, decoration) << ' ' << msg << ' '
+                    << std::string(30, decoration) << endl;
+                lograw(tmp.str());
             }
+
+            void logH2(const string &msg)
+            {
+                stringstream tmp;
+                char decoration{ '-' };
+                tmp << endl
+                    << std::string(10, decoration) << ' ' << msg << ' '
+                    << std::string(10, decoration) << endl;
+                lograw(tmp.str());
+            }
+
+            void lograw(const string &msg)
+            {
+                cerr << msg;
+            }
+
         } // namespace Log
 
         namespace Utils {
 
-            string to_string(::pEp_identity *ident, bool full, int indent)
+            string to_string(const ::pEp_identity *const ident, bool full, int indent)
             {
                 stringstream builder;
                 if (ident != nullptr) {
@@ -81,14 +96,14 @@ namespace pEp {
                 return builder.str();
             }
 
-            std::string to_string(::identity_list *idl, bool full, int indent)
+            std::string to_string(const ::identity_list *const idl, bool full, int indent)
             {
                 stringstream builder;
                 if (idl != nullptr) {
                     builder << endl;
                     builder << std::string(indent, '\t') << "[" << endl;
                     indent++;
-                    for (::identity_list *curr = idl; curr != nullptr; curr = curr->next) {
+                    for (const ::identity_list *curr = idl; curr != nullptr; curr = curr->next) {
                         builder << to_string(curr->ident, full, indent) << endl;
                     }
                     indent--;
@@ -100,7 +115,7 @@ namespace pEp {
                 return builder.str();
             }
 
-            string to_string(::pEp_member *member, bool full, int indent)
+            string to_string(const ::pEp_member *const member, bool full, int indent)
             {
                 stringstream builder;
                 if (member != nullptr) {
@@ -118,14 +133,14 @@ namespace pEp {
                 return builder.str();
             }
 
-            string to_string(::member_list *mbl, bool full, int indent)
+            string to_string(const ::member_list *const mbl, bool full, int indent)
             {
                 stringstream builder;
                 if (mbl != nullptr) {
                     builder << endl;
                     builder << std::string(indent, '\t') << "[" << endl;
                     indent++;
-                    for (member_list *curr_member = mbl; curr_member != nullptr;
+                    for (const member_list *curr_member = mbl; curr_member != nullptr;
                          curr_member = curr_member->next) {
                         builder << to_string(curr_member->member, full, indent) << endl;
                     }
@@ -138,22 +153,21 @@ namespace pEp {
                 return builder.str();
             }
 
-            string to_string(::pEp_group *group, bool full, int indent)
+            string to_string(const ::pEp_group *const group, bool full, int indent)
             {
                 stringstream builder;
                 if (group != nullptr) {
                     builder << endl;
                     builder << std::string(indent, '\t') << "{" << endl;
                     indent++;
-                    builder << std::string(indent, '\t') << "group_identity: "
-                            << to_string(group->group_identity, full, indent) << endl;
                     builder << std::string(indent, '\t')
-                            << "manager: " << to_string(group->manager, full, indent)
+                            << "group_identity: " << to_string(group->group_identity, full, indent)
                             << endl;
+                    builder << std::string(indent, '\t')
+                            << "manager: " << to_string(group->manager, full, indent) << endl;
                     builder << std::string(indent, '\t') << "active: " << group->active << endl;
                     builder << std::string(indent, '\t')
-                            << "members: " << to_string(group->members, full, indent)
-                            << endl;
+                            << "members: " << to_string(group->members, full, indent) << endl;
                     indent--;
                     builder << std::string(indent, '\t') << "]";
                 } else {
@@ -163,16 +177,30 @@ namespace pEp {
                 return builder.str();
             }
 
-            void print_exception(const exception &e, int level)
+            string nested_exception_to_string(const exception &e, int level, string src)
             {
-                cerr << string(level, ' ') << "exception: " << e.what() << endl;
+                src += string(level, ' ') + "exception: " + e.what() + "\n";
                 try {
                     rethrow_if_nested(e);
                 } catch (const exception &e) {
-                    print_exception(e, level + 1);
+                    src = nested_exception_to_string(e, level + 1, src);
                 } catch (...) {
                 }
+                return src;
             }
+
+
+            //            void print_exception(const exception &e, int level)
+            //            {
+            //                cerr << string(level, ' ') << "exception: " << e.what() << endl;
+            //                try {
+            //                    rethrow_if_nested(e);
+            //                } catch (const exception &e) {
+            //                    print_exception(e, level + 1);
+            //                } catch (...) {
+            //                }
+            //            }
+
 
             // File utils
             ofstream file_create(const string &filename)
@@ -198,7 +226,7 @@ namespace pEp {
                 }
             }
 
-            void file_ensure_not_existing(string path)
+            void file_ensure_not_existing(const string &path)
             {
                 while (file_exists(path)) {
                     file_delete(path);
