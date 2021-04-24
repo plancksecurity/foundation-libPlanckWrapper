@@ -12,7 +12,7 @@ namespace pEp {
         PEP_SESSION session,
         pEp_identity *group_identity,
         pEp_identity *manager,
-        identity_list *memberlist)
+        identity_list *memberlist) noexcept
     {
         pEpLogClass("called");
         return ::group_create(session, group_identity, manager, memberlist, nullptr);
@@ -21,7 +21,7 @@ namespace pEp {
     PEP_STATUS GroupUpdateDriverEngine::adapter_group_join(
         PEP_SESSION session,
         pEp_identity *group_identity,
-        pEp_identity *as_member)
+        pEp_identity *as_member) noexcept
     {
         pEpLogClass("called");
         return ::group_join(session, group_identity, as_member);
@@ -30,7 +30,7 @@ namespace pEp {
     PEP_STATUS GroupUpdateDriverEngine::adapter_group_dissolve(
         PEP_SESSION session,
         pEp_identity *group_identity,
-        pEp_identity *manager)
+        pEp_identity *manager) noexcept
     {
         pEpLogClass("called");
         return ::group_dissolve(session, group_identity, manager);
@@ -39,7 +39,7 @@ namespace pEp {
     PEP_STATUS GroupUpdateDriverEngine::adapter_group_invite_member(
         PEP_SESSION session,
         pEp_identity *group_identity,
-        pEp_identity *group_member)
+        pEp_identity *group_member) noexcept
     {
         pEpLogClass("called");
         return ::group_invite_member(session, group_identity, group_member);
@@ -48,7 +48,7 @@ namespace pEp {
     PEP_STATUS GroupUpdateDriverEngine::adapter_group_remove_member(
         PEP_SESSION session,
         pEp_identity *group_identity,
-        pEp_identity *group_member)
+        pEp_identity *group_member) noexcept
     {
         pEpLogClass("called");
         return ::group_remove_member(session, group_identity, group_member);

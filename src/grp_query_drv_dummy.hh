@@ -15,15 +15,15 @@ namespace pEp {
         GroupQueryDriverDummy() = delete;
         GroupQueryDriverDummy(const std::string &db_path);
 
-        PEP_STATUS group_query_groups(PEP_SESSION session, identity_list **groups) override;
+        PEP_STATUS group_query_groups(PEP_SESSION session, identity_list **groups) noexcept override;
         PEP_STATUS group_query_manager(
             PEP_SESSION session,
             const pEp_identity *const group,
-            pEp_identity **manager) override;
+            pEp_identity **manager) noexcept override;
         PEP_STATUS group_query_members(
             PEP_SESSION session,
             const pEp_identity *const group,
-            identity_list **members) override;
+            identity_list **members) noexcept override;
 
         // Logging
         static bool log_enabled;

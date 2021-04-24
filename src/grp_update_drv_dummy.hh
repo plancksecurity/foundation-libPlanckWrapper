@@ -18,27 +18,27 @@ namespace pEp {
             PEP_SESSION session,
             pEp_identity *group_identity,
             pEp_identity *manager,
-            identity_list *memberlist) override;
+            identity_list *memberlist) noexcept override;
 
         PEP_STATUS adapter_group_join(
             PEP_SESSION session,
             pEp_identity *group_identity,
-            pEp_identity *as_member) override;
+            pEp_identity *as_member) noexcept override;
 
         PEP_STATUS adapter_group_dissolve(
             PEP_SESSION session,
             pEp_identity *group_identity,
-            pEp_identity *manager) override;
+            pEp_identity *manager) noexcept override;
 
         PEP_STATUS adapter_group_invite_member(
             PEP_SESSION session,
             pEp_identity *group_identity,
-            pEp_identity *group_member) override;
+            pEp_identity *group_member) noexcept override;
 
         PEP_STATUS adapter_group_remove_member(
             PEP_SESSION session,
             pEp_identity *group_identity,
-            pEp_identity *group_member) override;
+            pEp_identity *group_member) noexcept override;
 
         // Logging
         static bool log_enabled;
