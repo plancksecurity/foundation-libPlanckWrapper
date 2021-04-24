@@ -42,7 +42,7 @@ namespace pEp {
         Adapter::pEpLog::pEpLogger logger{ "GroupUpdateDriverEngine", log_enabled };
 
     private:
-        Adapter::pEpLog::pEpLogger &m4gic_logger_n4ame = logger;
+        Adapter::pEpLog::pEpLogger &m4gic_logger_n4me = logger;
     };
 } // namespace pEp
 

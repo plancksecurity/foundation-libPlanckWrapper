@@ -39,7 +39,7 @@ namespace pEp {
         void ensure_db_initialized();
         void db_config();
         void create_tables();
-        Adapter::pEpLog::pEpLogger& m4gic_logger_n4ame = logger;
+        Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger;
     };
 
     class DBException : public std::runtime_error {

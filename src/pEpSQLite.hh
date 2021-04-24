@@ -46,7 +46,7 @@ namespace pEp {
         ::sqlite3* db = nullptr;
         std::string db_path;
         ResultSet resultset;
-        Adapter::pEpLog::pEpLogger& m4gic_logger_n4ame = logger;
+        Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger;
         static int callback(void* obj, int argc, char** argv, char** azColName);
     };
 

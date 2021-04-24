@@ -46,7 +46,7 @@ namespace pEp {
 
     private:
         ListManagerDummy lmd;
-        Adapter::pEpLog::pEpLogger &m4gic_logger_n4ame = logger;
+        Adapter::pEpLog::pEpLogger &m4gic_logger_n4me = logger;
     };
 } // namespace pEp
 

@@ -149,8 +149,8 @@ namespace pEp {
 // Usage:
 // create your logger obj in your class as a public member (usually)
 // Adapter::pEpLog::pEpLogger logger{"<CLASSNAME>", enabled: true|false};
-// then, create an alias for your logger called "m4gic_logger_n4ame" as a private member
-// Adapter::pEpLog::pEpLogger& m4gic_logger_n4ame = logger;
+// then, create an alias for your logger called "m4gic_logger_n4me" as a private member
+// Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger;
 // Thats all.
 // Now in your implementation, to log a message you just write:
 // pEpLogClass("my great logging message");
@@ -163,11 +163,11 @@ namespace pEp {
         do {                                                                                       \
             std::stringstream msg_;                                                                \
             msg_ << std::this_thread::get_id();                                                    \
-            msg_ << " - " << this->m4gic_logger_n4ame.get_classname();                             \
-            msg_ << "[" << this->m4gic_logger_n4ame.get_instancename() << "]";                     \
+            msg_ << " - " << this->m4gic_logger_n4me.get_classname();                              \
+            msg_ << "[" << this->m4gic_logger_n4me.get_instancename() << "]";                      \
             msg_ << "::" << __FUNCTION__;                                                          \
             msg_ << " - " << (msg);                                                                \
-            this->m4gic_logger_n4ame.logRaw(msg_.str());                                           \
+            this->m4gic_logger_n4me.logRaw(msg_.str());                                            \
         } while (0)
 #endif // NDEBUG
 
@@ -182,7 +182,7 @@ namespace pEp {
 #else
     #define pEpLogRawClass(msg)                                                                    \
         do {                                                                                       \
-            this->m4gic_logger_n4ame.logRaw(msg_.str());                                           \
+            this->m4gic_logger_n4me.logRaw(msg_.str());                                            \
         } while (0)
 #endif // NDEBUG
 
