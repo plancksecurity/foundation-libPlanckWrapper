@@ -143,6 +143,12 @@ namespace pEp {
     {
         pEpLogClass(
             "member_add(addr_list: \"" + addr_list + "\", addr_member: \"" + addr_member + "\")");
+        if (!list_exists(addr_list)) {
+            DoesNotExistException e{ "member_add(addr_list: \"" + addr_list + "\", addr_member: \"" +
+                                     addr_member + "\") - list does not exist" };
+            throw e;
+        }
+
         if (member_exists(addr_list, addr_member)) {
             AlreadyExistsException e{ "member_add(addr_list: \"" + addr_list + "\", addr_member: \"" +
                                       addr_member + "\") - member already exists" };
@@ -165,6 +171,13 @@ namespace pEp {
     {
         pEpLogClass(
             "member_remove(addr_list: \"" + addr_list + "\", addr_member: '\"" + addr_member + "\")");
+        if (!list_exists(addr_list)) {
+            DoesNotExistException e{ "member_remove(addr_list: \"" + addr_list +
+                                     "\", addr_member: '\"" + addr_member +
+                                     "\") - list does not exist" };
+            throw e;
+        }
+
         if (!member_exists(addr_list, addr_member)) {
             DoesNotExistException e{ "member_remove(addr_list: \"" + addr_list +
                                      "\", addr_member: '\"" + addr_member +
