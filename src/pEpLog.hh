@@ -25,7 +25,8 @@
 // primary design goal to keep it very simple, maintainable and portable.
 //
 
-// pEpLog is to be used in a non-class/object context
+// pEpLog - logformat "thread - __FILE__::__FUNTION__ - <message>"
+// To be used in a non-class/object context
 #ifdef NDEBUG
     #define pEpLog(msg)                                                                            \
         do {                                                                                       \
@@ -33,15 +34,55 @@
 #else
     #define pEpLog(msg)                                                                            \
         do {                                                                                       \
-            std::stringstream msg_;                                                                \
-            msg_ << std::this_thread::get_id();                                                    \
-            msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                     \
-            msg_ << " - " << msg;                                                                  \
-            pEp::Adapter::pEpLog::log(msg_.str());                                                 \
+            if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
+                std::stringstream msg_;                                                            \
+                msg_ << std::this_thread::get_id();                                                \
+                msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                 \
+                msg_ << " - " << msg;                                                              \
+                pEp::Adapter::pEpLog::log(msg_.str());                                             \
+            }                                                                                      \
         } while (0)
 #endif // NDEBUG
 
-// pEpLogRaw the same as pEpLog, but does not print anything except the supplied msg
+// pEpLogH1 - logformat "Thread - __FILE__::__FUNTION__ - <=============== message ==============>"
+#ifdef NDEBUG
+    #define pEpLogH1(msg)                                                                          \
+        do {                                                                                       \
+        } while (0)
+#else
+    #define pEpLogH1(msg)                                                                          \
+        do {                                                                                       \
+            if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
+                std::stringstream msg_;                                                            \
+                msg_ << std::this_thread::get_id();                                                \
+                msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                 \
+                msg_ << " - " << pEp::Adapter::pEpLog::decorateH1(msg);                            \
+                pEp::Adapter::pEpLog::log(msg_.str());                                             \
+            }                                                                                      \
+        } while (0)
+#endif // NDEBUG
+
+// pEpLogH1 - logformat "Thread - __FILE__::__FUNTION__ - <--------------- message -------------->"
+#ifdef NDEBUG
+    #define pEpLogH2(msg)                                                                          \
+        do {                                                                                       \
+        } while (0)
+#else
+    #define pEpLogH2(msg)                                                                          \
+        do {                                                                                       \
+            if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
+                std::stringstream msg_;                                                            \
+                msg_ << std::this_thread::get_id();                                                \
+                msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                 \
+                msg_ << " - " << pEp::Adapter::pEpLog::decorateH2(msg);                            \
+                pEp::Adapter::pEpLog::log(msg_.str());                                             \
+            }                                                                                      \
+        } while (0)
+#endif // NDEBUG
+
+
+// RAW == without prefixed of thread, file, function
+// pEpLogRaw - logformat "<message>"
 #ifdef NDEBUG
     #define pEpLogRaw(msg)                                                                         \
         do {                                                                                       \
@@ -49,17 +90,52 @@
 #else
     #define pEpLogRaw(msg)                                                                         \
         do {                                                                                       \
-            pEp::Adapter::pEpLog::log(msg_.str());                                                 \
+            if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
+                pEp::Adapter::pEpLog::log(msg_.str());                                             \
+            }                                                                                      \
         } while (0)
 #endif // NDEBUG
+
+// pEpLogRawH1 - logformat "<--------------- message -------------->"
+#ifdef NDEBUG
+    #define pEpLogRawH1(msg)                                                                       \
+        do {                                                                                       \
+        } while (0)
+#else
+    #define pEpLogRawH1(msg)                                                                       \
+        do {                                                                                       \
+            if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
+                pEp::Adapter::pEpLog::logH1(msg_.str());                                           \
+            }                                                                                      \
+        } while (0)
+#endif // NDEBUG
+
+// pEpLogRawH2 - logformat <=============== message ==============>"
+#ifdef NDEBUG
+    #define pEpLogRawH2(msg)                                                                       \
+        do {                                                                                       \
+        } while (0)
+#else
+    #define pEpLogRawH2(msg)                                                                       \
+        do {                                                                                       \
+            if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
+                pEp::Adapter::pEpLog::logH2(msg_.str());                                           \
+            }                                                                                      \
+        } while (0)
+#endif // NDEBUG
+
 
 namespace pEp {
     namespace Adapter {
         namespace pEpLog {
             // Logging functions to control pEpLog() macro
-            void log(const std::string& msg);
             void set_enabled(const bool& is_enabled);
             bool get_enabled();
+            void log(const std::string& msg);
+            void logH1(const std::string& msg);
+            void logH2(const std::string& msg);
+            std::string decorateH1(const std::string& msg);
+            std::string decorateH2(const std::string& msg);
         } // namespace pEpLog
     }     // namespace Adapter
 } // namespace pEp

@@ -44,10 +44,40 @@ namespace pEp {
 
             void log(const string& msg)
             {
-                if (is_enabled.load()) {
-                    _log(msg);
-                }
+                _log(msg);
             }
+
+            void logH1(const string& msg)
+            {
+                log(decorateH1(msg));
+            }
+
+            void logH2(const string& msg)
+            {
+                log(decorateH2(msg));
+            }
+
+            string decorateH1(const string& msg)
+            {
+                stringstream tmp;
+                char decoration{ '=' };
+                tmp << endl
+                    << endl
+                    << std::string(30, decoration) << ' ' << msg << ' '
+                    << std::string(30, decoration) << endl;
+                return tmp.str();
+            }
+
+            string decorateH2(const string& msg)
+            {
+                stringstream tmp;
+                char decoration{ '-' };
+                tmp << endl
+                    << std::string(10, decoration) << ' ' << msg << ' '
+                    << std::string(10, decoration) << endl;
+                return tmp.str();
+            }
+
         } // namespace pEpLog
     }     // namespace Adapter
 } // namespace pEp
