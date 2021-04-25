@@ -31,35 +31,31 @@ namespace pEp {
                 Utils::is_c_str_empty(manager->address)) {
                 status = PEP_ILLEGAL_VALUE;
             } else {
-                const string addr_list = group_identity->address;
-                const string addr_manager = manager->address;
+                const string addr_list{ group_identity->address };
+                const string addr_manager{ manager->address };
 
-                PEP_STATUS stat_add;
                 try {
                     lmd.list_add(addr_list, addr_manager);
-                    stat_add = PEP_STATUS_OK;
+                    status = PEP_STATUS_OK;
                 } catch (const AlreadyExistsException &e) {
                     pEpLogClass(Utils::nested_exception_to_string(e));
-                    stat_add = PEP_GROUP_EXISTS;
+                    status = PEP_GROUP_EXISTS;
                 } catch (const exception &e) {
                     pEpLogClass(Utils::nested_exception_to_string(e));
-                    stat_add = PEP_UNKNOWN_ERROR;
+                    status = PEP_UNKNOWN_ERROR;
                 } catch (...) {
                     pEpLogClass("unknown exception");
                     status = PEP_UNKNOWN_ERROR;
                 }
 
-                if (stat_add != PEP_STATUS_OK) {
-                    status = stat_add;
-                } else {
+                if (status == PEP_STATUS_OK) {
                     // Add the memberlist (if given)
                     // Fail totally on the first member_invite() that fails
-                    PEP_STATUS stat_invite = PEP_UNKNOWN_ERROR;
-                    vector<pEp_identity *> cxx_memberlist = Utils::to_cxx(*memberlist);
-                    for (pEp_identity *member : cxx_memberlist) {
-                        stat_invite = this->adapter_group_invite_member(session, group_identity, member);
-                        if (stat_invite != PEP_STATUS_OK) {
-                            status = stat_invite;
+                    const vector<pEp_identity *> cxx_memberlist = Utils::to_cxx(*memberlist);
+                    for (pEp_identity *const member : cxx_memberlist) {
+                        status = this->adapter_group_invite_member(session, group_identity, member);
+                        if (status != PEP_STATUS_OK) {
+                            status = status;
                             break;
                         }
                     }
@@ -97,29 +93,26 @@ namespace pEp {
                 Utils::is_c_str_empty(manager->address)) {
                 status = PEP_ILLEGAL_VALUE;
             } else {
-                const string addr_list = group_identity->address;
-                const string addr_manager = manager->address;
+                const string addr_list{ group_identity->address };
+                const string addr_manager{ manager->address };
 
                 // Check if given manager is correct for the given group
-                PEP_STATUS stat_query = PEP_UNKNOWN_ERROR;
                 string addr_manager_queried;
                 try {
                     addr_manager_queried = lmd.moderator(addr_list);
-                    stat_query = PEP_STATUS_OK;
+                    status = PEP_STATUS_OK;
                 } catch (const ListDoesNotExistException &e) {
                     pEpLogClass(Utils::nested_exception_to_string(e));
-                    stat_query = PEP_GROUP_NOT_FOUND;
+                    status = PEP_GROUP_NOT_FOUND;
                 } catch (const exception &e) {
                     pEpLogClass(Utils::nested_exception_to_string(e));
-                    stat_query = PEP_UNKNOWN_ERROR;
+                    status = PEP_UNKNOWN_ERROR;
                 } catch (...) {
                     pEpLogClass("unknown exception");
-                    stat_query = PEP_UNKNOWN_ERROR;
+                    status = PEP_UNKNOWN_ERROR;
                 }
 
-                if (stat_query != PEP_STATUS_OK) {
-                    status = stat_query;
-                } else {
+                if (status == PEP_STATUS_OK) {
                     if (addr_manager_queried != addr_manager) {
                         status = PEP_CANNOT_DISABLE_GROUP;
                     } else {
@@ -163,8 +156,8 @@ namespace pEp {
                 Utils::is_c_str_empty(group_member->address)) {
                 status = PEP_ILLEGAL_VALUE;
             } else {
-                const string addr_list = group_identity->address;
-                const string addr_member = group_member->address;
+                const string addr_list{ group_identity->address };
+                const string addr_member{ group_member->address };
 
                 try {
                     lmd.member_add(addr_list, addr_member);
@@ -203,8 +196,8 @@ namespace pEp {
                 Utils::is_c_str_empty(group_member->address)) {
                 status = PEP_ILLEGAL_VALUE;
             } else {
-                const string addr_list = group_identity->address;
-                const string addr_member = group_member->address;
+                const string addr_list{ group_identity->address };
+                const string addr_member{ group_member->address };
 
                 try {
                     lmd.member_remove(addr_list, addr_member);
