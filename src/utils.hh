@@ -10,9 +10,16 @@
 #include <pEp/identity_list.h>
 #include <pEp/group.h>
 #include <exception>
+#include <vector>
 
 namespace pEp {
     namespace Utils {
+        // C-types to C++ types
+        std::vector<::pEp_identity *> to_cxx(const ::identity_list &idl);
+
+        // C-types helpers
+        bool is_c_str_empty(const char *str);
+
         // pEpEngine datatypes to string
         std::string to_string(const ::pEp_identity *const ident, bool full = true, int indent = 0);
         std::string to_string(const ::identity_list *const idl, bool full = true, int indent = 0);

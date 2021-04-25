@@ -17,6 +17,28 @@ using namespace pEp;
 
 namespace pEp {
     namespace Utils {
+        std::vector<::pEp_identity *> to_cxx(const ::identity_list &idl)
+        {
+            vector<pEp_identity *> ret{};
+            for (const ::identity_list *curr = &idl; curr != nullptr; curr = curr->next) {
+                if(curr->ident) {
+                    ret.push_back(curr->ident);
+                }
+            }
+            return ret;
+        }
+
+        bool is_c_str_empty(const char *str)
+        {
+            if (str == nullptr) {
+                return true;
+            }
+            string tmp{ str };
+            if (tmp.empty()) {
+                return true;
+            }
+            return false;
+        }
 
         string to_string(const ::pEp_identity *const ident, bool full, int indent)
         {
