@@ -1,11 +1,10 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
-#ifndef LIBPEPADAPTER_GROUP_HH
-#define LIBPEPADAPTER_GROUP_HH
+#ifndef LIBPEPADAPTER_GROUP_MANAGER_API_H
+#define LIBPEPADAPTER_GROUP_MANAGER_API_H
 
 #include <pEp/message_api.h>
-//#include <pEp/group.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -200,4 +199,4 @@ group_query_members(PEP_SESSION session, const pEp_identity *const group, identi
 };
 #endif
 
-#endif //LIBPEPADAPTER_GROUP_HH
+#endif //LIBPEPADAPTER_GROUP_MANAGER_API_H

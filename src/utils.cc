@@ -10,7 +10,7 @@
 #include <pEp/identity_list.h>
 
 #include "Adapter.hh"
-#include "adapter_group.h"
+#include "group_manager_api.h"
 
 using namespace std;
 using namespace pEp;

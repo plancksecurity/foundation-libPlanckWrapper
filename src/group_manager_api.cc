@@ -1,8 +1,8 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
-#include <pEp/group.h>
+//#include <pEp/group.h>
 
-#include "adapter_group.h"
+#include "group_manager_api.h"
 #include "grp_driver_replicator.hh"
 #include "pEpLog.hh"
 
