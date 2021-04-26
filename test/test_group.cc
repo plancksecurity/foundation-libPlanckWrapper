@@ -9,9 +9,11 @@
 #include "../src/Adapter.hh"
 #include "../src/utils.hh"
 
-#include "../src/grp_update_interface.hh"
-#include "../src/grp_update_drv_engine.hh"
-#include "../src/grp_update_drv_dummy.hh"
+#include "../src/grp_manager_interface.hh"
+#include "../src/grp_driver_engine.hh"
+#include "../src/grp_driver_dummy.hh"
+#include "../src/grp_driver_replicator.hh"
+
 //#include "../src/adapter_group.h"
 #include "../src/status_to_string.hh"
 
@@ -20,18 +22,26 @@
 
 using namespace std;
 using namespace pEp;
+using namespace pEp::Adapter;
 using namespace pEp::Adapter::pEpLog;
 
 bool debug_info_full = true;
+
+
+// Model
+const string lmd_path = "test.db";
 ::pEp_identity* alice = nullptr;
 ::pEp_identity* bob = nullptr;
 ::pEp_identity* carol = nullptr;
 ::pEp_identity* grp_ident = nullptr;
 ::PEP_STATUS status;
 
+
 string dummy_in;
 
+
 GroupUpdateInterface* gu = nullptr;
+GroupQueryInterface* gq = nullptr;
 
 /*
  * Callbacks
@@ -104,21 +114,20 @@ void test_setup_and_start_sync()
     Adapter::sync_initialize(Adapter::SyncModes::Async, &test_messageToSend, &test_notifyHandshake, false);
 }
 
-void test_group_create(::identity_list& idl)
+void test_group_create()
 {
     logH2("test_group_create");
-    log("IDL: " + pEp::Utils::to_string(&idl, debug_info_full));
+    ::identity_list* initial_memberlist = nullptr;
+    initial_memberlist = new_identity_list(bob);
+    ::identity_list_add(initial_memberlist, carol);
 
     log("create group identity");
     grp_ident = ::new_identity("group1@peptest.ch", NULL, "432", "group1");
     assert(grp_ident);
-    status = ::myself(Adapter::session(), grp_ident);
-    log("STATUS: " + status_to_string(status));
-    assert(!status);
     log("grp_ident:" + pEp::Utils::to_string(grp_ident, debug_info_full));
 
     log("adapter_group_create()");
-    status = gu->adapter_group_create(Adapter::session(), grp_ident, alice, &idl);
+    status = gu->adapter_group_create(Adapter::session(), grp_ident, alice, initial_memberlist);
     log("STATUS: " + status_to_string(status));
     assert(!status);
 }
@@ -132,32 +141,12 @@ void test_group_invite_member(::pEp_identity& ident)
     assert(!status);
 }
 
-//void test_group_join(::pEp_identity& ident)
-//{
-//    logH2("test_group_join");
-//    status = gu->adapter_group_join(Adapter::session(), grp_ident, &ident);
-//    log("STATUS: " + status_to_string(status));
-//    assert(!status);
-//}
-
 void test_group_remove_member(::pEp_identity& ident)
 {
     logH2("test_group_remove_member");
     status = gu->adapter_group_remove_member(Adapter::session(), grp_ident, &ident);
     log("STATUS: " + status_to_string(status));
     assert(!status);
-}
-
-void test_group_rating()
-{
-    logH2("test_group_rating");
-    // Rating
-    ::PEP_rating rating;
-    log("adapter_group_rating()");
-    status = ::group_rating(Adapter::session(), grp_ident, alice, &rating);
-    log("STATUS: " + status_to_string(status));
-    assert(!status);
-    log("Rating: " + string{::rating_to_string(rating)});
 }
 
 void test_group_dissolve()
@@ -176,14 +165,14 @@ void test_group_dissolve()
  * - group_create(Alice)
  * 2. Add Bob
  * - group_invite_member(Bob)
- * - group_join(Bob)
+// * - group_join(Bob)
  * 3. Add Carol
  * - group_invite_member(Carol)
- * - group_join(Carol)
+// * - group_join(Carol)
  * 4. Remove Carol
  * - group_remove_member(Carol)
- * 5. Rating
- * - group_rating() (Just test once, to see it is generally working)
+// * 5. Rating
+// * - group_rating() (Just test once, to see it is generally working)
  * 6. Dissolve
  * - group_dissolve()
  *
@@ -202,40 +191,52 @@ int main(int argc, char** argv)
     Adapter::pEpLog::set_enabled(false);
     debug_info_full = true;
 
-    GroupUpdateDriverDummy gud{ "test.db" };
-    GroupUpdateDriverEngine gue{};
+    //    pEpSQLite::log_enabled = true;
+    //    ListManagerDummy::log_enabled = true;
+    GroupDriverDummy::log_enabled = true;
+    GroupDriverEngine::log_enabled = true;
+    GroupDriverReplicator::log_enabled = true;
 
-    //    gu = &gud;
-    gu = &gue;
+
+    GroupDriverDummy gdd{ lmd_path };
+    GroupDriverEngine gde{};
+    GroupDriverReplicator gdr{};
+
+
+//    gu = &gde;
+//    gq = nullptr;
+
+//    gu = &gdd;
+//    gq = &gdd;
+
+    gu = &gdr;
+    gq = &gdr;
+
 
     // Setup Test Context
     test_create_alice_me();
-    log("PERUSERDIR: " + string(::per_user_directory()));
-    //    pEp::Utils::file_delete(::per_user_directory());
-    //    cin >> dummy_in;
-
-    test_create_alice_me();
-
     test_create_bob_partner();
     test_create_carol_partner();
+
     test_setup_and_start_sync();
 
     logH1("1. Create group");
-    ::identity_list* initial_memberlist = nullptr;
-    initial_memberlist = new_identity_list(bob);
-    ::identity_list_add(initial_memberlist, carol);
-    test_group_create(*initial_memberlist);
-    log("USER DIR: " + string{ ::per_user_directory() });
+
+    test_group_create();
     logH1("2. Add Bob");
-    test_group_invite_member(*bob); // Fails
-                                    //        test_group_join(bob); // Fails
+    //    test_group_invite_member(*bob); // Fails
     logH1("3. Add Carol");
-    //    test_group_invite_member(carol);
-    //    test_group_join(carol);
+    //    test_group_invite_member(*carol);
     logH1("4. Remove Carol");
     test_group_remove_member(*carol);
-    logH1("5. Rating");
-    test_group_rating();
+
+    if (gq != nullptr) {
+        ::pEp_identity* grp_ident = ::new_identity("group1@peptest.ch", NULL, "432", "group1");
+        ::pEp_identity* manager = nullptr;
+        PEP_STATUS stat = gq->group_query_manager(Adapter::session(), grp_ident, &manager);
+        log(status_to_string(stat));
+        log(::Utils::to_string(manager));
+    }
     logH1("6. Dissolve");
     test_group_dissolve();
 
