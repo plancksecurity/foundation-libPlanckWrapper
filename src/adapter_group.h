@@ -5,7 +5,7 @@
 #define LIBPEPADAPTER_GROUP_HH
 
 #include <pEp/message_api.h>
-#include <pEp/group.h>
+//#include <pEp/group.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,30 +57,6 @@ DYNAMIC_API PEP_STATUS adapter_group_create(
     pEp_identity *manager,
     identity_list *memberlist);
 
-
-///**
-// *  <!--       adapter_group_join()       -->
-// *
-// *  @brief          Join a group for which we have received an invitation, marking
-// *                  our own membership in the database for the group and sending the manager
-// *                  a confirmation of the acceptance of the invitation
-// *
-// *  @param[in]      session             associated session object
-// *  @param[in]      group_identity      the pEp_identity object representing the group. Must contain at least
-// *                                      a user_id and address
-// *  @param[in]      as_member           the pEp_identity object representing the own identity we want to use to
-// *                                      join the group. This must match the identity which was invited to the group.
-// *                                      Must contain a user_id and address.
-// *
-// *  @retval         PEP_STATUS_OK       on success
-// *                  error               on failure
-// *
-// *  @ownership      FIXME
-// *
-// *
-// */
-//DYNAMIC_API PEP_STATUS
-//adapter_group_join(PEP_SESSION session, pEp_identity *group_identity, pEp_identity *as_member);
 
 /**
  *  <!--       adapter_group_dissolve()       -->
