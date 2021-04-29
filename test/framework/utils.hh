@@ -6,10 +6,9 @@
 
 #include "../../src/pEpLog.hh"
 #include <string>
-#include <pEp/message.h>
-#include <pEp/identity_list.h>
-#include <pEp/group.h>
 #include <exception>
+#include <chrono>
+#include <thread>
 
 // ------------------------------------------------------------------------------------------------
 
@@ -69,5 +68,7 @@
 #endif // TESTLOGH2
 
 // ------------------------------------------------------------------------------------------------
+
+void sleep_millis(int milis);
 
 #endif // LIBPEPADAPTER_TEST_UTILS_HH

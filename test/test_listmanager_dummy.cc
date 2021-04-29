@@ -1,5 +1,6 @@
 #include "../src/listmanager_dummy.hh"
 #include "../src/utils.hh"
+#include "../src/std_utils.hh"
 #include "framework/utils.hh"
 #include <iostream>
 #include <exception>
@@ -63,7 +64,7 @@ void recreate_apply_and_verify_model(ListManagerDummy& lmd, const model_test_lmd
         lmd.delete_db();
     } catch (const exception& e) {
     }
-    assert(!file_exists(model.db_path));
+    assert(!path_exists(model.db_path));
     apply_model(lmd, model);
     verify_model(lmd, model);
 }
@@ -124,7 +125,7 @@ int main(int argc, char* argv[])
     {
         logH2("Test re-open db");
         model_test_lmd model = create_default_model();
-        assert(file_exists(model.db_path));
+        assert(path_exists(model.db_path));
         ListManagerDummy lmd(model.db_path);
         verify_model(lmd, model);
 
@@ -155,7 +156,7 @@ int main(int argc, char* argv[])
 
         logH2("Test delete_db");
         lmd.delete_db();
-        assert(!file_exists(model.db_path));
+        assert(!path_exists(model.db_path));
     }
 
     logH1("Testing ERROR conditions");

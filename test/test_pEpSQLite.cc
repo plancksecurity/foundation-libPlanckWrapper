@@ -1,6 +1,7 @@
 #include "test_pEpSQLite.hh"
 #include "../src/pEpSQLite.hh"
 #include "../src/utils.hh"
+#include "../src/std_utils.hh"
 #include "framework/utils.hh"
 
 #include <fstream>
@@ -47,7 +48,7 @@ namespace pEp {
         {
             //            TESTLOG("called");
             string path = fixture_db_filename_new();
-            file_ensure_not_existing(path);
+            path_ensure_not_existing(path);
             return path;
         }
 
@@ -55,7 +56,7 @@ namespace pEp {
         {
             //            TESTLOG("called");
             string path = "existing.db";
-            file_ensure_not_existing(path);
+            path_ensure_not_existing(path);
             return path;
         }
 
@@ -63,7 +64,7 @@ namespace pEp {
         {
             //            TESTLOG("called");
             string path = fixture_db_filename_corrupt();
-            file_ensure_not_existing(path);
+            path_ensure_not_existing(path);
             ofstream db_corrupt = file_create(path);
             db_corrupt << "G4rbage" << endl;
             db_corrupt.close();
@@ -200,9 +201,9 @@ namespace pEp {
         {
             TESTLOG("called");
             pEpSQLite db = fixture_instance_of_new();
-            assert(!file_exists(fixture_db_filename_new()));
+            assert(!path_exists(fixture_db_filename_new()));
             db.create_or_open_db();
-            assert(file_exists(fixture_db_filename_new()));
+            assert(path_exists(fixture_db_filename_new()));
             return db;
         }
 
@@ -211,7 +212,7 @@ namespace pEp {
         {
             TESTLOG("called");
             pEpSQLite db = fixture_instance_of_existing_and_verified();
-            assert(file_exists(fixture_db_filename_existing_and_verified()));
+            assert(path_exists(fixture_db_filename_existing_and_verified()));
             db.create_or_open_db();
             return db;
         }
@@ -220,11 +221,11 @@ namespace pEp {
         pEpSQLite test_createopen_db_bad()
         {
             TESTLOG("called");
-            assert(!file_exists(fixture_db_filename_bad()));
+            assert(!path_exists(fixture_db_filename_bad()));
             pEpSQLite db = fixture_instance_of_bad();
-            assert(!file_exists(fixture_db_filename_bad()));
+            assert(!path_exists(fixture_db_filename_bad()));
             ASSERT_EXCEPT(db.create_or_open_db());
-            assert(!file_exists(fixture_db_filename_bad()));
+            assert(!path_exists(fixture_db_filename_bad()));
             return db;
         }
 
@@ -233,9 +234,9 @@ namespace pEp {
         {
             TESTLOG("called");
             pEpSQLite db = fixture_instance_of_corrupt();
-            assert(file_exists(fixture_db_filename_corrupt()));
+            assert(path_exists(fixture_db_filename_corrupt()));
             db.create_or_open_db();
-            assert(file_exists(fixture_db_filename_corrupt()));
+            assert(path_exists(fixture_db_filename_corrupt()));
             return db;
         }
 
@@ -450,7 +451,7 @@ namespace pEp {
             TESTLOG("called");
             pEpSQLite db = fixture_instance_of_new();
             ASSERT_EXCEPT(db.delete_db());
-            assert(!file_exists(fixture_db_filename_new()));
+            assert(!path_exists(fixture_db_filename_new()));
             return db;
         }
 
@@ -460,7 +461,7 @@ namespace pEp {
             TESTLOG("called");
             pEpSQLite db = fixture_instance_of_existing_and_verified();
             ASSERT_EXCEPT(db.delete_db());
-            assert(!file_exists(fixture_db_filename_existing_and_verified()));
+            assert(!path_exists(fixture_db_filename_existing_and_verified()));
             return db;
         }
 
@@ -470,7 +471,7 @@ namespace pEp {
             TESTLOG("called");
             pEpSQLite db = fixture_db_open_after_close();
             db.delete_db();
-            assert(!file_exists(fixture_db_filename_new()));
+            assert(!path_exists(fixture_db_filename_new()));
             return db;
         }
 
@@ -480,7 +481,7 @@ namespace pEp {
             TESTLOG("called");
             pEpSQLite db = fixture_db_open_of_existing_and_verified();
             db.delete_db();
-            assert(!file_exists(fixture_db_filename_existing_and_verified()));
+            assert(!path_exists(fixture_db_filename_existing_and_verified()));
             return db;
         }
 
@@ -490,7 +491,7 @@ namespace pEp {
             TESTLOG("called");
             pEpSQLite db = fixture_db_open_of_corrupt();
             db.delete_db();
-            assert(!file_exists(fixture_db_filename_corrupt()));
+            assert(!path_exists(fixture_db_filename_corrupt()));
             return db;
         }
 
@@ -500,7 +501,7 @@ namespace pEp {
             TESTLOG("called");
             pEpSQLite db = fixture_db_open_of_bad();
             ASSERT_EXCEPT(db.delete_db());
-            assert(!file_exists(fixture_db_filename_bad()));
+            assert(!path_exists(fixture_db_filename_bad()));
             return db;
         }
 
@@ -633,8 +634,8 @@ int main(int argc, char* argv[])
     test_is_open_after_delete_on_open();
     test_is_open_after_delete_on_closed();
 
-    file_ensure_not_existing(fixture_db_filename_new());
-    file_ensure_not_existing(fixture_db_filename_corrupt());
-    file_ensure_not_existing(fixture_db_filename_existing_and_verified());
+    path_ensure_not_existing(fixture_db_filename_new());
+    path_ensure_not_existing(fixture_db_filename_corrupt());
+    path_ensure_not_existing(fixture_db_filename_existing_and_verified());
     return 0;
 }
