@@ -1,7 +1,7 @@
 include ../Makefile.conf
 
 LDFLAGS=-L../src $(ENGINE_LIB)
-LDLIBS=-lstdc++ -lpEpEngine -lpEpAdapter
+LDLIBS=-lstdc++ -lpEpEngine -lpEpAdapter -lpthread
 CXXFLAGS:=-I../src -DENGINE_TEST=$(ENGINE_TEST) $(CXXFLAGS)
 SRC=$(wildcard test_*.cc)
 TST=$(subst .cc,,$(SRC))
