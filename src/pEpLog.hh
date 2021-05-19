@@ -16,12 +16,12 @@
 //      * android: __android_log_print
 //      * all other OS: cerr
 // * Logging without any class/object (pEpLog / pEpLogRaw macros)
-//      * runtime switchable only on a global level
+//      * runtime switchable (on/off) only on a global level
 // * Class backed Logging macros (pEpLogClass / pEpLogRawClass)
-// *    * runtime switchable logging on a class and object level
+// *    * runtime switchable (on/off)  on a class and object level
 //
-// There are already too mnay features and you might want even more and more,
-// but the feature-policy of this logging unit is very restrictive, and there is a
+// There are already too many features and you might want even more and more.
+// But the feature-policy of this logging unit is very restrictive, and there is a
 // primary design goal to keep it very simple, maintainable and portable.
 //
 
@@ -81,7 +81,7 @@
 #endif // NDEBUG
 
 
-// RAW == without prefixed of thread, file, function
+// RAW == without prefix of thread, file, function
 // pEpLogRaw - logformat "<message>"
 #ifdef NDEBUG
     #define pEpLogRaw(msg)                                                                         \
