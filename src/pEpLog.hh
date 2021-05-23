@@ -17,7 +17,7 @@
 //      * all other OS: cerr
 // * Logging without any class/object (pEpLog / pEpLogRaw macros)
 //      * runtime switchable (on/off) only on a global level
-// * Class backed Logging macros (pEpLogClass / pEpLogRawClass)
+// * Class backed Logging macros (pEpLogClass / pEpLogClassRaw)
 // *    * runtime switchable (on/off)  on a class and object level
 //
 // There are already too many features and you might want even more and more.
@@ -171,18 +171,18 @@ namespace pEp {
         } while (0)
 #endif // NDEBUG
 
-// pEpLogRawClass is the same as pEpLogClass, but does not print anything except the supplied msg
+// pEpLogClassRaw is the same as pEpLogClass, but does not print anything except the supplied msg
 // This can also be achieved without this macro, just use the log method of pEpLogger
 // You also need to set up the logger in your class as for pEpLogClass
 // The only advantage of this macro is that is compiled away to nothing with NDEBUG
 #ifdef NDEBUG
-    #define pEpLogRawClass(msg)                                                                    \
+    #define pEpLogClassRaw(msg)                                                                    \
         do {                                                                                       \
         } while (0)
 #else
-    #define pEpLogRawClass(msg)                                                                    \
+    #define pEpLogClassRaw(msg)                                                                    \
         do {                                                                                       \
-            this->m4gic_logger_n4me.logRaw(msg_.str());                                            \
+            this->m4gic_logger_n4me.logRaw(msg);                                            \
         } while (0)
 #endif // NDEBUG
 
