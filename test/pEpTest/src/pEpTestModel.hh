@@ -9,9 +9,13 @@
 namespace pEp {
     namespace Test {
         class pEpTestModel {
-
         public:
+            pEpTestModel() = delete;
+            pEpTestModel(const std::string& name);
+            const std::string& getName() const;
+
         private:
+            const std::string name;
             static bool log_enabled;
             Adapter::pEpLog::pEpLogger logger{ "pEpTestModel", log_enabled };
             Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger;

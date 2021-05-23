@@ -14,7 +14,8 @@ namespace pEp {
     namespace Test {
         class pEpTestUnit {
         public:
-            using TestEntryFunc = std::function<void(const pEpTestUnit&)>;
+            using TestUnitFunction = std::function<void(const pEpTestUnit&)>;
+
             enum class ExecutionMode
             {
                 FUNCTION,
@@ -33,14 +34,14 @@ namespace pEp {
             static pEpTestUnit createRootNode(
                 pEpTestModel& model,
                 const std::string& name,
-                const TestEntryFunc& main_f,
-                ExecutionMode emode = ExecutionMode::INHERIT);
+                const TestUnitFunction& main_f,
+                ExecutionMode emode_children = emode_default);
 
             static pEpTestUnit createChildNode(
                 pEpTestUnit& parent,
                 const std::string& name,
-                const TestEntryFunc& main_f,
-                ExecutionMode emode = ExecutionMode::INHERIT);
+                const TestUnitFunction& main_f,
+                ExecutionMode emode_children = emode_default);
 
 
             static void setDefaultDataDir(const std::string& dir);
@@ -51,9 +52,8 @@ namespace pEp {
             std::string getFQName() const;
             pEpTestModel& getModel() const;
             std::string getHomeDir() const;
+            std::string to_string(bool recursive = true, int indent = 0) const;
             static void setDefaultExecutionMode(ExecutionMode emode);
-            ExecutionMode getExecutionMode() const;
-            ExecutionMode getEffectiveExecutionMode() const;
 
         private:
             // Constructors
@@ -61,17 +61,18 @@ namespace pEp {
                 pEpTestUnit* parent,
                 pEpTestModel* model,
                 const std::string& name,
-                const TestEntryFunc& main_f,
-                ExecutionMode emode);
+                const TestUnitFunction& main_f,
+                ExecutionMode emode_children);
 
             // Methods
             void init() const;
             const pEpTestUnit& getRoot() const;
-            void executeSelf() const;
-            void executeChildren() const;
 
-            void executeTestFuncInFork(bool wait) const;
+            void executeChildren() const;
+            void executeForked(const pEpTestUnit& unit, bool wait) const;
             void waitChildProcesses() const;
+            ExecutionMode getExecutionMode() const;
+            ExecutionMode getEffectiveExecutionMode() const;
             void data_dir_delete();
             void data_dir_create();
             void data_dir_recreate();
@@ -80,10 +81,10 @@ namespace pEp {
             const pEpTestUnit* parent; //nullptr if rootnode
             const std::string name;
             pEpTestModel* model; //nullptr if inherited
-            const TestEntryFunc& main_func;
-            ExecutionMode exec_mode;
-            static ExecutionMode exec_mode_default;
-            std::map<const std::string, pEpTestUnit> children;
+            const TestUnitFunction& main_func;
+            const ExecutionMode emode_chld;
+            static ExecutionMode emode_default;
+            std::map<const std::string, const pEpTestUnit&> children;
             static std::string data_dir;
 
             // logger

@@ -13,18 +13,17 @@ namespace pEp {
     namespace Test {
         bool pEpTestUnit::log_enabled = true;
         string pEpTestUnit::data_dir = "./";
-        pEpTestUnit::ExecutionMode pEpTestUnit::exec_mode_default = pEpTestUnit::ExecutionMode::FUNCTION;
+        pEpTestUnit::ExecutionMode pEpTestUnit::emode_default = pEpTestUnit::ExecutionMode::FUNCTION;
 
         // RootNode factory
         //static
         pEpTestUnit pEpTestUnit::createRootNode(
             pEpTestModel& model,
             const std::string& name,
-            const TestEntryFunc& main_f,
-            ExecutionMode emode)
+            const TestUnitFunction& main_f,
+            ExecutionMode emode_children)
         {
-            pEpLog("called");
-            pEpTestUnit ret(nullptr, &model, name, main_f, emode);
+            pEpTestUnit ret(nullptr, &model, name, main_f, emode_children);
             return ret;
         }
 
@@ -33,11 +32,10 @@ namespace pEp {
         pEpTestUnit pEpTestUnit::createChildNode(
             pEpTestUnit& parent,
             const std::string& name,
-            const TestEntryFunc& main_f,
-            ExecutionMode emode)
+            const TestUnitFunction& main_f,
+            ExecutionMode emode_children)
         {
-            pEpLog("called");
-            pEpTestUnit ret(&parent, nullptr, name, main_f, emode);
+            pEpTestUnit ret(&parent, nullptr, name, main_f, emode_children);
             return ret;
         }
 
@@ -46,18 +44,17 @@ namespace pEp {
             pEpTestUnit* const parent,
             pEpTestModel* model,
             const std::string& name,
-            const TestEntryFunc& main_f,
-            ExecutionMode emode) :
+            const TestUnitFunction& main_f,
+            ExecutionMode emode_children) :
             parent(parent),
-            model(model), name(name), main_func(main_f), exec_mode(emode)
+            model(model), name(name), main_func(main_f), emode_chld(emode_children)
         {
+            logger.set_instancename(getFQName());
             if (parent != nullptr) {
                 parent->addChildNode(*this);
             }
-            logger.set_instancename(getFQName());
             //            data_dir_recreate();
         }
-
 
         //static
         void pEpTestUnit::setDefaultDataDir(const std::string& dir)
@@ -84,18 +81,20 @@ namespace pEp {
 
         void pEpTestUnit::waitChildProcesses() const
         {
-            pEpLogClass("called");
+            pEpLogClass("Waiting for child processes to terminate...");
             int status;
             pid_t pid;
             while ((pid = wait(&status)) > 0) {
                 pEpLogClass(
-                    "PID: " + std::to_string((int)pid) + " exit status: " + std::to_string(status));
+                    "process[" + std::to_string((int)pid) +
+                    "] terminated with status: " + std::to_string(status));
             }
+            pEpLogClass("All child processes terminated");
         }
 
         void pEpTestUnit::addChildNode(const pEpTestUnit& node)
         {
-            children.insert(pair<string, pEpTestUnit>(node.getName(), node));
+            children.insert(pair<string, const pEpTestUnit&>(node.getName(), node));
         }
 
         string pEpTestUnit::getName() const
@@ -105,62 +104,60 @@ namespace pEp {
 
         void pEpTestUnit::run(const pEpTestUnit* caller) const
         {
-            //            pEpLogClass("called");
-            //            init();
-            executeSelf();
-            executeChildren();
-            // if called by another TestNode, caller will not be nullptr, so caller will clean up
-            // if caller is mullptr, there is nobody who will do the cleanup, so we have to.
-            if (caller == nullptr) {
-                waitChildProcesses();
+            pEpLogClass("called");
+            // caller is never nullptr if called by another pEpTestUnit
+            if(caller == nullptr) {
+                pEpLogClass("\n" + to_string());
             }
-        }
-        //private
-        void pEpTestUnit::executeSelf() const
-        {
-            //            pEpLogClass("called");
+
             if (main_func) {
-                pEpLogClass(string("Starting as: " + to_string(getEffectiveExecutionMode())));
-                // Execute in fork and go on, wait for process execution in the edn
-                if (getEffectiveExecutionMode() == ExecutionMode::PROCESS_PARALLEL) { // fork
-                    executeTestFuncInFork(false);
-                    // Execute in fork and wait here until process ends
-                } else if (getEffectiveExecutionMode() == ExecutionMode::PROCESS_SERIAL) {
-                    executeTestFuncInFork(true);
-                    // Execute as normal funciton
-                } else if (getEffectiveExecutionMode() == ExecutionMode::FUNCTION) {
-                    //                    pEpLogClass("Executing in same process and thread");
-                    main_func(*this);
-                    //                    pEpLogClass("Execution ended");
-                } else if (getEffectiveExecutionMode() == ExecutionMode::THREAD_PARALLEL) {
-                    throw runtime_error(to_string(getEffectiveExecutionMode()) + " - not implemented");
-                } else if (getEffectiveExecutionMode() == ExecutionMode::THREAD_SERIAL) {
-                    throw runtime_error(to_string(getEffectiveExecutionMode()) + " - not implemented");
-                }
+                main_func(*this);
             } else {
                 pEpLogClass("No function to execute");
             }
+            executeChildren();
         }
 
         //private
         void pEpTestUnit::executeChildren() const
         {
-            pEpLogClass("called");
-            for (const pair<string, pEpTestUnit> elem : children) {
-                elem.second.run(this);
+            if (!children.empty()) {
+                const ExecutionMode& emode = getEffectiveExecutionMode();
+                pEpLogClass(string("Executing children as: " + to_string(emode)));
+                for (const pair<string, const pEpTestUnit&> elem : children) {
+                    // Execute in fork and go on, wait for process execution in the end
+                    if (emode == ExecutionMode::PROCESS_PARALLEL) { // fork
+                        executeForked(elem.second, false);
+                        // Execute in fork and wait here until process ends
+                    } else if (emode == ExecutionMode::PROCESS_SERIAL) {
+                        executeForked(elem.second, true);
+                        // Execute as normal funciton
+                    } else if (emode == ExecutionMode::FUNCTION) {
+                        pEpLogClass("Executing in same process and thread");
+                        elem.second.run(this);
+                        pEpLogClass("Execution ended");
+                    } else if (emode == ExecutionMode::THREAD_PARALLEL) {
+                        throw runtime_error(to_string(emode) + " - not implemented");
+                    } else if (emode == ExecutionMode::THREAD_SERIAL) {
+                        throw runtime_error(to_string(emode) + " - not implemented");
+                    }
+                }
+                if (emode == ExecutionMode::PROCESS_PARALLEL) {
+                    waitChildProcesses();
+                }
             }
         }
 
         //private
-        void pEpTestUnit::executeTestFuncInFork(bool wait) const
+        void pEpTestUnit::executeForked(const pEpTestUnit& unit, bool wait) const
         {
             pid_t pid;
             pid = fork();
             if (pid == pid_t(0)) {
-                pEpLogClass(string("pid: [" + std::to_string(getpid()) + "] - starting..."));
+                pEpLogClass(string("In pid: [" + std::to_string(getpid()) + "] - starting..."));
                 setenv("HOME", getHomeDir().c_str(), 1);
-                main_func(*this);
-                pEpLogClass(string("pid: [" + std::to_string(getpid()) + "] - ended."));
+                unit.run(this);
+                pEpLogClass(string("In pid: [" + std::to_string(getpid()) + "] - ended."));
                 exit(0);
             } else if (pid < pid_t(0)) {
                 pEpLogClass("Error forking");
@@ -172,7 +169,7 @@ namespace pEp {
 
         pEpTestModel& pEpTestUnit::getModel() const
         {
-            pEpLogClass("called");
+            //            pEpLogClass("called");
             pEpTestModel* ret = nullptr;
             if (model == nullptr) {
                 ret = &parent->getModel();
@@ -187,7 +184,7 @@ namespace pEp {
 
         const pEpTestUnit& pEpTestUnit::getRoot() const
         {
-            pEpLogClass("called");
+            //            pEpLogClass("called");
             const pEpTestUnit* ret = nullptr;
             if (parent != nullptr) {
                 ret = &parent->getRoot();
@@ -238,27 +235,24 @@ namespace pEp {
             data_dir_create();
         };
 
-
+        //static
         void pEpTestUnit::setDefaultExecutionMode(ExecutionMode emode)
         {
-            pEpTestUnit::exec_mode_default = emode;
+            pEpTestUnit::emode_default = emode;
         }
 
         pEpTestUnit::ExecutionMode pEpTestUnit::getExecutionMode() const
         {
-            return exec_mode;
+            return emode_chld;
         }
 
         pEpTestUnit::ExecutionMode pEpTestUnit::getEffectiveExecutionMode() const
         {
-            ExecutionMode ret;
+            ExecutionMode ret{ emode_default };
             if (getExecutionMode() == ExecutionMode::INHERIT) {
                 if (parent != nullptr) {
                     // get from parent until not inherit
                     ret = parent->getEffectiveExecutionMode();
-                } else {
-                    // get from static class config
-                    ret = pEpTestUnit::exec_mode_default;
                 }
             } else {
                 ret = getExecutionMode();
@@ -284,6 +278,26 @@ namespace pEp {
                 default:
                     return "UNDEFINED EXECUTION MODE";
             }
+        }
+
+        std::string pEpTestUnit::to_string(bool recursive, int indent) const
+        {
+            string ret;
+            stringstream builder;
+            builder << string(indent, '\t') << getName();
+            builder << "[children=" << to_string(getEffectiveExecutionMode()) + "]";
+            //            builder << "/" << getModel().getName();
+            builder << endl;
+            ret = builder.str();
+
+            if (recursive) {
+                indent++;
+                for (const pair<string, const pEpTestUnit&> elem : children) {
+                    ret += elem.second.to_string(true, indent);
+                }
+                indent--;
+            }
+            return ret;
         }
     } // namespace Test
 } // namespace pEp
