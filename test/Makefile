@@ -22,20 +22,27 @@ OBJ_FRAMEWORK=$(subst .cc,.o,$(SRC_FRAMEWORK))
 #    -include $(DEPENDS)
 #endif
 
-.PHONY: all clean rmtestdata
+.PHONY: all clean rmtestdata peptest peptest_clean
 .DEFAULT_GOAL := all
 
-all: $(BIN_TEST)
+all: $(BIN_TEST) peptest
 
 $(BIN_TEST): $(OBJ_FRAMEWORK)
 
-clean:
+peptest:
+	$(MAKE) -C pEpTest
+
+
+clean: peptest_clean
 	rm -f $(BIN_TEST)
 	rm -f $(OBJ_FRAMEWORK)
 	rm -Rf *.dSYM
 	rm -f *.d
 	rm -f *.o
 	rm -Rf /tmp/test_pEp.*
+
+peptest_clean:
+	$(MAKE) -C pEpTest clean
 
 rmtestdata:
 	rm -Rf /tmp/test_pEp.*

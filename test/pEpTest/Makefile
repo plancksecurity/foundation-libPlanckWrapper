@@ -1,4 +1,3 @@
-
 LDLIBS=-lstdc++ -lpEpAdapter
 LDFLAGS=-L../../src/
 CXXFLAGS=-std=c++11 -g
