@@ -6,6 +6,8 @@
 
 #include <sstream>
 #include <thread>
+#include <unistd.h>
+
 // pEpLog
 // ======
 // a "to be kept ultra small and simple" logging unit.
@@ -36,7 +38,7 @@
         do {                                                                                       \
             if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
                 std::stringstream msg_;                                                            \
-                msg_ << std::this_thread::get_id();                                                \
+                msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";             \
                 msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                 \
                 msg_ << " - " << msg;                                                              \
                 pEp::Adapter::pEpLog::log(msg_.str());                                             \
@@ -54,7 +56,7 @@
         do {                                                                                       \
             if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
                 std::stringstream msg_;                                                            \
-                msg_ << std::this_thread::get_id();                                                \
+                msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";             \
                 msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                 \
                 msg_ << " - " << pEp::Adapter::pEpLog::decorateH1(msg);                            \
                 pEp::Adapter::pEpLog::log(msg_.str());                                             \
@@ -72,7 +74,7 @@
         do {                                                                                       \
             if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
                 std::stringstream msg_;                                                            \
-                msg_ << std::this_thread::get_id();                                                \
+                msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";             \
                 msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                 \
                 msg_ << " - " << pEp::Adapter::pEpLog::decorateH2(msg);                            \
                 pEp::Adapter::pEpLog::log(msg_.str());                                             \
@@ -162,7 +164,7 @@ namespace pEp {
     #define pEpLogClass(msg)                                                                       \
         do {                                                                                       \
             std::stringstream msg_;                                                                \
-            msg_ << std::this_thread::get_id();                                                    \
+            msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";             \
             msg_ << " - " << this->m4gic_logger_n4me.get_classname();                              \
             msg_ << "[" << this->m4gic_logger_n4me.get_instancename() << "]";                      \
             msg_ << "::" << __FUNCTION__;                                                          \
@@ -182,7 +184,7 @@ namespace pEp {
 #else
     #define pEpLogClassRaw(msg)                                                                    \
         do {                                                                                       \
-            this->m4gic_logger_n4me.logRaw(msg);                                            \
+            this->m4gic_logger_n4me.logRaw(msg);                                                   \
         } while (0)
 #endif // NDEBUG
 

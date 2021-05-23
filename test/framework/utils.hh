@@ -9,6 +9,7 @@
 #include <exception>
 #include <chrono>
 #include <thread>
+#include <unistd.h>
 
 // ------------------------------------------------------------------------------------------------
 
@@ -36,7 +37,7 @@
     #define TESTLOG(msg)                                                                           \
         do {                                                                                       \
             std::stringstream msg_;                                                                \
-            msg_ << std::this_thread::get_id();                                                    \
+            msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";                 \
             msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                     \
             msg_ << " - " << msg;                                                                  \
             pEp::Adapter::pEpLog::log(msg_.str());                                                 \
@@ -48,7 +49,7 @@
     #define TESTLOGH1(msg)                                                                         \
         do {                                                                                       \
             std::stringstream msg_;                                                                \
-            msg_ << std::this_thread::get_id();                                                    \
+            msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";                 \
             msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                     \
             msg_ << " - " << pEp::Adapter::pEpLog::decorateH1(msg);                                \
             pEp::Adapter::pEpLog::log(msg_.str());                                                 \
@@ -60,7 +61,7 @@
     #define TESTLOGH2(msg)                                                                         \
         do {                                                                                       \
             std::stringstream msg_;                                                                \
-            msg_ << std::this_thread::get_id();                                                    \
+            msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";                 \
             msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                     \
             msg_ << " - " << pEp::Adapter::pEpLog::decorateH2(msg);                                \
             pEp::Adapter::pEpLog::log(msg_.str());                                                 \
