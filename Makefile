@@ -10,10 +10,7 @@ all: src
 src:
 	$(MAKE) -C src
 
-test-fw: src
-	$(MAKE) -C test/fw_dist_test
-
-test: src test-fw
+test: src
 	$(MAKE) -C test
 
 clean:
