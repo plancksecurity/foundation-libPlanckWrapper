@@ -6,6 +6,7 @@
 #include <sstream>
 #include <mutex>
 #include <atomic>
+#include <cmath>
 
 #ifdef ANDROID
     #include <android/log.h>
@@ -16,6 +17,7 @@ using namespace std;
 namespace pEp {
     namespace Adapter {
         namespace pEpLog {
+            int line_width = 120;
 
             // NON CLASS
             mutex mtx;
@@ -61,10 +63,9 @@ namespace pEp {
             {
                 stringstream tmp;
                 char decoration{ '=' };
-                tmp << endl
-                    << endl
-                    << std::string(30, decoration) << ' ' << msg << ' '
-                    << std::string(30, decoration) << endl;
+                tmp << std::string(line_width, decoration) << endl
+                    << msg << endl
+                    << std::string(line_width, decoration);
                 return tmp.str();
             }
 
@@ -72,9 +73,21 @@ namespace pEp {
             {
                 stringstream tmp;
                 char decoration{ '-' };
+                int max_len = 110;
+
+                // truncate msg
+                string msg_truncated = msg;
+                if(msg.length() >= max_len) {
+                    msg_truncated = msg.substr(0, max_len);
+                    msg_truncated += "...";
+                }
+
+                // define decolen
+                int decolen = static_cast<int>(floor((double(line_width - msg_truncated.length()))) / 2.0);
+
                 tmp << endl
-                    << std::string(10, decoration) << ' ' << msg << ' '
-                    << std::string(10, decoration) << endl;
+                    << std::string(decolen, decoration) << ' ' << msg_truncated << ' '
+                    << std::string(decolen, decoration);
                 return tmp.str();
             }
 
