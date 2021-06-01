@@ -99,7 +99,7 @@ namespace pEp {
                     }
                 }
             } catch (...) {
-                runtime_error e{"path_delete_all(\""+path+"\")"};
+                runtime_error e{ "path_delete_all(\"" + path + "\")" };
                 throw_with_nested(e);
             }
         }
@@ -179,6 +179,16 @@ namespace pEp {
             ret.erase(
                 remove_if(ret.begin(), ret.end(), [](string elem) { return !path_is_dir(elem); }),
                 ret.end());
+            return ret;
+        }
+
+        // Attention, it pads left...
+        string padTo(const string &str, const size_t num, const char paddingChar)
+        {
+            string ret{ str };
+            if (num > ret.size()) {
+                ret.insert(0, num - ret.size(), paddingChar);
+            }
             return ret;
         }
 
