@@ -31,6 +31,8 @@ namespace pEp {
                 ::pEp_identity *group_identity,
                 ::pEp_identity *group_member) noexcept = 0;
 
+            virtual ~GroupUpdateInterface() = 0;
+
         private:
         };
 
@@ -49,6 +51,8 @@ namespace pEp {
                 ::PEP_SESSION session,
                 const ::pEp_identity *const group,
                 ::identity_list **members) noexcept = 0;
+
+            virtual ~GroupQueryInterface() = 0;
 
         private:
         };
