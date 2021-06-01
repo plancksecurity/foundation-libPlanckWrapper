@@ -25,7 +25,6 @@ namespace pEp {
         void print_exception(const std::exception &e, int level = 0);
 
         // file utils
-
         bool path_exists(const std::string &filename);
         bool path_is_dir(const std::string &path);
         void path_delete(const std::string &filename);
@@ -42,6 +41,10 @@ namespace pEp {
             const std::string &dirname,
             const bool incl_dot_and_dotdot = false);
         std::vector<std::string> dir_list_files(const std::string &dirname);
+
+        //String formatting
+        std::string padTo(const std::string &str, const size_t num, const char paddingChar);
+
     } // namespace Utils
 } // namespace pEp
 
