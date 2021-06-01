@@ -1,4 +1,4 @@
-#include "../src/pEpTestUnit.hh"
+#include "../src/pEpTestTree.hh"
 #include "../../framework/utils.hh"
 #include <iostream>
 #include <unistd.h>
@@ -11,7 +11,7 @@ using namespace pEp;
 using namespace pEp::Test;
 
 
-void printHomeDir(pEpTestUnit& myself)
+void printHomeDir(pEpTestTree& myself)
 {
     //    TESTLOG(string(myself.getFQName() + " - PID: " + to_string(getpid())));
     //    cout << "[" << to_string(getpid()) << "/" << myself.getFQName() << "] -  " << endl;
@@ -22,34 +22,34 @@ void printHomeDir(pEpTestUnit& myself)
 int main(int argc, char* argv[])
 {
     pEpTestModel model{ "TestTransport" };
-    pEpTestUnit::log_enabled = false;
-    pEpTestUnit::setDefaultDataRoot("./testdata/");
+//    pEpTestTree::debug_log_enabled = true;
+    pEpTestTree::setDataRoot("./testdata/");
     {
-        pEpTestUnit root = pEpTestUnit::createRootNode(
+        pEpTestTree root = pEpTestTree::createRootNode(
             model,
             "root node nr.1",
-            [](pEpTestUnit mynode) { printHomeDir(mynode); },
-            pEp::Test::pEpTestUnit::ExecutionMode::PROCESS_PARALLEL);
+            [](pEpTestTree mynode) { printHomeDir(mynode); },
+            pEp::Test::pEpTestTree::ExecutionMode::PROCESS_PARALLEL);
 
-        pEpTestUnit test1 = pEpTestUnit::createChildNode(root, "node 1", [](pEpTestUnit mynode) {
+        pEpTestTree test1 = pEpTestTree::createChildNode(root, "node 1", [](pEpTestTree mynode) {
             printHomeDir(mynode);
         });
 
-        pEpTestUnit test1_1 = pEpTestUnit::createChildNode(test1, "node 1_1", [](pEpTestUnit mynode) {
+        pEpTestTree test1_1 = pEpTestTree::createChildNode(test1, "node 1.1", [](pEpTestTree mynode) {
             printHomeDir(mynode);
         });
 
-        pEpTestUnit test2 = pEpTestUnit::createChildNode(root, "node 2", [](pEpTestUnit mynode) {
+        pEpTestTree test2 = pEpTestTree::createChildNode(root, "node 2", [](pEpTestTree mynode) {
             printHomeDir(mynode);
         });
 
-        pEpTestUnit test2_1 = pEpTestUnit::createChildNode(
+        pEpTestTree test2_1 = pEpTestTree::createChildNode(
             test2,
-            "node 2_1",
-            [](pEpTestUnit mynode) { printHomeDir(mynode); },
-            pEp::Test::pEpTestUnit::ExecutionMode::PROCESS_PARALLEL);
+            "node 2.1",
+            [](pEpTestTree mynode) { printHomeDir(mynode); },
+            pEp::Test::pEpTestTree::ExecutionMode::PROCESS_PARALLEL);
 
-        pEpTestUnit test2_1_1 = pEpTestUnit::createChildNode(test2_1, "node 1", [](pEpTestUnit mynode) {
+        pEpTestTree test2_1_1 = pEpTestTree::createChildNode(test2_1, "node 2.1.1", [](pEpTestTree mynode) {
             printHomeDir(mynode);
         });
 
