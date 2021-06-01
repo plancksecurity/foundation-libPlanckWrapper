@@ -34,26 +34,35 @@ namespace pEp {
             static pEpTestUnit createRootNode(
                 pEpTestModel& model,
                 const std::string& name,
-                const TestUnitFunction& main_f,
+                const TestUnitFunction& test_func,
                 ExecutionMode emode_children = emode_default);
 
             static pEpTestUnit createChildNode(
                 pEpTestUnit& parent,
                 const std::string& name,
-                const TestUnitFunction& main_f,
+                const TestUnitFunction& test_func,
                 ExecutionMode emode_children = emode_default);
 
-
-            static void setDefaultDataDir(const std::string& dir);
-            static std::string getDataDir();
-            void addChildNode(const pEpTestUnit& node);
-            void run(const pEpTestUnit* caller = nullptr) const;
+            void init(const pEpTestUnit* caller = nullptr) const;
+            static void setDefaultDataRoot(const std::string& dir);
+            static std::string getDataRoot();
+            void addChildNode(pEpTestUnit& node);
+            void run(const pEpTestUnit* caller = nullptr);
             std::string getName() const;
             std::string getFQName() const;
+            std::string getFQNameNormalized() const;
             pEpTestModel& getModel() const;
-            std::string getHomeDir() const;
+            std::string getDataDir() const;
+            const pEpTestUnit& getParentProcessUnit() const;
             std::string to_string(bool recursive = true, int indent = 0) const;
             static void setDefaultExecutionMode(ExecutionMode emode);
+
+            //logging service
+            void log(const std::string& msg) const;
+
+            // internal logging
+            static bool log_enabled;
+            Adapter::pEpLog::pEpLogger logger{ "pEpTestUnit", log_enabled };
 
         private:
             // Constructors
@@ -61,35 +70,34 @@ namespace pEp {
                 pEpTestUnit* parent,
                 pEpTestModel* model,
                 const std::string& name,
-                const TestUnitFunction& main_f,
+                const TestUnitFunction& test_func,
                 ExecutionMode emode_children);
 
             // Methods
-            void init() const;
             const pEpTestUnit& getRoot() const;
-
             void executeChildren() const;
-            void executeForked(const pEpTestUnit& unit, bool wait) const;
+            void executeForked(pEpTestUnit& unit) const;
             void waitChildProcesses() const;
             ExecutionMode getExecutionMode() const;
             ExecutionMode getEffectiveExecutionMode() const;
             void data_dir_delete();
             void data_dir_create();
             void data_dir_recreate();
+            bool isRootNode() const;
+            //            bool isProcessNode() const;
+            std::string normalizeName(std::string name) const;
 
             // Fields
             const pEpTestUnit* parent; //nullptr if rootnode
             const std::string name;
             pEpTestModel* model; //nullptr if inherited
-            const TestUnitFunction& main_func;
+            const TestUnitFunction& test_func;
             const ExecutionMode emode_chld;
             static ExecutionMode emode_default;
-            std::map<const std::string, const pEpTestUnit&> children;
-            static std::string data_dir;
+            std::map<const std::string, pEpTestUnit&> children;
+            static std::string data_root;
 
             // logger
-            static bool log_enabled;
-            Adapter::pEpLog::pEpLogger logger{ "pEpTestUnit", log_enabled };
             Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger;
         };
     }; // namespace Test
