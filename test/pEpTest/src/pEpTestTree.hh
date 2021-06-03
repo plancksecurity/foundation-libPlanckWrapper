@@ -8,7 +8,6 @@
 #include <functional>
 #include <map>
 #include "../../../src/pEpLog.hh"
-//#include "pEpTestModel.hh"
 
 // Yes, the mem mgmt is purely static on purpose (so far)
 

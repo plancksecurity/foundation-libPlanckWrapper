@@ -1,4 +1,9 @@
-#include "pEpTestTree.hh"
+// This file is under GNU General Public License 3.0
+// see LICENSE.txt
+
+#ifndef LIBPEPADAPTER_PEPTEST_PEPTESTTREE_HXX
+#define LIBPEPADAPTER_PEPTEST_PEPTESTTREE_HXX
+
 #include "../../../src/std_utils.hh"
 #include "../../framework/utils.hh"
 #include <iostream>
@@ -398,3 +403,5 @@ namespace pEp {
         };
     } // namespace Test
 } // namespace pEp
+
+#endif // LIBPEPADAPTER_PEPTEST_PEPTESTTREE_HXX
