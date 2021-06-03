@@ -16,38 +16,36 @@ using namespace pEp::Utils;
 
 namespace pEp {
     namespace Test {
-        string pEpTestTree::_data_root = "./peptest";
-        bool pEpTestTree::debug_log_enabled = false;
+        template<class T>
+        string pEpTestTree<T>::_global_root_dir = "./peptest";
+        template<class T>
+        bool pEpTestTree<T>::debug_log_enabled = false;
 
-        // PUBIC CONCSTRUCTORS / FACTORY -----------------------------------------------------------
-        // static
-        pEpTestTree pEpTestTree::createRootNode(
-            pEpTestModel& model,
+        // PUBLIC CONCSTRUCTORS / FACTORY -----------------------------------------------------------
+        template<class T>
+        pEpTestTree<T>::pEpTestTree(
+            pEpTestTree* const parent,
             const string& name,
-            const NodeFunc& test_func,
-            ExecutionMode exec_mode)
+            const NodeFunc test_func,
+            T* model,
+            ExecutionMode exec_mode) :
+            _parent(parent),
+            _model(model), _name(_normalizeName(name)), _test_func(test_func), _exec_mode(exec_mode)
         {
-            pEpTestTree ret(nullptr, &model, name, test_func, exec_mode);
-            return ret;
+            logger_debug.set_instancename(getNodePath());
+            if (!_isRootNode()) {
+                parent->_addChildNode(*this);
+            }
         }
 
-        // static
-        pEpTestTree pEpTestTree::createChildNode(
-            pEpTestTree& parent,
-            const string& name,
-            const NodeFunc& test_func,
-            ExecutionMode exec_mode)
-        {
-            pEpTestTree ret(&parent, nullptr, name, test_func, exec_mode);
-            return ret;
-        }
-
-        string pEpTestTree::getNodeName() const
+        template<class T>
+        string pEpTestTree<T>::getNodeName() const
         {
             return _name;
         }
 
-        string pEpTestTree::getNodePath() const
+        template<class T>
+        string pEpTestTree<T>::getNodePath() const
         {
             pEpLogClass("called");
             string ret;
@@ -65,7 +63,8 @@ namespace pEp {
         // ProcessNode                      - ".../<proc>"
         // When Process as dir. parent      - ".../<proc>/name"
         // When no process as dir. parent   - ".../<proc>/.../name"
-        std::string pEpTestTree::getNodePathShort() const
+        template<class T>
+        std::string pEpTestTree<T>::getNodePathShort() const
         {
             string ret;
             if (_isRootNode()) {
@@ -74,10 +73,10 @@ namespace pEp {
                 if (_isProcessNode()) {
                     ret += ".../" + getNodeName();
                 } else {
-                    if (&(_getParentingProcessNode()) == (_parent)) {
-                        ret = _getParentingProcessNode().getNodePathShort() + "/" + getNodeName();
+                    if (&(_parentingProcessNode()) == (_parent)) {
+                        ret = _parentingProcessNode().getNodePathShort() + "/" + getNodeName();
                     } else {
-                        ret = _getParentingProcessNode().getNodePathShort() + "/.../" + getNodeName();
+                        ret = _parentingProcessNode().getNodePathShort() + "/.../" + getNodeName();
                     }
                 }
             }
@@ -85,94 +84,124 @@ namespace pEp {
         }
 
         // Inherited (if null see parent recursively)
-        pEpTestModel& pEpTestTree::getModel() const
+        template<class T>
+        T* pEpTestTree<T>::getModel() const
         {
             pEpLogClass("called");
-            pEpTestModel* ret = nullptr;
-            if (_model == nullptr) {
-                ret = &(_parent->getModel());
-            } else {
+            T* ret = nullptr;
+
+            if (_model != nullptr) {
                 ret = _model;
-            }
-            assert(ret != nullptr);
-            // cant be null because for createChildNode() you have to provide TestNode& instance,
-            // and the only other way to get one is by createRootNode() which in turn requires a TestModel&
-            return *ret;
-        }
-
-        // RootNodes have their own data_dir
-        // ProcessNodes have their own data_dir inside their RootNote dir (nameclash prossible)
-        // All other nodes inherit data_dir from their Root/ProcessNode
-        string pEpTestTree::getDataDir() const
-        {
-            pEpLogClass("called");
-            string ret;
-            if (_isRootNode()) {
-                ret = getDataRoot() + getNodeName() + "/";
             } else {
-                if (_parent->_exec_mode == ExecutionMode::PROCESS_SERIAL ||
-                    _parent->_exec_mode == ExecutionMode::PROCESS_PARALLEL) {
-
-                    ret = _parent->getDataDir() + getNodeName();
-                } else {
-                    // inherit
-                    ret = _parent->getDataDir();
+                if (!_isRootNode()) {
+                    ret = _parent->getModel();
                 }
             }
             return ret;
         }
 
-        // static
-        void pEpTestTree::setDataRoot(const string& dir)
+        // RootNodes have their own data_dir
+        // ProcessNodes have their own data_dir inside their RootNote dir (nameclash prossible)
+        // All other nodes inherit data_dir from their Root/ProcessNode
+        //        string pEpTestTree::dataDir() const
+        //        {
+        //            pEpLogClass("called");
+        //            string ret;
+        //            if(!_isRootNode()) {
+        //                ret = getRootNodesDir() + _getRootNode().getNodeName() + "/" + _getParentingProcessNode().getNodeName() + "/";
+        //            } else {
+        //                ret = getRootNodesDir() + _getRootNode().getNodeName() + "/";
+        //            }
+        //            return ret;
+        //        }
+        //
+
+        // Every RootNode has its own dir
+        template<class T>
+        string pEpTestTree<T>::rootNodeDir() const
         {
-            pEpTestTree::_data_root = dir;
+            return getGlobalRootDir() + _rootNode().getNodeName() + "/";
+        }
+
+        // Every process has its own dir inside its rootNodeDir
+        // The Root node has its own processDir for future use
+        template<class T>
+        string pEpTestTree<T>::processDir() const
+        {
+            if (_isRootNode()) {
+                return rootNodeDir() + "rootnode_data";
+            } else {
+                if (&_parentingProcessNode() == &_rootNode()) {
+                    return rootNodeDir() + getNodeName() + "/";
+                } else {
+                    return rootNodeDir() + _parentingProcessNode().getNodeName() + "/";
+                };
+            }
+        }
+
+        template<class T>
+        void pEpTestTree<T>::setExecutionMode(ExecutionMode mode)
+        {
+            _exec_mode = mode;
         }
 
         // static
-        string pEpTestTree::getDataRoot()
+        template<>
+        void pEpTestTree<void>::setGlobalRootDir(const string& dir)
         {
-            return pEpTestTree::_data_root;
+            pEpTestTree::_global_root_dir = dir;
         }
 
+        // static
+        template<class T>
+        string pEpTestTree<T>::getGlobalRootDir()
+        {
+            return pEpTestTree::_global_root_dir + "/";
+        }
 
-        void pEpTestTree::run(const pEpTestTree* caller) const
+        template<class T>
+        void pEpTestTree<T>::run() const
         {
             pEpLogClass("called");
             // caller is never nullptr if called by another pEpTestTree
-            if (caller == nullptr) {
+            if (_isRootNode()) {
                 pEpLog::logH1("Starting pEpTestTree from node: " + getNodePathShort());
                 pEpLog::log(to_string());
             }
 
-            pEpLog::logH2(
-                "[ " + to_string(_exec_mode) + " / " + getNodePathShort() + "]");
             // Execute in fork and wait here until process ends
-            if (_exec_mode == ExecutionMode::PROCESS_SERIAL) { // fork
+            if (_exec_mode == ExecutionMode::PROCESS_SEQUENTIAL) { // fork
+                pEpLog::logH2("[ " + to_string(_exec_mode) + " / " + getNodePathShort() + "]");
                 _executeInFork(bind(&pEpTestTree::_run, this), true);
                 // Execute in fork and go on, wait for process execution in the end
             } else if (_exec_mode == ExecutionMode::PROCESS_PARALLEL) {
+                pEpLog::logH2("[ " + to_string(_exec_mode) + " / " + getNodePathShort() + "]");
                 _executeInFork(bind(&pEpTestTree::_run, this), false);
                 // Execute as normal funciton
             } else if (_exec_mode == ExecutionMode::FUNCTION) {
+                pEpLog::logH3("[ " + to_string(_exec_mode) + " / " + getNodePathShort() + "]");
                 _run();
             } else if (_exec_mode == ExecutionMode::THREAD_PARALLEL) {
                 throw invalid_argument(to_string(_exec_mode) + " - not implemented");
-            } else if (_exec_mode == ExecutionMode::THREAD_SERIAL) {
+            } else if (_exec_mode == ExecutionMode::THREAD_SEQUENTIAL) {
                 throw invalid_argument(to_string(_exec_mode) + " - not implemented");
             }
 
-            if (caller == nullptr) {
-                _waitChildProcesses();
-            }
+            _waitChildProcesses();
         }
 
-        string pEpTestTree::to_string(bool recursive, int indent) const
+        template<class T>
+        string pEpTestTree<T>::to_string(bool recursive, int indent) const
         {
             string ret;
             stringstream builder;
-            builder << string(indent, '\t');
+            builder << string(indent * 4, ' ');
+
             builder << getNodeName();
-            builder << "[" << to_string(_exec_mode) << "]";
+            builder << " [ ";
+            builder << to_string(_exec_mode) << " - ";
+            builder << "\"" << processDir() << "\"";
+            builder << " ]";
             builder << endl;
             ret = builder.str();
 
@@ -186,19 +215,20 @@ namespace pEp {
             return ret;
         }
 
-        string pEpTestTree::to_string(const ExecutionMode& emode)
+        template<class T>
+        string pEpTestTree<T>::to_string(const ExecutionMode& emode)
         {
             switch (emode) {
                 case ExecutionMode::FUNCTION:
                     return "FUNCTION";
-                case ExecutionMode::PROCESS_SERIAL:
-                    return "PROCESS_SERIAL";
+                case ExecutionMode::PROCESS_SEQUENTIAL:
+                    return "PROC_SEQ";
                 case ExecutionMode::PROCESS_PARALLEL:
-                    return "PROCESS_PARALLEL";
-                case ExecutionMode::THREAD_SERIAL:
-                    return "THREAD_SERIAL";
+                    return "PROC_PAR";
+                case ExecutionMode::THREAD_SEQUENTIAL:
+                    return "THREAD_S";
                 case ExecutionMode::THREAD_PARALLEL:
-                    return "THREAD_PARALLEL";
+                    return "THREAD_P";
                 case ExecutionMode::INHERIT:
                     return "INHERIT";
                 default:
@@ -207,7 +237,8 @@ namespace pEp {
         }
 
         //Well, ok, lets just add some little convenience logging service in here, too
-        void pEpTestTree::log(const string& msg) const
+        template<class T>
+        void pEpTestTree<T>::log(const string& msg) const
         {
             stringstream builder;
             builder << "[";
@@ -222,36 +253,35 @@ namespace pEp {
 
         // PRIVATE ---------------------------------------------------------------------------------
 
-        pEpTestTree::pEpTestTree(
-            pEpTestTree* const parent,
-            pEpTestModel* model,
-            const string& name,
-            const NodeFunc& test_func,
-            ExecutionMode exec_mode) :
-            _parent(parent),
-            _model(model), _name(_normalizeName(name)), _test_func(test_func), _exec_mode(exec_mode)
+        template<class T>
+        void pEpTestTree<T>::_run() const
         {
-            logger_debug.set_instancename(getNodePath());
-            if (!_isRootNode()) {
-                parent->_addChildNode(*this);
-            }
+            _runSelf();
+            _runChildren();
         }
 
-        void pEpTestTree::_run() const
+        template<class T>
+        void pEpTestTree<T>::_runSelf() const
         {
-            if (_test_func) {
+            if (_test_func != nullptr) {
                 _test_func(*this);
             } else {
                 pEpLog::log("No function to execute");
             }
+        }
+
+        template<class T>
+        void pEpTestTree<T>::_runChildren() const
+        {
             if (!_children.empty()) {
                 for (const pair<string, pEpTestTree&> child : _children) {
-                    child.second.run(this);
+                    child.second.run();
                 }
             }
         }
 
-        void pEpTestTree::_executeInFork(function<void(void)> func, bool wait_child) const
+        template<class T>
+        void pEpTestTree<T>::_executeInFork(function<void(void)> func, bool wait_child) const
         {
             pid_t pid;
             pid = fork();
@@ -266,7 +296,8 @@ namespace pEp {
             }
         }
 
-        void pEpTestTree::_waitChildProcesses() const
+        template<class T>
+        void pEpTestTree<T>::_waitChildProcesses() const
         {
             int status;
             pid_t pid;
@@ -277,35 +308,39 @@ namespace pEp {
             }
         }
 
-        void pEpTestTree::_addChildNode(pEpTestTree& node)
+        template<class T>
+        void pEpTestTree<T>::_addChildNode(pEpTestTree& node)
         {
             _children.insert(pair<string, pEpTestTree&>(node.getNodeName(), node));
         }
 
-        bool pEpTestTree::_isProcessNode() const
+        template<class T>
+        bool pEpTestTree<T>::_isProcessNode() const
         {
             bool ret = false;
-            if (_exec_mode == ExecutionMode::PROCESS_SERIAL ||
+            if (_exec_mode == ExecutionMode::PROCESS_SEQUENTIAL ||
                 _exec_mode == ExecutionMode::PROCESS_PARALLEL) {
                 ret = true;
             }
             return ret;
         }
 
-        bool pEpTestTree::_isRootNode() const
+        template<class T>
+        bool pEpTestTree<T>::_isRootNode() const
         {
-            bool ret = false;
             if (_parent == nullptr) {
-                ret = true;
+                return true;
+            } else {
+                return false;
             }
-            return ret;
         }
 
-        const pEpTestTree& pEpTestTree::_getRootNode() const
+        template<class T>
+        const pEpTestTree<T>& pEpTestTree<T>::_rootNode() const
         {
             const pEpTestTree* ret = nullptr;
             if (!_isRootNode()) {
-                ret = &(_parent->_getRootNode());
+                ret = &(_parent->_rootNode());
             } else {
                 ret = this;
             }
@@ -315,17 +350,19 @@ namespace pEp {
             return *ret;
         }
 
-        const pEpTestTree& pEpTestTree::_getParentingProcessNode() const
+        template<class T>
+        const pEpTestTree<T>& pEpTestTree<T>::_parentingProcessNode() const
         {
             if (_isRootNode() || _isProcessNode()) {
                 return *this;
             } else {
-                return _parent->_getParentingProcessNode();
+                return _parent->_parentingProcessNode();
             }
         }
 
         // name is alphanumeric only (everything else will be replaced by an underscore)
-        string pEpTestTree::_normalizeName(string name) const
+        template<class T>
+        string pEpTestTree<T>::_normalizeName(string name) const
         {
             replace_if(
                 name.begin(),
@@ -336,22 +373,25 @@ namespace pEp {
             return name;
         }
 
-        void pEpTestTree::_data_dir_create()
+        template<class T>
+        void pEpTestTree<T>::_data_dir_create()
         {
-            //            Utils::dir_create(getDataDir());
-            pEpLog::log("creating dir:" + getDataRoot());
+            //            Utils::dir_create(dataDir());
+            pEpLog::log("creating dir:" + getGlobalRootDir());
         }
 
-        void pEpTestTree::_data_dir_delete()
+        template<class T>
+        void pEpTestTree<T>::_data_dir_delete()
         {
             try {
-                Utils::path_delete_all(getDataRoot());
+                Utils::path_delete_all(getGlobalRootDir());
             } catch (const exception& e) {
-                pEpLog::log("DistTest: - could not delete data dir: " + getDataRoot());
+                pEpLog::log("DistTest: - could not delete data dir: " + getGlobalRootDir());
             }
         }
 
-        void pEpTestTree::_data_dir_recreate()
+        template<class T>
+        void pEpTestTree<T>::_data_dir_recreate()
         {
             _data_dir_delete();
             _data_dir_create();

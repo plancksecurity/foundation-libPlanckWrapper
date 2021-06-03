@@ -8,12 +8,13 @@
 #include <functional>
 #include <map>
 #include "../../../src/pEpLog.hh"
-#include "pEpTestModel.hh"
+//#include "pEpTestModel.hh"
 
 // Yes, the mem mgmt is purely static on purpose (so far)
 
 namespace pEp {
     namespace Test {
+        template<class T = void>
         class pEpTestTree {
         public:
             using NodeFunc = std::function<void(const pEpTestTree&)>;
@@ -21,42 +22,38 @@ namespace pEp {
             enum class ExecutionMode
             {
                 FUNCTION,
-                PROCESS_SERIAL,
+                PROCESS_SEQUENTIAL,
                 PROCESS_PARALLEL,
-                THREAD_SERIAL,   // unimplemented
-                THREAD_PARALLEL, // unimplemented
+                THREAD_SEQUENTIAL, // unimplemented
+                THREAD_PARALLEL,   // unimplemented
                 INHERIT
             };
 
             // Constructors are private
             pEpTestTree() = delete;
-
-            // Modify
-            static pEpTestTree createRootNode(
-                pEpTestModel& model,
+            explicit pEpTestTree(
+                pEpTestTree* parent,
                 const std::string& name,
-                const NodeFunc& test_func,
-                ExecutionMode exec_mode = ExecutionMode::FUNCTION);
-
-            static pEpTestTree createChildNode(
-                pEpTestTree& parent,
-                const std::string& name,
-                const NodeFunc& test_func,
+                const NodeFunc test_func = nullptr,
+                T* model = nullptr,
                 ExecutionMode exec_mode = ExecutionMode::FUNCTION);
 
             // Read-Only
-            std::string getNodeName() const;      // name only
-            std::string getNodePath() const;      // full path (is an ID)
-            std::string getNodePathShort() const; // parent process + name
-            pEpTestModel& getModel() const;
-            std::string getDataDir() const;
+            std::string getNodeName() const;
+            std::string getNodePath() const;
+            std::string getNodePathShort() const;
+            T* getModel() const;
+            std::string rootNodeDir() const;
+            std::string processDir() const; // own process dir
 
             // Read-Write
-            static void setDataRoot(const std::string& dir);
-            static std::string getDataRoot();
+            void setExecutionMode(ExecutionMode mode);
+            static void setGlobalRootDir(const std::string& dir);
+            static std::string getGlobalRootDir();
+
 
             // Main funcs
-            void run(const pEpTestTree* caller = nullptr) const;
+            void run() const;
             std::string to_string(bool recursive = true, int indent = 0) const;
             static std::string to_string(const ExecutionMode& emode);
 
@@ -68,17 +65,14 @@ namespace pEp {
             Adapter::pEpLog::pEpLogger logger_debug{ "pEpTestTree", debug_log_enabled };
 
         private:
-            // CONSTRUCGTORS
-            explicit pEpTestTree(
-                pEpTestTree* parent,
-                pEpTestModel* model,
-                const std::string& name,
-                const NodeFunc& test_func,
-                ExecutionMode exec_mode);
+            // CONSTRUCTORS
 
             // METHODS
             // Execution
+            void _runRootNode() const;
             void _run() const;
+            void _runSelf() const;
+            void _runChildren() const;
             void _executeInFork(std::function<void(void)> func, bool wait_child) const;
             void _waitChildProcesses() const;
 
@@ -88,8 +82,8 @@ namespace pEp {
             // Query
             bool _isProcessNode() const;
             bool _isRootNode() const;
-            const pEpTestTree& _getRootNode() const;
-            const pEpTestTree& _getParentingProcessNode() const;
+            const pEpTestTree& _rootNode() const;
+            const pEpTestTree& _parentingProcessNode() const;
 
             // Util
             std::string _normalizeName(std::string name) const;
@@ -102,10 +96,10 @@ namespace pEp {
             // Fields
             const std::string _name;
             const pEpTestTree* _parent; //nullptr if RootUnit
-            pEpTestModel* _model;       //nullptr if inherited
-            const NodeFunc& _test_func;
-            const ExecutionMode _exec_mode;
-            static std::string _data_root;
+            T* _model;                  //nullptr if inherited
+            const NodeFunc _test_func;
+            ExecutionMode _exec_mode;
+            static std::string _global_root_dir;
 
             std::map<const std::string, pEpTestTree&> _children; // map to guarantee uniqueness of sibling-names
 
@@ -114,5 +108,7 @@ namespace pEp {
         };
     }; // namespace Test
 };     // namespace pEp
+
+#include "pEpTestTree.hxx"
 
 #endif // LIBPEPADAPTER_PEPTEST_PEPTESTTREE_HH
