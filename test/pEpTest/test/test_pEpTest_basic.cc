@@ -8,7 +8,7 @@ using namespace pEp;
 using namespace pEp::Test;
 
 
-void printHomeDir(pEpTestTree& myself, int sleepmilis, int rep_count)
+void printHomeDir(const pEpTestTree<>& myself, int sleepmilis, int rep_count)
 {
     //    TESTLOGH1("HYA FROM:" + myself.getFQName());
     int i = 0;
@@ -23,49 +23,49 @@ void printHomeDir(pEpTestTree& myself, int sleepmilis, int rep_count)
 int main(int argc, char* argv[])
 {
     string dummy;
-    pEpTestModel model{ "pEpTestModel" };
     {
         // DEBUG Logging of pEpTestTree itself
-        pEpTestTree::debug_log_enabled = true;
+        pEpTestTree<>::debug_log_enabled = false;
 
         // Configure DataRoot for all TestNodes
-        pEpTestTree::setDataRoot("./basic_data_root");
+        pEpTestTree<>::setGlobalRootDir("./basic_data_root");
 
         // The RootNode is the
-        pEpTestTree root = pEpTestTree::createRootNode(
-            model,
-            "Test Execution Model",
-            [](pEpTestTree mynode) { printHomeDir(mynode, 200, 5); });
+        pEpTestTree<> root = pEpTestTree<>{ nullptr, "Test Execution Model"};
 
         // Subprocess 1
-        pEpTestTree test1 = pEpTestTree::createChildNode(
-            root,
+        pEpTestTree<> test1 = pEpTestTree<>{
+            &root,
             "node1",
-            [](pEpTestTree mynode) { printHomeDir(mynode, 200, 10); },
-            pEp::Test::pEpTestTree::ExecutionMode::PROCESS_PARALLEL);
+            [](const pEpTestTree<>& mynode) { printHomeDir(mynode, 200, 10); },
+            nullptr,
+            pEp::Test::pEpTestTree<>::ExecutionMode::PROCESS_PARALLEL
+        };
 
-        pEpTestTree test1_1 = pEpTestTree::createChildNode(test1, "test1.1", [](pEpTestTree mynode) {
-            printHomeDir(mynode, 200, 10);
-        });
+        pEpTestTree<> test1_1 = pEpTestTree<>{ &test1, "test1.1", [](const pEpTestTree<>& mynode) {
+                                                  printHomeDir(mynode, 200, 10);
+                                              } };
 
-        pEpTestTree test1_2 = pEpTestTree::createChildNode(test1, "test1.2", [](pEpTestTree mynode) {
-            printHomeDir(mynode, 200, 10);
-        });
+        pEpTestTree<> test1_2 = pEpTestTree<>{ &test1, "test1.2", [](const pEpTestTree<>& mynode) {
+                                                  printHomeDir(mynode, 200, 10);
+                                              } };
 
         // Subprocess 2
-        pEpTestTree test2 = pEpTestTree::createChildNode(
-            root,
+        pEpTestTree<> test2 = pEpTestTree<>{
+            &root,
             "node2",
-            [](pEpTestTree mynode) { printHomeDir(mynode, 200, 10); },
-            pEp::Test::pEpTestTree::ExecutionMode::PROCESS_PARALLEL);
+            [](const pEpTestTree<>& mynode) { printHomeDir(mynode, 200, 10); },
+            nullptr,
+            pEp::Test::pEpTestTree<>::ExecutionMode::PROCESS_PARALLEL
+        };
 
-        pEpTestTree test2_1 = pEpTestTree::createChildNode(test2, "test2.1", [](pEpTestTree mynode) {
-          printHomeDir(mynode, 200, 10);
-        });
+        pEpTestTree<> test2_1 = pEpTestTree<>{ &test2, "test2.1", [](const pEpTestTree<>& mynode) {
+                                                  printHomeDir(mynode, 200, 10);
+                                              } };
 
-        pEpTestTree test2_2 = pEpTestTree::createChildNode(test2, "test2.2", [](pEpTestTree mynode) {
-          printHomeDir(mynode, 200, 10);
-        });
+        pEpTestTree<> test2_2 = pEpTestTree<>{ &test2, "test2.2", [](const pEpTestTree<>& mynode) {
+                                                  printHomeDir(mynode, 200, 10);
+                                              } };
 
         root.run();
     }
