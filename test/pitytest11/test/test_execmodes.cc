@@ -17,7 +17,7 @@ void printHomeDir(const PityUnit<>& myself, int sleepmilis, int rep_count)
 int main(int argc, char* argv[])
 {
     {
-        // DEBUG Logging of pEpTestTree itself
+        // DEBUG Logging of PityTestUnit itself
         PityUnit<>::debug_log_enabled = false;
 
         // Configure DataRoot for all TestNodes

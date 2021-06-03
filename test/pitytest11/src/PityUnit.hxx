@@ -1,8 +1,8 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
-#ifndef LIBPEPADAPTER_PEPTEST_PityUnit_HXX
-#define LIBPEPADAPTER_PEPTEST_PityUnit_HXX
+#ifndef PITYTEST_PITYUNIT_HXX
+#define PITYTEST_PITYUNIT_HXX
 
 #include "../../../src/std_utils.hh"
 #include "../../framework/utils.hh"
@@ -20,7 +20,7 @@ using namespace pEp::Adapter::pEpLog;
 namespace pEp {
     namespace PityTest11 {
         template<class T>
-        std::string PityUnit<T>::_global_root_dir = "./peptest";
+        std::string PityUnit<T>::_global_root_dir = "./pitytest";
         template<class T>
         bool PityUnit<T>::debug_log_enabled = false;
 
@@ -387,4 +387,4 @@ namespace pEp {
     } // namespace Test
 } // namespace pEp
 
-#endif // LIBPEPADAPTER_PEPTEST_PityUnit_HXX
+#endif // PITYTEST_PITYUNIT_HXX

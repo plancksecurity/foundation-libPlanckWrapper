@@ -14,6 +14,11 @@ void printHomeDir(const PityUnit<>& myself)
     myself.log("HOME=" + string(getenv("HOME")));
 }
 
+void ptAssert(bool condition) {
+    if(!condition) {
+
+    }
+}
 
 int main(int argc, char* argv[])
 {

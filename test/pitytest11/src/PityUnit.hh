@@ -61,7 +61,7 @@ namespace pEp {
 
             // internal logging
             static bool debug_log_enabled;
-            Adapter::pEpLog::pEpLogger logger_debug{ "pEpTestTree", debug_log_enabled };
+            Adapter::pEpLog::pEpLogger logger_debug{ "PityUnit", debug_log_enabled };
 
         private:
             // CONSTRUCTORS
