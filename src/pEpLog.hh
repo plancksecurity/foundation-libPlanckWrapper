@@ -136,8 +136,9 @@ namespace pEp {
             void log(const std::string& msg);
             void logH1(const std::string& msg);
             void logH2(const std::string& msg);
-            std::string decorateH1(const std::string& msg);
-            std::string decorateH2(const std::string& msg);
+            void logH3(const std::string& msg);
+            std::string decorate_three_lines(const std::string& msg, char decoration = '-');
+            std::string decorate_centered(const std::string& msg, char decoration = '-');
         } // namespace pEpLog
     }     // namespace Adapter
 } // namespace pEp

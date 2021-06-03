@@ -51,39 +51,42 @@ namespace pEp {
 
             void logH1(const string& msg)
             {
-                log(decorateH1(msg));
+                log(decorate_three_lines(msg, '='));
             }
 
             void logH2(const string& msg)
             {
-                log(decorateH2(msg));
+                log(decorate_centered(msg, '='));
             }
 
-            string decorateH1(const string& msg)
+            void logH3(const string& msg)
+            {
+                log(decorate_centered(msg, '-'));
+            }
+
+            string decorate_three_lines(const string& msg, char decoration)
             {
                 stringstream tmp;
-                char decoration{ '=' };
                 tmp << std::string(line_width, decoration) << endl
                     << msg << endl
                     << std::string(line_width, decoration);
                 return tmp.str();
             }
 
-            string decorateH2(const string& msg)
+            string decorate_centered(const string& msg, char decoration)
             {
                 stringstream tmp;
-                char decoration{ '-' };
-                int max_len = 110;
-
+                int max_len = line_width - 10;
                 // truncate msg
                 string msg_truncated = msg;
-                if(msg.length() >= max_len) {
+                if (msg.length() >= max_len) {
                     msg_truncated = msg.substr(0, max_len);
                     msg_truncated += "...";
                 }
 
                 // define decolen
-                int decolen = static_cast<int>(floor((double(line_width - msg_truncated.length()))) / 2.0);
+                int decolen = static_cast<int>(
+                    floor((double(line_width - msg_truncated.length()))) / 2.0);
 
                 tmp << endl
                     << std::string(decolen, decoration) << ' ' << msg_truncated << ' '
