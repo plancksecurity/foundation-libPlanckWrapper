@@ -12,7 +12,7 @@ namespace pEp {
         public:
             pEpTestModel() = delete;
             pEpTestModel(const std::string& name);
-            const std::string& getName() const;
+            virtual const std::string& getName() const;
 
         private:
             const std::string name;
