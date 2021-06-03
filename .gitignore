@@ -33,3 +33,6 @@ test_pEpLog_basic
 
 *.db
 
+/test/PityTest11/test/test_pEpTest_basic
+/test/PityTest11/test/test_transport
+/test/PityTest11/test/test_processdirs

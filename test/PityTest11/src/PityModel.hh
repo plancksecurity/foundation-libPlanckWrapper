@@ -7,11 +7,11 @@
 #include "../../../src/pEpLog.hh"
 
 namespace pEp {
-    namespace Test {
-        class pEpTestModel {
+    namespace PityTest11 {
+        class PityModel {
         public:
-            pEpTestModel() = delete;
-            pEpTestModel(const std::string& name);
+            PityModel() = delete;
+            PityModel(const std::string& name);
             virtual const std::string& getName() const;
 
         private:

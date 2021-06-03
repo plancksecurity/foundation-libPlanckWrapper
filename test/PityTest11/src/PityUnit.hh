@@ -1,8 +1,8 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 
-#ifndef LIBPEPADAPTER_PEPTEST_PEPTESTTREE_HH
-#define LIBPEPADAPTER_PEPTEST_PEPTESTTREE_HH
+#ifndef PITYTEST_PITYUNIT_HH
+#define PITYTEST_PITYUNIT_HH
 
 #include <string>
 #include <functional>
@@ -12,11 +12,11 @@
 // Yes, the mem mgmt is purely static on purpose (so far)
 
 namespace pEp {
-    namespace Test {
+    namespace PityTest11 {
         template<class T = void>
-        class pEpTestTree {
+        class PityUnit {
         public:
-            using NodeFunc = std::function<void(const pEpTestTree&)>;
+            using NodeFunc = std::function<void(const PityUnit&)>;
 
             enum class ExecutionMode
             {
@@ -29,9 +29,9 @@ namespace pEp {
             };
 
             // Constructors are private
-            pEpTestTree() = delete;
-            explicit pEpTestTree(
-                pEpTestTree* parent,
+            PityUnit() = delete;
+            explicit PityUnit(
+                PityUnit* parent,
                 const std::string& name,
                 const NodeFunc test_func = nullptr,
                 T* model = nullptr,
@@ -76,13 +76,13 @@ namespace pEp {
             void _waitChildProcesses() const;
 
             // Modify
-            void _addChildNode(pEpTestTree& node);
+            void _addChildNode(PityUnit& node);
 
             // Query
             bool _isProcessNode() const;
             bool _isRootNode() const;
-            const pEpTestTree& _rootNode() const;
-            const pEpTestTree& _parentingProcessNode() const;
+            const PityUnit& _rootNode() const;
+            const PityUnit& _parentingProcessNode() const;
 
             // Util
             std::string _normalizeName(std::string name) const;
@@ -94,13 +94,13 @@ namespace pEp {
 
             // Fields
             const std::string _name;
-            const pEpTestTree* _parent; //nullptr if RootUnit
-            T* _model;                  //nullptr if inherited
+            const PityUnit* _parent; //nullptr if RootUnit
+            T* _model;               //nullptr if inherited
             const NodeFunc _test_func;
             ExecutionMode _exec_mode;
             static std::string _global_root_dir;
 
-            std::map<const std::string, pEpTestTree&> _children; // map to guarantee uniqueness of sibling-names
+            std::map<const std::string, PityUnit&> _children; // map to guarantee uniqueness of sibling-names
 
             // internal logging
             Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger_debug;
@@ -108,6 +108,6 @@ namespace pEp {
     }; // namespace Test
 };     // namespace pEp
 
-#include "pEpTestTree.hxx"
+#include "PityUnit.hxx"
 
-#endif // LIBPEPADAPTER_PEPTEST_PEPTESTTREE_HH
+#endif // PITYTEST_PITYUNIT_HH
