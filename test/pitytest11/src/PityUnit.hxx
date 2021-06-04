@@ -5,7 +5,7 @@
 #define PITYTEST_PITYUNIT_HXX
 
 #include "../../../src/std_utils.hh"
-#include "../../framework/utils.hh"
+//#include "../../framework/utils.hh"
 #include <iostream>
 #include <unistd.h>
 #include <cstdlib>
@@ -13,7 +13,7 @@
 #include <functional>
 #include <algorithm>
 #include <sstream>
-
+#include <exception>
 
 using namespace pEp::Adapter::pEpLog;
 
@@ -119,7 +119,7 @@ namespace pEp {
             } else {
                 if (_isProcessNode()) {
                     return rootNodeDir() + getNodeName() + "/";
-                } else{
+                } else {
                     return _parent->processDir();
                 }
             }
@@ -152,20 +152,20 @@ namespace pEp {
             // caller is never nullptr if called by another PityUnit
             if (_isRootNode()) {
                 logH1("Starting PityUnit from node: " + getNodePathShort());
-                log(to_string());
+                std::cout << to_string() << std::endl;
             }
 
             // Execute in fork and wait here until process ends
             if (_exec_mode == ExecutionMode::PROCESS_SEQUENTIAL) { // fork
-                logH2("[ " + to_string(_exec_mode) + " / " + getNodePathShort() + " ]");
+                logH2(_status_string("RUNNING"));
                 _executeInFork(std::bind(&PityUnit::_run, this), true);
                 // Execute in fork and go on, wait for process execution in the end
             } else if (_exec_mode == ExecutionMode::PROCESS_PARALLEL) {
-                logH2("[ " + to_string(_exec_mode) + " / " + getNodePathShort() + " ]");
+                logH2(_status_string("RUNNING"));
                 _executeInFork(std::bind(&PityUnit::_run, this), false);
                 // Execute as normal funciton
             } else if (_exec_mode == ExecutionMode::FUNCTION) {
-                logH3("[ " + to_string(_exec_mode) + " / " + getNodePathShort() + " ]");
+                logH3(_status_string("RUNNING"));
                 _run();
             } else if (_exec_mode == ExecutionMode::THREAD_PARALLEL) {
                 throw std::invalid_argument(to_string(_exec_mode) + " - not implemented");
@@ -173,7 +173,7 @@ namespace pEp {
                 throw std::invalid_argument(to_string(_exec_mode) + " - not implemented");
             }
 
-            if(_isRootNode()) {
+            if (_isRootNode()) {
                 _waitChildProcesses();
             }
         }
@@ -252,7 +252,13 @@ namespace pEp {
         void PityUnit<T>::_runSelf() const
         {
             if (_test_func != nullptr) {
-                _test_func(*this);
+                try {
+                    _test_func(*this);
+                    logH3(_status_string("SUCCESS"));
+                } catch (const std::exception& e) {
+                    log("reason: " + std::string(e.what()));
+                    logH3(_status_string("FAILED"));
+                }
             } else {
                 log("No function to execute");
             }
@@ -290,8 +296,7 @@ namespace pEp {
             int status;
             pid_t pid;
             while ((pid = wait(&status)) > 0) {
-                log(
-                    "process[" + std::to_string((int)pid) +
+                pEpLogClass("process[" + std::to_string((int)pid) +
                     "] terminated with status: " + std::to_string(status));
             }
         }
@@ -362,6 +367,15 @@ namespace pEp {
         }
 
         template<class T>
+        std::string PityUnit<T>::_status_string(const std::string& msg) const
+        {
+            std::string ret;
+            ret = "[ " + to_string(_exec_mode) + ":" + std::to_string(getpid()) + " ]  [ " +
+                  getNodePathShort() + " ]  [ " + msg + " ]";
+            return ret;
+        }
+
+        template<class T>
         void PityUnit<T>::_data_dir_create()
         {
             //            Utils::dir_create(dataDir());
@@ -384,7 +398,7 @@ namespace pEp {
             _data_dir_delete();
             _data_dir_create();
         };
-    } // namespace Test
+    } // namespace PityTest11
 } // namespace pEp
 
 #endif // PITYTEST_PITYUNIT_HXX
