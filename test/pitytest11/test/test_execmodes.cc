@@ -21,9 +21,6 @@ int main(int argc, char* argv[])
         // DEBUG Logging of PityTestUnit itself
         PityUnit<>::debug_log_enabled = false;
 
-        // Configure DataRoot for all TestNodes
-        PityUnit<>::setGlobalRootDir("./basic_data_root");
-
         // The RootNode is the
         PityUnit<> root = PityUnit<>{ nullptr, "Test Execution Model" };
 
