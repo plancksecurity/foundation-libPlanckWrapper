@@ -5,7 +5,6 @@
 #define PITYTEST_PITYUNIT_HH
 
 #include <string>
-#include <functional>
 #include <map>
 #include "../../../src/pEpLog.hh"
 
@@ -86,6 +85,7 @@ namespace pEp {
 
             // Util
             std::string _normalizeName(std::string name) const;
+            std::string _status_string(const std::string& msg) const;
 
             // TODO
             void _data_dir_delete();
@@ -105,7 +105,35 @@ namespace pEp {
             // internal logging
             Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger_debug;
         };
-    }; // namespace Test
+
+
+        class PityAssertException : public std::runtime_error {
+        public:
+            PityAssertException(const std::string& string) : runtime_error(string) {}
+        };
+
+
+#ifndef PTASSERT
+    #define PTASSERT(condition)                                                                    \
+        do {                                                                                       \
+            if (!(condition)) {                                                                    \
+                throw PityAssertException("AssertError");                                       \
+            }                                                                                      \
+        } while (0)
+#endif
+
+#ifndef PTASSERT_EXCEPT
+    #define PTASSERT_EXCEPT(func)                                                                  \
+        do {                                                                                       \
+            try {                                                                                  \
+                (func);                                                                            \
+                PTASSERT(false);                                                                   \
+            } catch (const exception& e) {                                                         \
+            }                                                                                      \
+        } while (0)
+#endif
+
+    }; // namespace PityTest11
 };     // namespace pEp
 
 #include "PityUnit.hxx"
