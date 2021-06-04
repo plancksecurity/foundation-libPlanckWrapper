@@ -51,6 +51,7 @@ namespace pEp {
 
 
             // Main funcs
+            void _init() const;
             void run() const;
             std::string to_string(bool recursive = true, int indent = 0) const;
             static std::string to_string(const ExecutionMode& emode);
@@ -88,6 +89,9 @@ namespace pEp {
             std::string _status_string(const std::string& msg) const;
 
             // TODO
+            void _ensureDir(const std::string& path) const;
+            void _recreateDir(const std::string& path ) const;
+
             void _data_dir_delete();
             void _data_dir_create();
             void _data_dir_recreate();
