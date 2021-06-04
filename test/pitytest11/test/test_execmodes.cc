@@ -1,10 +1,11 @@
 #include "../src/PityUnit.hh"
+#include "../../framework/utils.hh"
 #include <iostream>
 
 using namespace std;
 using namespace pEp::PityTest11;
 
-void printHomeDir(const PityUnit<>& myself, int sleepmilis, int rep_count)
+void do_some_work(const PityUnit<>& myself, int sleepmilis, int rep_count)
 {
     int i = 0;
     while (i < rep_count) {
@@ -30,36 +31,36 @@ int main(int argc, char* argv[])
         PityUnit<> test1 = PityUnit<>{ &root,
                                        "node1",
                                        [](const PityUnit<>& mynode) {
-                                           printHomeDir(mynode, 200, 10);
+                                           do_some_work(mynode, 200, 10);
                                        },
                                        nullptr,
                                        pEp::PityTest11::PityUnit<>::ExecutionMode::PROCESS_PARALLEL };
 
         PityUnit<> test1_1 = PityUnit<>{ &test1, "test1.1", [](const PityUnit<>& mynode) {
-                                            printHomeDir(mynode, 200, 10);
+                                            do_some_work(mynode, 200, 10);
                                         } };
 
         PityUnit<> test1_2 = PityUnit<>{ &test1, "test1.2", [](const PityUnit<>& mynode) {
-                                            printHomeDir(mynode, 200, 10);
+                                            do_some_work(mynode, 200, 10);
                                         } };
 
         // Subprocess 2
         PityUnit<> test2 = PityUnit<>{ &root,
                                        "node2",
                                        [](const PityUnit<>& mynode) {
-                                           printHomeDir(mynode, 200, 10);
+                                           do_some_work(mynode, 200, 10);
                                        },
                                        nullptr,
                                        pEp::PityTest11::PityUnit<>::ExecutionMode::PROCESS_PARALLEL };
 
         PityUnit<> test2_1 = PityUnit<>{ &test2, "test2.1", [](const PityUnit<>& mynode) {
-                                            printHomeDir(mynode, 200, 10);
+                                            do_some_work(mynode, 200, 10);
                                         } };
 
         PityUnit<> test2_2 = PityUnit<>{ &test2, "test2.2", [](const PityUnit<>& mynode) {
-                                            printHomeDir(mynode, 200, 10);
+                                            do_some_work(mynode, 200, 10);
                                         } };
 
-        test1.run();
+        root.run();
     }
 }
