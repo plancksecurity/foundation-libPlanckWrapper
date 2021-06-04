@@ -58,6 +58,7 @@ namespace pEp {
 
             // logging service
             void log(const std::string& msg) const;
+            void logRaw(const std::string& msg) const;
 
             // internal logging
             static bool debug_log_enabled;
@@ -88,13 +89,9 @@ namespace pEp {
             std::string _normalizeName(std::string name) const;
             std::string _status_string(const std::string& msg) const;
 
-            // TODO
+            // Dirs
             void _ensureDir(const std::string& path) const;
             void _recreateDir(const std::string& path ) const;
-
-            void _data_dir_delete();
-            void _data_dir_create();
-            void _data_dir_recreate();
 
             // Fields
             const std::string _name;

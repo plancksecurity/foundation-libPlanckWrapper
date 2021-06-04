@@ -148,6 +148,14 @@ namespace pEp {
         template<class T>
         void PityUnit<T>::_init() const
         {
+            logH1("PityTest Starting...");
+            logRaw("RootNode: " + getNodePathShort());
+            logRaw("GlobalRootDir: " + getGlobalRootDir());
+            logRaw("\nTestTree");
+            logRaw("--------");
+            logRaw(to_string());
+
+            logH3("INIT");
             _ensureDir(getGlobalRootDir());
             _recreateDir(processDir());
             if (!_children.empty()) {
@@ -155,17 +163,16 @@ namespace pEp {
                     _recreateDir(child.second.processDir());
                 }
             }
+            logH3("INIT DONE");
         }
 
         template<class T>
         void PityUnit<T>::run() const
         {
             pEpLogClass("called");
-            _init();
             // caller is never nullptr if called by another PityUnit
             if (_isRootNode()) {
-                logH1("Starting PityUnit from node: " + getNodePathShort());
-                std::cout << to_string() << std::endl;
+                _init();
             }
 
             // Execute in fork and wait here until process ends
@@ -237,7 +244,6 @@ namespace pEp {
             }
         }
 
-        //Well, ok, lets just add some little convenience logging service in here, too
         template<class T>
         void PityUnit<T>::log(const std::string& msg) const
         {
@@ -249,8 +255,15 @@ namespace pEp {
             builder << "] -  ";
             builder << msg;
             builder << std::endl;
-            std::cout << builder.str();
+            logRaw(builder.str());
         }
+
+        template<class T>
+        void PityUnit<T>::logRaw(const std::string& msg) const
+        {
+            std::cerr << msg << std::endl;
+        }
+
 
         // PRIVATE ---------------------------------------------------------------------------------
 
@@ -393,7 +406,7 @@ namespace pEp {
         void PityUnit<T>::_ensureDir(const std::string& path) const
         {
             if (!Utils::path_exists(path)) {
-                log("creating dir:" + path);
+                logRaw("creating dir:" + path);
                 Utils::dir_create(path);
             }
         }
@@ -403,40 +416,17 @@ namespace pEp {
         {
             if (Utils::path_exists(path)) {
                 try {
-                    log("deleting dir:" + path);
+                    logRaw("deleting dir:" + path);
                     Utils::path_delete_all(path);
                 } catch (const std::exception& e) {
-                    log("PityUnit: - could not delete data dir: " + getGlobalRootDir());
+                    logRaw("PityUnit: - could not delete data dir: " + getGlobalRootDir());
                 }
             }
-            log("creating dir:" + path);
+            logRaw("creating dir:" + path);
             Utils::dir_create(path);
         }
 
 
-        template<class T>
-        void PityUnit<T>::_data_dir_create()
-        {
-            //            Utils::dir_create(dataDir());
-            log("creating dir:" + getGlobalRootDir());
-        }
-
-        template<class T>
-        void PityUnit<T>::_data_dir_delete()
-        {
-            try {
-                //                Utils::path_delete_all(getGlobalRootDir());
-            } catch (const std::exception& e) {
-                log("DistTest: - could not delete data dir: " + getGlobalRootDir());
-            }
-        }
-
-        template<class T>
-        void PityUnit<T>::_data_dir_recreate()
-        {
-            _data_dir_delete();
-            _data_dir_create();
-        };
     } // namespace PityTest11
 } // namespace pEp
 
