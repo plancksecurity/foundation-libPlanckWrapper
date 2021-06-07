@@ -45,6 +45,21 @@ namespace pEp {
         //String formatting
         std::string padTo(const std::string &str, const size_t num, const char paddingChar);
 
+        enum class Color
+        {
+            RESET,
+            BLACK,
+            RED,
+            GREEN,
+            YELLOW,
+            BLUE,
+            MAGENTA,
+            CYAN,
+            WHITE,
+        };
+
+        std::string to_termcol(const Color& col);
+
     } // namespace Utils
 } // namespace pEp
 

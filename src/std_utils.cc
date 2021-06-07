@@ -110,7 +110,6 @@ namespace pEp {
             return outfile;
         }
 
-
         void path_ensure_not_existing(const string &path)
         {
             while (path_exists(path)) {
@@ -192,5 +191,30 @@ namespace pEp {
             return ret;
         }
 
+        string to_termcol(const Color& col)
+        {
+            switch (col) {
+                case Color::RESET:
+                    return "\033[0m";
+                case Color::BLACK:
+                    return "\033[30m";
+                case Color::RED:
+                    return "\033[31m";
+                case Color::GREEN:
+                    return "\033[32m";
+                case Color::YELLOW:
+                    return "\033[33m";
+                case Color::BLUE:
+                    return "\033[34m";
+                case Color::MAGENTA:
+                    return "\033[35m";
+                case Color::CYAN:
+                    return "\033[36m";
+                case Color::WHITE:
+                    return "\033[37m";
+                default:
+                    return "\033[0m";
+            }
+        }
     } // namespace Utils
 } // namespace pEp
