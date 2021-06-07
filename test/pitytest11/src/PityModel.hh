@@ -5,22 +5,34 @@
 #define PITYTEST_PITYMODEL_HH
 
 #include "../../../src/pEpLog.hh"
+#include "PityNode.hh"
+#include "PityUnit.hh"
 
 namespace pEp {
     namespace PityTest11 {
         class PityModel {
         public:
             PityModel() = delete;
-            PityModel(const std::string& name);
-            virtual const std::string& getName() const;
+            PityModel(const std::string& name, int nodesCount);
+            std::string getName() const;
+            std::vector<PityNode> getNodes() const;
+            PityUnit<PityModel>& rootUnit();
 
+
+            //internal logging
+            static bool debug_log_enabled;
+            Adapter::pEpLog::pEpLogger logger_debug{ "PityModel", debug_log_enabled };
         private:
-            const std::string name;
-            static bool log_enabled;
-            Adapter::pEpLog::pEpLogger logger{ "PityModel", log_enabled };
-            Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger;
+            const int _nodes_count;
+            PityUnit<PityModel> _root_unit;
+            std::vector<PityNode> _nodes;
+            const std::string _name;
+
+            //internal logging
+            Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger_debug;
         };
-    }; // namespace Test
-};     // namespace pEp
+    }; // namespace PityTest11
+
+}; // namespace pEp
 
 #endif // PITYTEST_PITYMODEL_HH
