@@ -9,7 +9,7 @@ void do_some_work(const PityUnit<>& myself, int sleepmilis, int rep_count)
 {
     int i = 0;
     while (i < rep_count) {
-        myself.log(myself.getNodeName() + " - " + to_string(i));
+        myself.log(myself.getName() + " - " + to_string(i));
         sleep_millis(sleepmilis);
         i++;
     }
