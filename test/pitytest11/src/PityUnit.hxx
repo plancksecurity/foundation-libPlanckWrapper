@@ -15,7 +15,7 @@
 #include <sstream>
 #include <exception>
 
-using namespace pEp::Adapter::pEpLog;
+//using namespace pEp::Adapter::pEpLog;
 
 namespace pEp {
     namespace PityTest11 {
@@ -23,6 +23,8 @@ namespace pEp {
         std::string PityUnit<T>::_global_root_dir = "./pitytest_data/";
         template<class T>
         bool PityUnit<T>::debug_log_enabled = false;
+        template<class T>
+        int PityUnit<T>::procNodesCount = 0;
 
         // CONCSTRUCTORS
         template<class T>
@@ -38,6 +40,15 @@ namespace pEp {
             logger_debug.set_instancename(getNodePath());
             if (!_isRootNode()) {
                 parent->_addChildNode(*this);
+                // Inherit
+                procNodeNr = _parent->procNodeNr;
+                //Or update if procNode
+                if (_isProcessNode()) {
+                    procNodesCount++;
+                    procNodeNr = procNodesCount;
+                }
+            } else {
+                procNodeNr = procNodesCount;
             }
         }
 
@@ -125,11 +136,11 @@ namespace pEp {
             }
         }
 
-        template<class T>
-        void PityUnit<T>::setExecutionMode(ExecutionMode mode)
-        {
-            _exec_mode = mode;
-        }
+        //        template<class T>
+        //        void PityUnit<T>::setExecutionMode(ExecutionMode mode)
+        //        {
+        //            _exec_mode = mode;
+        //        }
 
         // static
         template<>
@@ -254,14 +265,32 @@ namespace pEp {
             builder << getNodePathShort();
             builder << "] -  ";
             builder << msg;
-            builder << std::endl;
+
             logRaw(builder.str());
         }
 
         template<class T>
         void PityUnit<T>::logRaw(const std::string& msg) const
         {
-            std::cerr << msg << std::endl;
+            Adapter::pEpLog::log(msg, termColor());
+        }
+
+        template<class T>
+        void PityUnit<T>::logH1(const std::string& msg) const
+        {
+            Adapter::pEpLog::logH1(msg, termColor());
+        }
+
+        template<class T>
+        void PityUnit<T>::logH2(const std::string& msg) const
+        {
+            Adapter::pEpLog::logH2(msg, termColor());
+        }
+
+        template<class T>
+        void PityUnit<T>::logH3(const std::string& msg) const
+        {
+            Adapter::pEpLog::logH3(msg, termColor());
         }
 
 
@@ -282,11 +311,11 @@ namespace pEp {
                     _test_func(*this);
                     logH3(_status_string("SUCCESS"));
                 } catch (const std::exception& e) {
-                    log("reason: " + std::string(e.what()));
+                    logRaw("reason: " + std::string(e.what()));
                     logH3(_status_string("FAILED"));
                 }
             } else {
-                log("No function to execute");
+                logRaw("No function to execute");
             }
         }
 
@@ -400,6 +429,36 @@ namespace pEp {
             ret = "[ " + to_string(_exec_mode) + ":" + std::to_string(getpid()) + " ]  [ " +
                   getNodePathShort() + " ]  [ " + msg + " ]";
             return ret;
+        }
+
+
+        template<class T>
+        Utils::Color PityUnit<T>::colForProcNodeNr(int procNodeNr) const
+        {
+            switch (procNodeNr) {
+                case 0:
+                    return Utils::Color::WHITE;
+                case 1:
+                    return Utils::Color::CYAN;
+                case 2:
+                    return Utils::Color::MAGENTA;
+                case 3:
+                    return Utils::Color::BLUE;
+                case 4:
+                    return Utils::Color::GREEN;
+                case 5:
+                    return Utils::Color::YELLOW;
+                case 6:
+                    return Utils::Color::RED;
+                default:
+                    return Utils::Color::WHITE;
+            }
+        }
+
+        template<class T>
+        Utils::Color PityUnit<T>::termColor() const
+        {
+            return colForProcNodeNr(procNodeNr);
         }
 
         template<class T>

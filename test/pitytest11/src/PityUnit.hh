@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 #include "../../../src/pEpLog.hh"
+#include "../../../src/std_utils.hh"
 
 // Yes, the mem mgmt is purely static on purpose (so far)
 
@@ -45,7 +46,7 @@ namespace pEp {
             std::string processDir() const; // own process dir
 
             // Read-Write
-            void setExecutionMode(ExecutionMode mode);
+            //            void setExecutionMode(ExecutionMode mode);
             static void setGlobalRootDir(const std::string& dir);
             static std::string getGlobalRootDir();
 
@@ -59,6 +60,9 @@ namespace pEp {
             // logging service
             void log(const std::string& msg) const;
             void logRaw(const std::string& msg) const;
+            void logH1(const std::string& msg) const;
+            void logH2(const std::string& msg) const;
+            void logH3(const std::string& msg) const;
 
             // internal logging
             static bool debug_log_enabled;
@@ -88,10 +92,12 @@ namespace pEp {
             // Util
             std::string _normalizeName(std::string name) const;
             std::string _status_string(const std::string& msg) const;
+            Utils::Color colForProcNodeNr(int procNodeNr) const;
+            Utils::Color termColor() const;
 
             // Dirs
             void _ensureDir(const std::string& path) const;
-            void _recreateDir(const std::string& path ) const;
+            void _recreateDir(const std::string& path) const;
 
             // Fields
             const std::string _name;
@@ -100,8 +106,10 @@ namespace pEp {
             const NodeFunc _test_func;
             ExecutionMode _exec_mode;
             static std::string _global_root_dir;
-
             std::map<const std::string, PityUnit&> _children; // map to guarantee uniqueness of sibling-names
+            int procNodeNr;
+            static int procNodesCount; // will be increased in everuy constructor
+
 
             // internal logging
             Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger_debug;
@@ -118,7 +126,7 @@ namespace pEp {
     #define PTASSERT(condition)                                                                    \
         do {                                                                                       \
             if (!(condition)) {                                                                    \
-                throw PityAssertException("AssertError");                                       \
+                throw PityAssertException("AssertError");                                          \
             }                                                                                      \
         } while (0)
 #endif
