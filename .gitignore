@@ -33,6 +33,9 @@ test_pEpLog_basic
 
 *.db
 
-/test/PityTest11/test/test_pEpTest_basic
-/test/PityTest11/test/test_transport
-/test/PityTest11/test/test_processdirs
+/test/pitytest11/test/test_transport
+/test/pitytest11/test/test_processdirs
+/test/pitytest11/test/test_execmodes
+/test/pitytest11/test/test_linear
+/test/pitytest11/test/test_model
+/test/pitytest11/pitytest_data/*
