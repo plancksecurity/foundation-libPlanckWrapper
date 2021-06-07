@@ -7,6 +7,7 @@
 #include <mutex>
 #include <atomic>
 #include <cmath>
+#include "std_utils.hh"
 
 #ifdef ANDROID
     #include <android/log.h>
@@ -34,34 +35,35 @@ namespace pEp {
             }
 
             // Common "print" function implementing the actual "backends"
-            void _log(const string& msg)
+            void _log(const string& msg, Utils::Color col = Utils::Color::WHITE)
             {
                 lock_guard<mutex> l(mtx);
 #ifdef ANDROID
                 __android_log_print(ANDROID_LOG_DEBUG, "pEpDebugLog", "%s", msg.c_str());
 #else
-                cerr << msg << endl; //endl also flushes, but cerr is unbuffered anyways
+                cerr << Utils::to_termcol(col) << msg << Utils::to_termcol(Utils::Color::RESET)
+                     << endl; //endl also flushes, but cerr is unbuffered anyways
 #endif
             }
 
-            void log(const string& msg)
+            void log(const string& msg, Utils::Color col)
             {
-                _log(msg);
+                _log(msg, col);
             }
 
-            void logH1(const string& msg)
+            void logH1(const string& msg, Utils::Color col)
             {
-                log(decorate_three_lines(msg, '='));
+                log(decorate_three_lines(msg, '='), col);
             }
 
-            void logH2(const string& msg)
+            void logH2(const string& msg, Utils::Color col)
             {
-                log(decorate_centered(msg, '='));
+                log(decorate_centered(msg, '='), col);
             }
 
-            void logH3(const string& msg)
+            void logH3(const string& msg, Utils::Color col)
             {
-                log(decorate_centered(msg, '-'));
+                log(decorate_centered(msg, '-'), col);
             }
 
             string decorate_three_lines(const string& msg, char decoration)
@@ -111,20 +113,20 @@ namespace pEp {
                 this->set_instancename(to_string(auto_instance_nr));
             }
 
-            void pEpLogger::log(const string& msg) const
+            void pEpLogger::log(const string& msg, Utils::Color col) const
             {
                 std::stringstream msg_;
                 msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";
                 msg_ << " - ";
                 msg_ << this->get_classname() << "[" << this->get_instancename() << "]";
                 msg_ << " - " << msg;
-                this->logRaw(msg_.str());
+                this->logRaw(msg_.str(), col);
             }
 
-            void pEpLogger::logRaw(const string& msg) const
+            void pEpLogger::logRaw(const string& msg, Utils::Color col) const
             {
                 if (this->is_enabled) {
-                    _log(msg);
+                    _log(msg, col);
                 }
             }
 

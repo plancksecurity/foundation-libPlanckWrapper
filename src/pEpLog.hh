@@ -7,6 +7,7 @@
 #include <sstream>
 #include <thread>
 #include <unistd.h>
+#include "std_utils.hh"
 
 // pEpLog
 // ======
@@ -38,7 +39,7 @@
         do {                                                                                       \
             if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
                 std::stringstream msg_;                                                            \
-                msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";             \
+                msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";               \
                 msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                 \
                 msg_ << " - " << msg;                                                              \
                 pEp::Adapter::pEpLog::log(msg_.str());                                             \
@@ -56,7 +57,7 @@
         do {                                                                                       \
             if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
                 std::stringstream msg_;                                                            \
-                msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";             \
+                msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";               \
                 msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                 \
                 msg_ << " - " << pEp::Adapter::pEpLog::decorateH1(msg);                            \
                 pEp::Adapter::pEpLog::log(msg_.str());                                             \
@@ -74,7 +75,7 @@
         do {                                                                                       \
             if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
                 std::stringstream msg_;                                                            \
-                msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";             \
+                msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";               \
                 msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                 \
                 msg_ << " - " << pEp::Adapter::pEpLog::decorateH2(msg);                            \
                 pEp::Adapter::pEpLog::log(msg_.str());                                             \
@@ -133,10 +134,10 @@ namespace pEp {
             // Logging functions to control pEpLog() macro
             void set_enabled(const bool& is_enabled);
             bool get_enabled();
-            void log(const std::string& msg);
-            void logH1(const std::string& msg);
-            void logH2(const std::string& msg);
-            void logH3(const std::string& msg);
+            void log(const std::string& msg, Utils::Color col = Utils::Color::WHITE);
+            void logH1(const std::string& msg, Utils::Color col = Utils::Color::WHITE);
+            void logH2(const std::string& msg, Utils::Color col = Utils::Color::WHITE);
+            void logH3(const std::string&msg, Utils::Color col = Utils::Color::WHITE);
             std::string decorate_three_lines(const std::string& msg, char decoration = '-');
             std::string decorate_centered(const std::string& msg, char decoration = '-');
         } // namespace pEpLog
@@ -165,7 +166,7 @@ namespace pEp {
     #define pEpLogClass(msg)                                                                       \
         do {                                                                                       \
             std::stringstream msg_;                                                                \
-            msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";             \
+            msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";                   \
             msg_ << " - " << this->m4gic_logger_n4me.get_classname();                              \
             msg_ << "[" << this->m4gic_logger_n4me.get_instancename() << "]";                      \
             msg_ << "::" << __FUNCTION__;                                                          \
@@ -197,9 +198,9 @@ namespace pEp {
                 pEpLogger() = delete;
                 pEpLogger(const std::string& classname, const bool& enabled);
                 // Print a logging message in the format "thread - classname[instancename] - <msg>"
-                void log(const std::string& msg) const;
+                void log(const std::string& msg, Utils::Color col = Utils::Color::WHITE) const;
                 // Prints just "<msg>"
-                void logRaw(const std::string& msg) const;
+                void logRaw(const std::string& msg,  Utils::Color col = Utils::Color::WHITE) const;
                 void set_enabled(const bool& enabled);
                 bool get_enabled() const;
                 std::string get_classname() const;
