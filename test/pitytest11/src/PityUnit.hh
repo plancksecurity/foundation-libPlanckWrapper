@@ -16,8 +16,6 @@ namespace pEp {
         template<class T = void>
         class PityUnit {
         public:
-            using NodeFunc = std::function<void(const PityUnit&)>;
-
             enum class ExecutionMode
             {
                 FUNCTION,
@@ -30,19 +28,18 @@ namespace pEp {
 
             // Constructors are private
             PityUnit() = delete;
-            explicit PityUnit(
-                PityUnit* parent,
+            explicit PityUnit<T>(
+                PityUnit<T>* parent,
                 const std::string& name,
-                const NodeFunc test_func = nullptr,
+                const std::function<void(const PityUnit&)> test_func = nullptr,
                 T* model = nullptr,
                 ExecutionMode exec_mode = ExecutionMode::FUNCTION);
 
             // Read-Only
-            std::string getNodeName() const;
-            std::string getNodePath() const;
-            std::string getNodePathShort() const;
+            std::string getName() const;
+            std::string getPath() const;
+            std::string getPathShort() const;
             T* getModel() const;
-            std::string rootNodeDir() const;
             std::string processDir() const; // own process dir
 
             // Read-Write
@@ -52,14 +49,15 @@ namespace pEp {
 
 
             // Main funcs
-            void _init() const;
             void run() const;
             std::string to_string(bool recursive = true, int indent = 0) const;
             static std::string to_string(const ExecutionMode& emode);
 
+            // Util
+            void recreateDirsRecursively() const;
+
             // logging service
             void log(const std::string& msg) const;
-            void logRaw(const std::string& msg) const;
             void logH1(const std::string& msg) const;
             void logH2(const std::string& msg) const;
             void logH3(const std::string& msg) const;
@@ -73,7 +71,7 @@ namespace pEp {
 
             // METHODS
             // Execution
-            void _runRootNode() const;
+            void _init() const;
             void _run() const;
             void _runSelf() const;
             void _runChildren() const;
@@ -81,35 +79,37 @@ namespace pEp {
             void _waitChildProcesses() const;
 
             // Modify
-            void _addChildNode(PityUnit& node);
+            void _addChildUnit(PityUnit& unit);
 
             // Query
-            bool _isProcessNode() const;
-            bool _isRootNode() const;
-            const PityUnit& _rootNode() const;
-            const PityUnit& _parentingProcessNode() const;
+            bool _isProcessUnit() const;
+            bool _isRootUnit() const;
+            const PityUnit& _rootUnit() const;
+            std::string _rootUnitDir() const;
+            const PityUnit& _parentingProcessUnit() const;
 
             // Util
             std::string _normalizeName(std::string name) const;
             std::string _status_string(const std::string& msg) const;
-            Utils::Color colForProcNodeNr(int procNodeNr) const;
-            Utils::Color termColor() const;
+            Utils::Color _colForProcUnitNr(int procUnitNr) const;
+            Utils::Color _termColor() const;
+            void logRaw(const std::string& msg) const;
 
             // Dirs
             void _ensureDir(const std::string& path) const;
             void _recreateDir(const std::string& path) const;
 
+
             // Fields
             const std::string _name;
             const PityUnit* _parent; //nullptr if RootUnit
             T* _model;               //nullptr if inherited
-            const NodeFunc _test_func;
+            const std::function<void(const PityUnit&)> _test_func;
             ExecutionMode _exec_mode;
             static std::string _global_root_dir;
             std::map<const std::string, PityUnit&> _children; // map to guarantee uniqueness of sibling-names
-            int procNodeNr;
-            static int procNodesCount; // will be increased in everuy constructor
-
+            int procUnitNr;
+            static int procUnitsCount; // will be increased in everuy constructor
 
             // internal logging
             Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger_debug;
