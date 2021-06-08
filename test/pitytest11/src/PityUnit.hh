@@ -95,11 +95,6 @@ namespace pEp {
             Utils::Color _termColor() const;
             void logRaw(const std::string& msg) const;
 
-            // Dirs
-            void _ensureDir(const std::string& path) const;
-            void _recreateDir(const std::string& path) const;
-
-
             // Fields
             const std::string _name;
             const PityUnit* _parent; //nullptr if RootUnit

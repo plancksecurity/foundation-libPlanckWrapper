@@ -5,7 +5,6 @@
 #define PITYTEST_PITYUNIT_HXX
 
 #include "../../../src/std_utils.hh"
-//#include "../../framework/utils.hh"
 #include <iostream>
 #include <unistd.h>
 #include <cstdlib>
@@ -284,7 +283,7 @@ namespace pEp {
             logRaw(to_string());
 
             logH3("INIT");
-            _ensureDir(getGlobalRootDir());
+            Utils::dir_ensure(getGlobalRootDir());
             recreateDirsRecursively();
             //            if (!_children.empty()) {
             //                for (const std::pair<std::string, PityUnit<T>&> child : _children) {
@@ -468,34 +467,11 @@ namespace pEp {
             Adapter::pEpLog::log(msg, _termColor());
         }
 
-        template<class T>
-        void PityUnit<T>::_ensureDir(const std::string& path) const
-        {
-            if (!Utils::path_exists(path)) {
-                logRaw("creating dir:" + path);
-                Utils::dir_create(path);
-            }
-        }
-
-        template<class T>
-        void PityUnit<T>::_recreateDir(const std::string& path) const
-        {
-            if (Utils::path_exists(path)) {
-                try {
-                    logRaw("deleting dir:" + path);
-                    Utils::path_delete_all(path);
-                } catch (const std::exception& e) {
-                    logRaw("PityUnit: - could not delete data dir: " + getGlobalRootDir());
-                }
-            }
-            logRaw("creating dir:" + path);
-            Utils::dir_create(path);
-        }
 
         template<class T>
         void PityUnit<T>::recreateDirsRecursively() const
         {
-            _recreateDir(processDir());
+            Utils::dir_recreate(processDir());
             if (!_children.empty()) {
                 for (const std::pair<std::string, PityUnit<T>&> child : _children) {
                     child.second.recreateDirsRecursively();
