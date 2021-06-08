@@ -1,59 +1,59 @@
 #include "../src/PityUnit.hh"
+#include "../src/PityModel.hh"
 #include "../../../src/std_utils.hh"
-#include <iostream>
-#include <fstream>
-#include <algorithm>
 
-using namespace std;
 using namespace pEp;
+using namespace pEp::Adapter;
 using namespace pEp::PityTest11;
 
-void send(const PityUnit<>& myself)
+void test_node1(const PityUnit<PityModel>& unit)
 {
-    setenv("HOME", myself.processDir().c_str(), 1);
-    myself.log("HOME=" + string(getenv("HOME")));
-    ofstream msgfile = Utils::file_create(myself.processDir() + "/transport.msg");
-    msgfile << "G4rbage" << endl;
-    msgfile.close();
-    Utils::sleep_millis(400000);
-}
+    unit.log("ModelName:" + unit.getModel()->getName());
+    unit.log("own_node:" + unit.getModel()->own_node->getName());
+    unit.log("partner:" + unit.getModel()->own_node->partner);
+    unit.log("peers:\n" + Utils::to_string(unit.getModel()->own_node->peers));
 
-void receive(const PityUnit<>& myself)
-{
-    setenv("HOME", myself.processDir().c_str(), 1);
-    myself.log("HOME=" + string(getenv("HOME")));
-//    Utils::dir_list_files()
-    Utils::sleep_millis(400000);
+    std::string msg = "Message from: " + unit.getPathShort();
+    int throttle = 2000;
+    while (true) {
+        Utils::sleep_millis(throttle);
+        for (auto peer : unit.getModel()->own_node->peers) {
+            unit.log("sending to:" + peer);
+            unit.getModel()->sendMsg(peer, msg);
+            Utils::sleep_millis(throttle);
+        }
+
+        while (unit.getModel()->hasMsg()) {
+            unit.log("MSG RX:" + unit.getModel()->receiveMsg());
+            Utils::sleep_millis(throttle);
+        }
+    }
 }
 
 int main(int argc, char* argv[])
 {
+    // debug log per class
+    PityModel::debug_log_enabled = false;
+    PityNode::debug_log_enabled = false;
     PityUnit<>::debug_log_enabled = false;
-    PityUnit<> root = PityUnit<>{ nullptr, "test_transport" };
 
-    // 1
-    PityUnit<> node1 = PityUnit<>{ &root,
-                                   "node 1",
-                                   [](const PityUnit<>& mynode) {
+    // Create model with 3 nodes
+    PityModel model{ "test_transport", 3 };
 
-                                   },
-                                   nullptr,
-                                   pEp::PityTest11::PityUnit<>::ExecutionMode::PROCESS_PARALLEL };
+    //    //Configure model
+    //    model.nodeNr(0)->partner = model.nodeNr(1)->getName();
+    //    model.nodeNr(1)->partner = model.nodeNr(2)->getName();
+    //    model.nodeNr(2)->partner = model.nodeNr(0)->getName();
 
-    PityUnit<> node1_send = PityUnit<>{ &node1, "send", &send };
+    PityUnit<PityModel> node1_test1 = PityUnit<PityModel>{ model.unitOfNodeNr(0),
+                                                           "test1",
+                                                           &test_node1 };
+    PityUnit<PityModel> node2_test1 = PityUnit<PityModel>{ model.unitOfNodeNr(1),
+                                                           "test1",
+                                                           &test_node1 };
+    PityUnit<PityModel> node3_test1 = PityUnit<PityModel>{ model.unitOfNodeNr(2),
+                                                           "test1",
+                                                           &test_node1 };
 
-
-    // 2
-    PityUnit<> node2 = PityUnit<>{ &root,
-                                   "node 2",
-                                   [](const PityUnit<>& mynode) {
-
-                                   },
-                                   nullptr,
-                                   pEp::PityTest11::PityUnit<>::ExecutionMode::PROCESS_PARALLEL };
-
-    PityUnit<> node2_receive = PityUnit<>{ &node2, "receive", &receive };
-
-    //    root._init();
-    root.run();
+    model.run();
 }

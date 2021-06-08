@@ -4,17 +4,19 @@
 #include "../../../src/std_utils.hh"
 #include <random>
 #include <fstream>
+#include <memory>
 
 namespace pEp {
     namespace PityTest11 {
-        bool PityModel::debug_log_enabled = true;
+        bool PityModel::debug_log_enabled = false;
 
         PityModel::PityModel(const std::string& name, int nodeCount) :
-            _name{ name }, _root_unit{ nullptr, name, nullptr, this }
+            _name{ name }, _unit{ nullptr, name, nullptr, this }
         {
             for (int i = 0; i < nodeCount; i++) {
                 _nodes.emplace_back(std::make_shared<PityNode>(*this, i));
             }
+
         }
 
         std::string PityModel::getName() const
@@ -27,19 +29,29 @@ namespace pEp {
             _name = name;
         }
 
-        std::vector<std::shared_ptr<PityNode>> PityModel::getNodes() const
+        std::vector<std::shared_ptr<PityNode>> PityModel::nodes() const
         {
             return _nodes;
         }
 
-        PityUnit<PityModel>& PityModel::rootUnit()
+        PityUnit<PityModel>& PityModel::unit()
         {
-            return _root_unit;
+            return _unit;
         }
 
-        PityUnit<PityModel>* PityModel::getNodeUnit(int nr) const
+        PityUnit<PityModel>* PityModel::unitOfNodeNr(int nr) const
         {
-            return getNodes().at(nr)->getProcessUnit().get();
+            return nodes().at(nr)->unit().get();
+        }
+
+        PityNode* PityModel::nodeNr(int nr) const
+        {
+            return nodes().at(nr).get();
+        }
+
+        void PityModel::run()
+        {
+            unit().run();
         }
 
         void PityModel::sendMsg(const std::string nodename, const std::string& msg) const
@@ -62,6 +74,15 @@ namespace pEp {
             if (!found) {
                 throw std::runtime_error("no such nodename: " + nodename);
             }
+        }
+
+        bool PityModel::hasMsg() const{
+            bool ret = false;
+            pEpLogClass("called");
+            Utils::dir_ensure(own_node->inboxDir());
+            auto msg_filenames = Utils::dir_list_files(own_node->inboxDir());
+            ret = msg_filenames.size() > 0;
+            return ret;
         }
 
         // Non-blocking
@@ -94,7 +115,7 @@ namespace pEp {
                 try {
                     ret = pollMsg();
                     retry = false;
-                } catch (const std::underflow_error &){
+                } catch (const std::underflow_error&) {
                     pEpLogClass("polling again in [ms]: " + std::to_string(timeout_msec) + "...");
                     Utils::sleep_millis(timeout_msec);
                     retry = true;

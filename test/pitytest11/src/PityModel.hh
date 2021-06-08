@@ -31,27 +31,38 @@ namespace pEp {
     namespace PityTest11 {
         class PityModel {
         public:
+            // Constructors
             PityModel() = delete;
             PityModel(const std::string& name, int nodeCount);
+
+            // Getters
             std::string getName() const;
+            std::vector<std::shared_ptr<PityNode>> nodes() const;
+            PityUnit<PityModel>& unit();
+            PityUnit<PityModel>* unitOfNodeNr(int nr) const;
+            PityNode* nodeNr(int nr) const;
+
+            // Setter
             void setName(std::string name);
-            std::vector<std::shared_ptr<PityNode>> getNodes() const;
-            PityUnit<PityModel>& rootUnit();
-            PityUnit<PityModel>* getNodeUnit(int nr) const;
+
+            // Perspective
+            PityNode* own_node = nullptr;
+
+            //Run
+            void run();
 
             //Transport
+            bool hasMsg() const;
             void sendMsg(const std::string nodename, const std::string& msg) const;
             std::string pollMsg() const;
             std::string receiveMsg(int timeout_msec = 100) const;
-
-            PityNode* own_node = nullptr;
 
             //internal logging
             static bool debug_log_enabled;
             Adapter::pEpLog::pEpLogger logger_debug{ "PityModel", debug_log_enabled };
 
         private:
-            PityUnit<PityModel> _root_unit;
+            PityUnit<PityModel> _unit;
             std::vector<std::shared_ptr<PityNode>> _nodes;
             std::string _name;
 

@@ -432,7 +432,8 @@ namespace pEp {
         template<class T>
         Utils::Color PityUnit<T>::_colForProcUnitNr(int procUnitNr) const
         {
-            switch (procUnitNr) {
+            int nrColors = 7;
+            switch (procUnitNr % nrColors) {
                 case 0:
                     return Utils::Color::WHITE;
                 case 1:
