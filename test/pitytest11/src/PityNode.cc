@@ -29,23 +29,23 @@ namespace pEp {
 
         void PityNode::_init(const PityUnit<PityModel>& unit)
         {
-            unit.log("INIT -  " + getName());
+            unit.log("NODE INIT -  " + getName());
             unit.getModel()->own_node = this;
             unit.getModel()->setName("Copy for:" + getName());
-            unit.log("INIT DONE");
+            unit.log("NODE INIT DONE");
         }
 
         std::string PityNode::getName() const
         {
             std::string ret{};
-            ret += "node_" + std::to_string(_node_nr);
+            ret += "node_" + std::to_string(_node_nr) + "@peptest.org";
             return ret;
         }
 
         std::string PityNode::to_string() const
         {
             std::string ret{};
-            ret += "node_" + std::to_string(_node_nr);
+            ret += "name: " +getName();
             return ret;
         }
 
@@ -53,5 +53,10 @@ namespace pEp {
         {
             return _process_unit;
         }
+
+        std::string PityNode::inboxDir() const {
+            return getProcessUnit()->processDir() + "inbox/";
+        }
+
     } // namespace PityTest11
 } // namespace pEp

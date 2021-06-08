@@ -18,7 +18,7 @@ namespace pEp {
             std::string getName() const;
             std::string to_string() const;
             const std::shared_ptr<PityUnit<PityModel>>& getProcessUnit() const;
-
+            std::string inboxDir() const;
             //internal logging
             static bool debug_log_enabled;
             Adapter::pEpLog::pEpLogger logger_debug{ "PityNode", debug_log_enabled };
