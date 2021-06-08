@@ -17,19 +17,17 @@ namespace pEp {
             explicit PityNode(PityModel& model, int nodeNr);
             std::string getName() const;
             std::string to_string() const;
+            const std::shared_ptr<PityUnit<PityModel>>& getProcessUnit() const;
 
             //internal logging
             static bool debug_log_enabled;
             Adapter::pEpLog::pEpLogger logger_debug{ "PityNode", debug_log_enabled };
+
         private:
+            void _init(const PityUnit<PityModel>& unit);
             const int _node_nr;
-            PityModel& _model;
             std::shared_ptr<PityUnit<PityModel>> _process_unit;
 
-        public:
-            const std::shared_ptr<PityUnit<PityModel>>& getProcessUnit() const;
-
-        private:
             //internal logging
             Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger_debug;
         };

@@ -3,21 +3,36 @@
 #include "PityUnit.hh"
 #include "iostream"
 #include <memory>
+#include <functional>
+#include <sstream>
+
 
 namespace pEp {
     namespace PityTest11 {
         bool PityNode::debug_log_enabled = false;
 
-        PityNode::PityNode(PityModel& model, int nodeNr) :
-            _model{ model }, _node_nr{ nodeNr }, _process_unit{
-                std::make_shared<PityUnit<PityModel>>(
-                    &(_model.rootUnit()),
-                    getName(),
-                    nullptr,
-                    nullptr,
-                    PityUnit<PityModel>::ExecutionMode::PROCESS_PARALLEL)
-            }
+        PityNode::PityNode(PityModel& model, int nodeNr) : _node_nr{ nodeNr }
         {
+            logger_debug.set_instancename(getName());
+            std::stringstream ss{};
+            ss << this;
+            pEpLogClass(std::string("called with: " + std::to_string(_node_nr) + "AT: " +ss.str()));
+
+            _process_unit = std::make_shared<PityUnit<PityModel>>(
+                &(model.rootUnit()),
+                getName(),
+                std::bind(&PityNode::_init,this, std::placeholders::_1),
+                &model,
+                PityUnit<PityModel>::ExecutionMode::PROCESS_PARALLEL);
+
+        }
+
+        void PityNode::_init(const PityUnit<PityModel>& unit)
+        {
+            unit.log("INIT -  " + getName());
+            unit.getModel()->own_node = this;
+            unit.getModel()->setName("Copy for:" + getName());
+            unit.log("INIT DONE");
         }
 
         std::string PityNode::getName() const
