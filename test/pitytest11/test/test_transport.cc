@@ -1,5 +1,4 @@
 #include "../src/PityUnit.hh"
-#include "../../framework/utils.hh"
 #include "../../../src/std_utils.hh"
 #include <iostream>
 #include <fstream>
@@ -16,7 +15,7 @@ void send(const PityUnit<>& myself)
     ofstream msgfile = Utils::file_create(myself.processDir() + "/transport.msg");
     msgfile << "G4rbage" << endl;
     msgfile.close();
-    sleep_millis(400000);
+    Utils::sleep_millis(400000);
 }
 
 void receive(const PityUnit<>& myself)
@@ -24,7 +23,7 @@ void receive(const PityUnit<>& myself)
     setenv("HOME", myself.processDir().c_str(), 1);
     myself.log("HOME=" + string(getenv("HOME")));
 //    Utils::dir_list_files()
-    sleep_millis(400000);
+    Utils::sleep_millis(400000);
 }
 
 int main(int argc, char* argv[])

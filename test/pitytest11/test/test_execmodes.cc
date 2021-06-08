@@ -1,8 +1,9 @@
 #include "../src/PityUnit.hh"
-#include "../../framework/utils.hh"
+#include "../../../src/std_utils.hh"
 #include <iostream>
 
 using namespace std;
+using namespace pEp;
 using namespace pEp::PityTest11;
 
 void do_some_work(const PityUnit<>& myself, int sleepmilis, int rep_count)
@@ -10,7 +11,7 @@ void do_some_work(const PityUnit<>& myself, int sleepmilis, int rep_count)
     int i = 0;
     while (i < rep_count) {
         myself.log(myself.getName() + " - " + to_string(i));
-        sleep_millis(sleepmilis);
+        Utils::sleep_millis(sleepmilis);
         i++;
     }
 }
