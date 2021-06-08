@@ -1,12 +1,5 @@
 #include "../src/PityUnit.hh"
 #include "../src/PityModel.hh"
-#include "../../framework/utils.hh"
-#include "../../../src/std_utils.hh"
-#include "../../../src/pEpLog.hh"
-#include <iostream>
-#include <fstream>
-#include <algorithm>
-#include <sstream>
 
 using namespace std;
 using namespace pEp::Adapter;
@@ -16,14 +9,19 @@ using namespace pEp::PityTest11;
 void test_node1(const PityUnit<PityModel>& unit)
 {
     unit.log(unit.getModel()->getName());
-    unit.log(unit.getModel()->own_node->);
+    unit.log(unit.getModel()->own_node->to_string());
+    unit.getModel()->sendMsg("node_2@peptest.org", "Fdsfs");
+
+    while(true) {
+        unit.log("MSG RX:" + unit.getModel()->receiveMsg());
+    }
 }
 
 
 int main(int argc, char* argv[])
 {
     PityModel::debug_log_enabled = false;
-    PityNode::debug_log_enabled = true;
+    PityNode::debug_log_enabled = false;
     PityModel model{ "test_model", 3 };
 
     for (auto n : model.getNodes()) {
