@@ -9,6 +9,8 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <algorithm>
+#include <thread>
+#include <random>
 
 using namespace std;
 using namespace pEp;
@@ -110,6 +112,18 @@ namespace pEp {
             return outfile;
         }
 
+        std::string file_read(const std::string &filename)
+        {
+            auto ss = ostringstream{};
+            ifstream input_file(filename);
+            if (!input_file.is_open()) {
+                runtime_error e{ "Could not open the file: " + filename };
+                exit(EXIT_FAILURE);
+            }
+            ss << input_file.rdbuf();
+            return ss.str();
+        }
+
         void path_ensure_not_existing(const string &path)
         {
             while (path_exists(path)) {
@@ -123,6 +137,22 @@ namespace pEp {
                 runtime_error e{ string("dir_create(\"" + dirname + "\") -  " + strerror(errno)) };
                 throw(e);
             }
+        }
+
+
+        void dir_ensure(const std::string &path)
+        {
+            if (!Utils::path_exists(path)) {
+                Utils::dir_create(path);
+            }
+        }
+
+        void dir_recreate(const std::string &path)
+        {
+            if (Utils::path_exists(path)) {
+                Utils::path_delete_all(path);
+            }
+            Utils::dir_create(path);
         }
 
         vector<string> dir_list_all(const std::string &path, const bool incl_dot_and_dotdot)
@@ -166,7 +196,10 @@ namespace pEp {
         {
             vector<string> ret = dir_list_all(dirname, incl_dot_and_dotdot);
             ret.erase(
-                remove_if(ret.begin(), ret.end(), [](string elem) { return !path_is_dir(elem); }),
+                remove_if(
+                    ret.begin(),
+                    ret.end(),
+                    [dirname](string elem) { return !path_is_dir(dirname + "/" + elem); }),
                 ret.end());
 
             return ret;
@@ -176,7 +209,10 @@ namespace pEp {
         {
             vector<string> ret = dir_list_all(dirname);
             ret.erase(
-                remove_if(ret.begin(), ret.end(), [](string elem) { return !path_is_dir(elem); }),
+                remove_if(
+                    ret.begin(),
+                    ret.end(),
+                    [dirname](string elem) { return path_is_dir(dirname + "/" + elem); }),
                 ret.end());
             return ret;
         }
@@ -191,7 +227,7 @@ namespace pEp {
             return ret;
         }
 
-        string to_termcol(const Color& col)
+        string to_termcol(const Color &col)
         {
             switch (col) {
                 case Color::RESET:
@@ -216,5 +252,28 @@ namespace pEp {
                     return "\033[0m";
             }
         }
+
+        void sleep_millis(int milis) {
+            std::chrono::milliseconds timespan(milis);
+            std::this_thread::sleep_for(timespan);
+        }
+
+        unsigned char random_char(unsigned char min, unsigned char max)
+        {
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<short> dis(static_cast<short>(min), static_cast<short>(max));
+            return static_cast<unsigned char>(dis(gen));
+        }
+
+        std::string random_string(unsigned char min, unsigned char max, int len)
+        {
+            std::stringstream ret;
+            for (int i = 0; i < len; i++) {
+                ret << random_char(97, 122);
+            }
+            return ret.str();
+        }
+
     } // namespace Utils
 } // namespace pEp

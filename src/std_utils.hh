@@ -24,22 +24,32 @@ namespace pEp {
             std::string src = "");
         void print_exception(const std::exception &e, int level = 0);
 
-        // file utils
+        // File utils
+        // ----------
+        // path (file&dir)
         bool path_exists(const std::string &filename);
         bool path_is_dir(const std::string &path);
         void path_delete(const std::string &filename);
         void path_delete_all(const std::string &path);
-
-        std::ofstream file_create(const std::string &filename);
         void path_ensure_not_existing(const std::string &path);
 
+        // file
+        std::ofstream file_create(const std::string &filename);
+        std::string file_read(const std::string &filename);
+
+        // dir
         void dir_create(const std::string &dirname, const mode_t mode = 0775);
+        void dir_ensure(const std::string& path);
+        void dir_recreate(const std::string& path);
+
         std::vector<std::string> dir_list_all(
             const std::string &path,
             const bool incl_dot_and_dotdot = false);
+
         std::vector<std::string> dir_list_dirs(
             const std::string &dirname,
             const bool incl_dot_and_dotdot = false);
+
         std::vector<std::string> dir_list_files(const std::string &dirname);
 
         //String formatting
@@ -59,6 +69,14 @@ namespace pEp {
         };
 
         std::string to_termcol(const Color& col);
+
+
+        // Time
+        void sleep_millis(int milis);
+
+        // Random
+        unsigned char random_char(unsigned char min, unsigned char max);
+        std::string random_string(unsigned char min, unsigned char max, int len);
 
     } // namespace Utils
 } // namespace pEp
