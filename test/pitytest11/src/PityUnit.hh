@@ -4,10 +4,12 @@
 #ifndef PITYTEST_PITYUNIT_HH
 #define PITYTEST_PITYUNIT_HH
 
-#include <string>
-#include <map>
 #include "../../../src/pEpLog.hh"
 #include "../../../src/std_utils.hh"
+#include <string>
+#include <map>
+#include <memory>
+#include "fs_mutex.hh"
 
 // Yes, the mem mgmt is purely static on purpose (so far)
 
@@ -49,7 +51,7 @@ namespace pEp {
 
 
             // Main funcs
-            void run() const;
+            void run();
             std::string to_string(bool recursive = true, int indent = 0) const;
             static std::string to_string(const ExecutionMode& emode);
 
@@ -106,16 +108,15 @@ namespace pEp {
             int procUnitNr;
             static int procUnitsCount; // will be increased in everuy constructor
 
+            std::shared_ptr<fs_mutex> _log_mutex = nullptr;
             // internal logging
             Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger_debug;
         };
-
 
         class PityAssertException : public std::runtime_error {
         public:
             PityAssertException(const std::string& string) : runtime_error(string) {}
         };
-
 
 #ifndef PTASSERT
     #define PTASSERT(condition)                                                                    \

@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <sstream>
 #include <exception>
+#include <memory>
 
 //using namespace pEp::Adapter::pEpLog;
 
@@ -161,10 +162,12 @@ namespace pEp {
         }
 
         template<class T>
-        void PityUnit<T>::run() const
+        void PityUnit<T>::run()
         {
             pEpLogClass("called");
-            // caller is never nullptr if called by another PityUnit
+            _log_mutex = std::make_shared<fs_mutex>("fds");
+            _log_mutex->release();
+
             if (_isRootUnit()) {
                 _init();
             }
@@ -285,11 +288,6 @@ namespace pEp {
             logH3("INIT");
             Utils::dir_ensure(getGlobalRootDir());
             recreateDirsRecursively();
-            //            if (!_children.empty()) {
-            //                for (const std::pair<std::string, PityUnit<T>&> child : _children) {
-            //                    _recreateDir(child.second.processDir());
-            //                }
-            //            }
             logH3("INIT DONE");
         }
 
@@ -311,8 +309,7 @@ namespace pEp {
                     logH3(_status_string("\033[1m\033[32mSUCCESS" + Utils::to_termcol(_termColor())));
                 } catch (const std::exception& e) {
                     logRaw("reason: " + std::string(e.what()));
-                    logH3(_status_string("\033[1m\033[31mFAILED" + Utils::to_termcol(_termColor())
-                                         ));
+                    logH3(_status_string("\033[1m\033[31mFAILED" + Utils::to_termcol(_termColor())));
                 }
             } else {
                 logRaw("No function to execute");
@@ -464,7 +461,9 @@ namespace pEp {
         template<class T>
         void PityUnit<T>::logRaw(const std::string& msg) const
         {
+            _log_mutex->aquire();
             Adapter::pEpLog::log(msg, _termColor());
+            _log_mutex->release();
         }
 
 
