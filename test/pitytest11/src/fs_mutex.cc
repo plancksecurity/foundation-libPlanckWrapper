@@ -14,7 +14,7 @@ namespace pEp {
             } else {
                 std::string mutex_file = mutexpath;
                 while (Utils::path_exists(mutex_file)) {
-                    Utils::sleep_millis(5);
+                    Utils::sleep_millis(2);
                 }
                 std::ofstream msgfile = Utils::file_create(mutexpath);
             }
@@ -29,7 +29,7 @@ namespace pEp {
                 try {
                     Utils::path_delete(mutexpath);
                     // Give others a chance to pickup
-                    Utils::sleep_millis(100);
+                    Utils::sleep_millis(4);
                 } catch (...) {
                     //                    pEpLogClass("Error releasing fsmutex");
                 }
