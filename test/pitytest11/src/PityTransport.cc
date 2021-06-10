@@ -4,13 +4,13 @@
 #include <random>
 #include <fstream>
 #include <memory>
-#include <map>
+#include <unordered_map>
 
 namespace pEp {
     namespace PityTest11 {
         bool PityTransport::debug_log_enabled = false;
 
-        PityTransport::PityTransport(const std::string& inboxDir, Endpoints& endpoints) :
+        PityTransport::PityTransport(std::string inboxDir, Endpoints& endpoints) :
             _inboxDir{ inboxDir }, _endpoints{ endpoints }
         {
         }

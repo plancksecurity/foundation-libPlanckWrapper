@@ -22,12 +22,12 @@ void test_node1(PityUnit<PityModel>& unit,PityModel* model, PityPerspective* psp
             unit.transport()->sendMsg(peer.first,msg);
             Utils::sleep_millis(throttle);
         }
-//
-//        while (model->hasMsg()) {
-//            unit.log("MSG RX:" + model->receiveMsg());
-//            Utils::sleep_millis(throttle);
-//        }
-//    }
+
+        while (unit.transport()->hasMsg()) {
+            unit.log("MSG RX:" + unit.transport()->receiveMsg());
+            Utils::sleep_millis(throttle);
+        }
+    }
 }
 
 int main(int argc, char* argv[])
@@ -35,6 +35,7 @@ int main(int argc, char* argv[])
     // debug log per class
     PityModel::debug_log_enabled = false;
     PityNode::debug_log_enabled = false;
+    PityTransport::debug_log_enabled = false;
     PityUnit<>::debug_log_enabled = false;
 
     // Create model with 3 nodes

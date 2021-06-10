@@ -12,13 +12,13 @@
 namespace pEp {
     namespace PityTest11 {
         // Address - Dir
-         using Endpoints = std::unordered_map<std::string, std::string>;
+        using Endpoints = std::unordered_map<std::string, std::string>;
 
         class PityTransport {
         public:
             // Constructors
             PityTransport() = delete;
-            PityTransport(const std::string& inboxDir, Endpoints& endpoints);
+            explicit PityTransport(std::string inboxDir, Endpoints& endpoints);
 
             // Getters
             //Transport
@@ -29,7 +29,7 @@ namespace pEp {
 
             //internal logging
             static bool debug_log_enabled;
-            Adapter::pEpLog::pEpLogger logger_debug{ "PityModel", debug_log_enabled };
+            Adapter::pEpLog::pEpLogger logger_debug{ "PityTransport", debug_log_enabled };
 
         private:
             std::string _inboxDir;

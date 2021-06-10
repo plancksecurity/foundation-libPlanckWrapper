@@ -14,7 +14,7 @@
 #include <sstream>
 #include <exception>
 #include <memory>
-#include <memory>
+#include <unordered_map>
 
 //using namespace pEp::Adapter::pEpLog;
 
@@ -475,7 +475,7 @@ namespace pEp {
         void PityUnit<T, P>::createTransport()
         {
             registerAsTransportEndpoint();
-                        _transport = std::shared_ptr<PityTransport>(transportDir(), transportEndpoints());
+            _transport = std::make_shared<PityTransport>(transportDir(), transportEndpoints());
         }
 
         // Inherited (if null see parent recursively)

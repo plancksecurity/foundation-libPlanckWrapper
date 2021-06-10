@@ -6,12 +6,12 @@
 
 #include "../../../src/pEpLog.hh"
 #include "../../../src/std_utils.hh"
+#include "fs_mutex.hh"
+#include "PityTransport.hh"
 #include <string>
 #include <map>
 #include <memory>
-#include "fs_mutex.hh"
-#include "PityTransport.hh"
-//#include "PityModel.hh"
+#include <unordered_map>
 
 // Yes, the mem mgmt is purely static on purpose (so far)
 
