@@ -6,6 +6,7 @@
 
 #include "PityModel.hh"
 #include "PityUnit.hh"
+#include "PityPerspective.hh"
 #include "../../../src/pEpLog.hh"
 #include <vector>
 #include <memory>
@@ -21,7 +22,7 @@ namespace pEp {
             void addTestUnit(
                 int nodeNr,
                 const std::string& name,
-                std::function<void(PityUnit<>&, PityModel*, PityPerspective*)> test_func);
+                PityUnit<PityPerspective>::TestFunction test_func);
 
             //Run
             void run();
@@ -32,9 +33,9 @@ namespace pEp {
 
         private:
             PityModel& _model;
-            std::shared_ptr<PityUnit<>> _rootUnit;
-            std::vector<std::shared_ptr<PityUnit<>>> _nodeUnits;
-            std::vector<std::shared_ptr<PityUnit<>>> _testUnits;
+            std::shared_ptr<PityUnit<PityPerspective>> _rootUnit;
+            std::vector<std::shared_ptr<PityUnit<PityPerspective>>> _nodeUnits;
+            std::vector<std::shared_ptr<PityUnit<PityPerspective>>> _testUnits;
             std::vector<std::shared_ptr<PityPerspective>> _perspectives;
 
             //internal logging

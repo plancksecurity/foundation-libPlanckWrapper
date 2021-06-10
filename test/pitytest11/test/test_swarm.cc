@@ -1,42 +1,41 @@
 #include "../src/PityUnit.hh"
 #include "../src/PityModel.hh"
-#include "../../../src/std_utils.hh"
+#include "../src/PitySwarm.hh"
+#include "../src/PityPerspective.hh"
 
 using namespace pEp;
 using namespace pEp::Adapter;
 using namespace pEp::PityTest11;
 
-void test_node1(const PityUnit<PityModel>& unit)
+void test_node1(PityUnit<PityPerspective>& unit, PityPerspective* psp)
 {
-    unit.log("ModelName:" + unit.getModel()->getName());
-    unit.log("own_node:" + unit.getModel()->own_node->getName());
-    unit.log("partner:" + unit.getModel()->own_node->partner);
+    unit.log("ModelName:" + psp->model.getName());
+    unit.log("perspective name:" + psp->name);
+    unit.log("perspective partner:" + psp->partner);
 
     std::string msg = "Message from: " + unit.getPathShort();
-    int throttle = 10;
+    int throttle = 1000;
     while (true) {
         Utils::sleep_millis(throttle);
-        for (auto peer : unit.getModel()->own_node->peers) {
-            unit.getModel()->sendMsg(peer, msg);
-            Utils::sleep_millis(throttle);
+        for (auto peer : unit.transportEndpoints()) {
+            unit.transport()->sendMsg(peer.first,msg);
         }
 
-        while (unit.getModel()->hasMsg()) {
-            unit.log("MSG RX:" + unit.getModel()->receiveMsg());
-            Utils::sleep_millis(throttle);
+        while (unit.transport()->hasMsg()) {
+            unit.log("MSG RX:" + unit.transport()->receiveMsg());
         }
     }
 }
 
 int main(int argc, char* argv[])
 {
-    int nodesCount = 64;
+    int nodesCount = 3;
     PityModel model{ "test_swarm", nodesCount };
+    PitySwarm swarm{model};
 
-    std::vector<std::shared_ptr<PityUnit<PityModel>>> nodeUnits;
-    for (int i = 0; i < nodesCount; i++) {
-        nodeUnits.emplace_back(std::make_shared<PityUnit<PityModel>>(model.unitOfNodeNr(i), "test1", &test_node1 ));
+    for(int i = 0; i < nodesCount; i++) {
+        swarm.addTestUnit(i,"test1",&test_node1);
     }
 
-    model.run();
+    swarm.run();
 }

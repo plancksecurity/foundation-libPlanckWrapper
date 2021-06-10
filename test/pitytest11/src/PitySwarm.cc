@@ -1,6 +1,7 @@
-#include "PityModel.hh"
-#include "PityUnit.hh"
 #include "PitySwarm.hh"
+#include "PityModel.hh"
+#include "PityPerspective.hh"
+#include "PityUnit.hh"
 
 #include <vector>
 #include <functional>
@@ -10,6 +11,7 @@ namespace pEp {
     namespace PityTest11 {
         bool PitySwarm::debug_log_enabled = false;
 
+        // The perspective currently is complete defined by specifying a node, since there is a 1-1 node/ident relationship currently
         void createPerspective(const PityModel& model, PityPerspective* psp, int node_nr)
         {
             psp->name = model.nodeNr(node_nr)->getName();
@@ -32,20 +34,20 @@ namespace pEp {
             pEpLogClass("called");
             // Create perspective
             for (auto n : _model.nodes()) {
-                auto tmp = std::make_shared<PityPerspective>();
+                auto tmp = std::make_shared<PityPerspective>(model);
                 createPerspective(_model, tmp.get(), n->getNr());
                 _perspectives.push_back(tmp);
             }
 
             // Construct Tree
-            _rootUnit = std::make_shared<PityUnit<PityModel, PityPerspective>>(
+            _rootUnit = std::make_shared<PityUnit<PityPerspective>>(
                 nullptr,
                 _model.getName(),
                 nullptr,
-                &_model);
+                nullptr);
 
             for (auto n : _model.nodes()) {
-                _nodeUnits.push_back(std::make_shared<PityUnit<>>(
+                _nodeUnits.push_back(std::make_shared<PityUnit<PityPerspective>>(
                     _rootUnit.get(),
                     n->getName(),
                     nullptr,
@@ -55,29 +57,23 @@ namespace pEp {
                     //                        std::placeholders::_1,
                     //                        std::placeholders::_2,
                     //                        std::placeholders::_3),
-                    &_model,
                     _perspectives.at(n->getNr()).get(),
-                    PityUnit<>::ExecutionMode::PROCESS_PARALLEL));
+                    PityUnit<PityPerspective>::ExecutionMode::PROCESS_PARALLEL));
             }
         }
 
         void PitySwarm::addTestUnit(
             int nodeNr,
             const std::string& name,
-            std::function<void(PityUnit<>&, PityModel*, PityPerspective*)> test_func)
+            PityUnit<PityPerspective>::TestFunction test_func)
         {
-            auto tmp = std::make_shared <PityUnit<>>(_nodeUnits.at(nodeNr).get(), name, test_func);
+            auto tmp = std::make_shared<PityUnit<PityPerspective>>(_nodeUnits.at(nodeNr).get(), name, test_func);
             _testUnits.push_back(tmp);
         }
 
-
-
         void PitySwarm::run()
         {
-
             _rootUnit->run();
         }
-
-
     } // namespace PityTest11
 } // namespace pEp
