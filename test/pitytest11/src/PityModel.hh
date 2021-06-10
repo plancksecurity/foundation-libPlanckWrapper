@@ -6,17 +6,12 @@
 
 #include "../../../src/pEpLog.hh"
 #include "PityNode.hh"
-#include "PityUnit.hh"
 #include <vector>
 #include <memory>
 
 // The Model currently is as follows:
 // The Model creates the TestTree using PityUnits.
 // When creating the model you specify how many nodes you want
-// The Model has a PityUnit rootUnit.
-// The Model then creates a list of PityNodes, each containing a PityUnit connected to the rootUnit
-// The PityNode, when run will modify the model to represent the perspective of the respective node nr.
-// The perspective currently is complete by specifying a node, since there is a 1-1 node/ident relationship currently
 //
 // ATTENTION - TODO:
 // Currently there is a strict 1-1 relationship of nodes and identities.
@@ -38,21 +33,7 @@ namespace pEp {
             // Getters
             std::string getName() const;
             std::vector<std::shared_ptr<PityNode>> nodes() const;
-//            PityUnit<PityModel>& unit();
-//            PityUnit<PityModel>* unitOfNodeNr(int nr) const;
             PityNode* nodeNr(int nr) const;
-
-            // Setter
-            void setName(std::string name);
-
-            // Perspective
-            PityNode* own_node = nullptr;
-
-            //Transport
-//            bool hasMsg() const;
-//            void sendMsg(const std::string nodename, const std::string& msg) const;
-//            std::string pollMsg() const;
-//            std::string receiveMsg(int timeout_msec = 100) const;
 
             //internal logging
             static bool debug_log_enabled;

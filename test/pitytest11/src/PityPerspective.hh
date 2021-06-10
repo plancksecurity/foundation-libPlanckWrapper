@@ -5,13 +5,17 @@
 #define PITYTEST_PITYPERSPECTIVE_HH
 
 #include "../../../src/pEpLog.hh"
+#include "PityModel.hh"
 
 namespace pEp {
     namespace PityTest11 {
         class PityPerspective {
         public:
             // Constructors
-            PityPerspective();
+            PityPerspective(PityModel& model);
+
+            // Lets grant access to the whole model too
+            PityModel& model;
 
             // Perspective
             std::string name;

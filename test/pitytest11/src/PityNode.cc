@@ -1,12 +1,6 @@
-#include "PityModel.hh"
 #include "PityNode.hh"
-#include "PityUnit.hh"
-#include "PityPerspective.hh"
-#include "iostream"
 #include <memory>
-#include <functional>
 #include <sstream>
-
 
 namespace pEp {
     namespace PityTest11 {

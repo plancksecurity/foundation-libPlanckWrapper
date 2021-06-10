@@ -5,13 +5,9 @@
 #define PITYTEST_PITYNODE_HH
 
 #include "../../../src/pEpLog.hh"
-#include "PityUnit.hh"
-#include "PityModel.hh"
-#include "PityPerspective.hh"
 
 namespace pEp {
     namespace PityTest11 {
-        class PityModel;
         class PityNode {
         public:
             // Constructors
