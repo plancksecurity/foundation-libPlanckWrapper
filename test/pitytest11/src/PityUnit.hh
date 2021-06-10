@@ -10,12 +10,17 @@
 #include <map>
 #include <memory>
 #include "fs_mutex.hh"
+#include "PityTransport.hh"
+//#include "PityModel.hh"
 
 // Yes, the mem mgmt is purely static on purpose (so far)
 
 namespace pEp {
     namespace PityTest11 {
-        template<class T = void>
+        class PityModel;
+        class PityPerspective;
+
+        template<class T = PityModel, class P = PityPerspective>
         class PityUnit {
         public:
             enum class ExecutionMode
@@ -30,20 +35,20 @@ namespace pEp {
 
             // Constructors are private
             PityUnit() = delete;
-            explicit PityUnit<T>(
-                PityUnit<T>* parent,
+            explicit PityUnit<T, P>(
+                PityUnit<>* parent,
                 const std::string& name,
-                const std::function<void(const PityUnit&)> test_func = nullptr,
+                const std::function<void(PityUnit&, T*, P*)> test_func = nullptr,
                 T* model = nullptr,
+                P* perspective = nullptr,
                 ExecutionMode exec_mode = ExecutionMode::FUNCTION);
 
             // Read-Only
             std::string getName() const;
             std::string getPath() const;
             std::string getPathShort() const;
-            T* getModel() const;
-            std::string processDir() const; // own process dir
-
+            std::string processDir(); // own process dir
+            std::string transportDir();
             // Read-Write
             //            void setExecutionMode(ExecutionMode mode);
             static void setGlobalRootDir(const std::string& dir);
@@ -52,11 +57,17 @@ namespace pEp {
 
             // Main funcs
             void run();
-            std::string to_string(bool recursive = true, int indent = 0) const;
+            std::string to_string(bool recursive = true, int indent = 0);
             static std::string to_string(const ExecutionMode& emode);
 
             // Util
-            void recreateDirsRecursively() const;
+            void recreateDirsRecursively();
+
+            //Transport
+            PityTransport* transport() const;
+            void registerAsTransportEndpoint();
+            Endpoints& transportEndpoints();
+
 
             // logging service
             void log(const std::string& msg) const;
@@ -73,9 +84,9 @@ namespace pEp {
 
             // METHODS
             // Execution
-            void _init() const;
-            void _run() const;
-            void _runSelf() const;
+            void _init();
+            void _run();
+            void _runSelf();
             void _runChildren() const;
             void _executeInFork(std::function<void(void)> func, bool wait_child) const;
             void _waitChildProcesses() const;
@@ -86,9 +97,13 @@ namespace pEp {
             // Query
             bool _isProcessUnit() const;
             bool _isRootUnit() const;
-            const PityUnit& _rootUnit() const;
-            std::string _rootUnitDir() const;
+            PityUnit* _rootUnit();
+            std::string _rootUnitDir();
             const PityUnit& _parentingProcessUnit() const;
+            T* _getModel() const;
+            P* _getPerspective() const;
+            void createTransport();
+
 
             // Util
             std::string _normalizeName(std::string name) const;
@@ -99,14 +114,17 @@ namespace pEp {
 
             // Fields
             const std::string _name;
-            const PityUnit* _parent; //nullptr if RootUnit
+            PityUnit* _parent; //nullptr if RootUnit
             T* _model;               //nullptr if inherited
-            const std::function<void(const PityUnit&)> _test_func;
+            P* _perspective;         //nullptr if inherited
+            const std::function<void(PityUnit&, T*, P*)> _test_func;
             ExecutionMode _exec_mode;
             static std::string _global_root_dir;
             std::map<const std::string, PityUnit&> _children; // map to guarantee uniqueness of sibling-names
             int procUnitNr;
-            static int procUnitsCount; // will be increased in everuy constructor
+            static int procUnitsCount;                 // will be increased in everuy constructor
+            std::shared_ptr<PityTransport> _transport; //only ever read via transport()
+            Endpoints _transport_endpoints;            // only ever access via transportEndpoints()
 
             std::shared_ptr<fs_mutex> _log_mutex = nullptr;
             // internal logging
