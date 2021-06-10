@@ -38,8 +38,8 @@ namespace pEp {
             // Getters
             std::string getName() const;
             std::vector<std::shared_ptr<PityNode>> nodes() const;
-            PityUnit<PityModel>& unit();
-            PityUnit<PityModel>* unitOfNodeNr(int nr) const;
+//            PityUnit<PityModel>& unit();
+//            PityUnit<PityModel>* unitOfNodeNr(int nr) const;
             PityNode* nodeNr(int nr) const;
 
             // Setter
@@ -48,21 +48,17 @@ namespace pEp {
             // Perspective
             PityNode* own_node = nullptr;
 
-            //Run
-            void run();
-
             //Transport
-            bool hasMsg() const;
-            void sendMsg(const std::string nodename, const std::string& msg) const;
-            std::string pollMsg() const;
-            std::string receiveMsg(int timeout_msec = 100) const;
+//            bool hasMsg() const;
+//            void sendMsg(const std::string nodename, const std::string& msg) const;
+//            std::string pollMsg() const;
+//            std::string receiveMsg(int timeout_msec = 100) const;
 
             //internal logging
             static bool debug_log_enabled;
             Adapter::pEpLog::pEpLogger logger_debug{ "PityModel", debug_log_enabled };
 
         private:
-            PityUnit<PityModel> _unit;
             std::vector<std::shared_ptr<PityNode>> _nodes;
             std::string _name;
 
