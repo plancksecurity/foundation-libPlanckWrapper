@@ -1,10 +1,12 @@
 #include "PityTransport.hh"
+#include "PityUnit.hh"
 #include "iostream"
 #include "../../../src/std_utils.hh"
 #include <random>
 #include <fstream>
 #include <memory>
 #include <unordered_map>
+
 
 namespace pEp {
     namespace PityTest11 {
@@ -18,12 +20,16 @@ namespace pEp {
         void PityTransport::sendMsg(const std::string nodename, const std::string& msg) const
         {
             pEpLogClass("Address: " + nodename + " msg: " + msg);
+
+            // HACK TODO
+            std::string nodename_normalize = PityUnit<>::_normalizeName(nodename);
+
             bool found = false;
             std::string dir;
             try {
-                dir = _endpoints.at(nodename);
+                dir = _endpoints.at(nodename_normalize);
             } catch (std::out_of_range&) {
-                throw std::runtime_error("no such nodename: " + nodename);
+                throw std::runtime_error("no such nodename: " + nodename_normalize);
             }
             Utils::dir_ensure(dir);
             std::stringstream filename;

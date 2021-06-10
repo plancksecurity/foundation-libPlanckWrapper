@@ -63,6 +63,7 @@ namespace pEp {
 
             // Util
             void recreateDirsRecursively();
+            static std::string _normalizeName(std::string name); //TODO HACK in PityTransport this should be private
 
             //Transport
             PityTransport* transport() const;
@@ -102,9 +103,7 @@ namespace pEp {
             std::string _rootUnitDir();
 
 
-
             // Util
-            std::string _normalizeName(std::string name) const;
             std::string _status_string(const std::string& msg) const;
             Utils::Color _colForProcUnitNr(int procUnitNr) const;
             Utils::Color _termColor() const;
@@ -113,7 +112,7 @@ namespace pEp {
             // Fields
             const std::string _name;
             PityUnit<TestContext>* _parent; //nullptr if RootUnit
-            TestContext* _perspective;         //nullptr if inherited
+            TestContext* _perspective;      //nullptr if inherited
             TestFunction _test_func;
             ExecutionMode _exec_mode;
             static std::string _global_root_dir;

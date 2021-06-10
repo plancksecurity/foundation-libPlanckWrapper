@@ -478,8 +478,9 @@ namespace pEp {
         }
 
         // name is alphanumeric only (everything else will be replaced by an underscore)
+        // static
         template<class TestContext>
-        std::string PityUnit<TestContext>::_normalizeName(std::string name) const
+        std::string PityUnit<TestContext>::_normalizeName(std::string name)
         {
             replace_if(
                 name.begin(),
