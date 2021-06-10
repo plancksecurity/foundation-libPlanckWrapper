@@ -35,16 +35,16 @@ public:
     Car car;
 };
 
-void test_setGear(const PityUnit<CarTestModel>& node)
+void test_setGear(PityUnit<CarTestModel>& node, CarTestModel* ctx)
 {
     int gear = 1;
     node.log("Setting gear to: " + to_string(gear));
-    node.getModel()->car.setGear(gear);
+    ctx->car.setGear(gear);
 }
 
-void test_drive(const PityUnit<CarTestModel>& node)
+void test_drive(PityUnit<CarTestModel>& node, CarTestModel* ctx)
 {
-    node.getModel()->car.drive();
+    ctx->car.drive();
 }
 
 int main(int argc, char* argv[])

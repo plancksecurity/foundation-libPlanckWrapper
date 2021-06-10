@@ -19,7 +19,7 @@
 namespace pEp {
     namespace PityTest11 {
 
-        template<class TestContext>
+        template<class TestContext = void>
         class PityUnit {
         public:
             using TestFunction = const std::function<void(PityUnit<TestContext>&, TestContext*)>;

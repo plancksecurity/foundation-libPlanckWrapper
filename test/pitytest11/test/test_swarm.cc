@@ -29,7 +29,7 @@ void test_node1(PityUnit<PityPerspective>& unit, PityPerspective* psp)
 
 int main(int argc, char* argv[])
 {
-    int nodesCount = 3;
+    int nodesCount = 23;
     PityModel model{ "test_swarm", nodesCount };
     PitySwarm swarm{model};
 

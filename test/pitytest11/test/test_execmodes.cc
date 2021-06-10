@@ -29,46 +29,36 @@ int main(int argc, char* argv[])
         // Subprocess 1
         PityUnit<> test1 = PityUnit<>{ &root,
                                        "node1",
-                                       [](PityUnit<>& unit,
-                                          PityModel* model,
-                                          PityPerspective* psp) { do_some_work(unit, 200, 10); },
-                                       nullptr,
+                                       [](PityUnit<>& unit, void* ctx) {
+                                           do_some_work(unit, 200, 10);
+                                       },
                                        nullptr,
                                        pEp::PityTest11::PityUnit<>::ExecutionMode::PROCESS_PARALLEL };
 
-        PityUnit<> test1_1 = PityUnit<>{ &test1,
-                                         "test1.1",
-                                         [](PityUnit<>& unit,
-                                            PityModel* model,
-                                            PityPerspective* psp) { do_some_work(unit, 200, 10); } };
+        PityUnit<> test1_1 = PityUnit<>{ &test1, "test1.1", [](PityUnit<>& unit, void* ctx) {
+                                            do_some_work(unit, 200, 10);
+                                        } };
 
-        PityUnit<> test1_2 = PityUnit<>{ &test1,
-                                         "test1.2",
-                                         [](PityUnit<>& unit,
-                                            PityModel* model,
-                                            PityPerspective* psp) { do_some_work(unit, 200, 10); } };
+        PityUnit<> test1_2 = PityUnit<>{ &test1, "test1.2", [](PityUnit<>& unit, void* ctx) {
+                                            do_some_work(unit, 200, 10);
+                                        } };
 
         // Subprocess 2
         PityUnit<> test2 = PityUnit<>{ &root,
                                        "node2",
-                                       [](PityUnit<>& unit,
-                                          PityModel* model,
-                                          PityPerspective* psp) { do_some_work(unit, 200, 10); },
-                                       nullptr,
+                                       [](PityUnit<>& unit, void* ctx) {
+                                           do_some_work(unit, 200, 10);
+                                       },
                                        nullptr,
                                        pEp::PityTest11::PityUnit<>::ExecutionMode::PROCESS_PARALLEL };
 
-        PityUnit<> test2_1 = PityUnit<>{ &test2,
-                                         "test2.1",
-                                         [](PityUnit<>& unit,
-                                            PityModel* model,
-                                            PityPerspective* psp) { do_some_work(unit, 200, 10); } };
+        PityUnit<> test2_1 = PityUnit<>{ &test2, "test2.1", [](PityUnit<>& unit, void* ctx) {
+                                            do_some_work(unit, 200, 10);
+                                        } };
 
-        PityUnit<> test2_2 = PityUnit<>{ &test2,
-                                         "test2.2",
-                                         [](PityUnit<>& unit,
-                                            PityModel* model,
-                                            PityPerspective* psp) { do_some_work(unit, 200, 10); } };
+        PityUnit<> test2_2 = PityUnit<>{ &test2, "test2.2", [](PityUnit<>& unit, void* ctx) {
+                                            do_some_work(unit, 200, 10);
+                                        } };
 
         root.run();
     }

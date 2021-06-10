@@ -8,6 +8,7 @@
 
 #include "../src/Adapter.hh"
 #include "../src/utils.hh"
+#include "../src/std_utils.hh"
 
 #include "../src/grp_manager_interface.hh"
 #include "../src/grp_driver_engine.hh"
@@ -59,7 +60,8 @@ GroupQueryInterface* gq = nullptr;
     log("called");
     log("me: " + pEp::Utils::to_string(_me, false));
     log("partner: " + pEp::Utils::to_string(_partner, false));
-    log("Signal: " + string{ ::sync_handshake_signal_to_string(signal) });
+    log("Signal: " + to_string(signal));
+    //    log("Signal: " + string{ ::sync_handshake_signal_to_string(signal) });
 
     return PEP_STATUS_OK;
 }
@@ -87,8 +89,9 @@ void test_create_bob_partner()
     logH2("test_create_bob_partner");
     bob = ::new_identity("bob@peptest.ch", NULL, PEP_OWN_USERID, "Bob");
     assert(bob);
-    bob->lang[0] = 'c';
-    bob->lang[1] = 'r';
+//    bob->lang[0] = 'c';
+//    bob->lang[1] = 'r';
+//    status = ::myself(Adapter::session(), bob);
     status = ::update_identity(Adapter::session(), bob);
     log("STATUS: " + status_to_string(status));
     assert(!status);
@@ -103,6 +106,7 @@ void test_create_carol_partner()
     carol->lang[0] = 'f';
     carol->lang[1] = 'n';
     status = ::update_identity(Adapter::session(), carol);
+//    status = ::myself(Adapter::session(), carol);
     log("STATUS: " + status_to_string(status));
     assert(!status);
     log("Carol:" + pEp::Utils::to_string(carol, debug_info_full));
@@ -126,8 +130,13 @@ void test_group_create()
     assert(grp_ident);
     log("grp_ident:" + pEp::Utils::to_string(grp_ident, debug_info_full));
 
+//    PEP_STATUS stat = ::myself(Adapter::session(), grp_ident);
+//    log("STATUS: " + status_to_string(status));
+//    assert(stat == PEP_STATUS_OK);
+//    log("grp_ident:" + pEp::Utils::to_string(grp_ident, debug_info_full));
+
     log("adapter_group_create()");
-    status = gu->adapter_group_create(Adapter::session(), grp_ident, alice, initial_memberlist);
+    status = gu->adapter_group_create(Adapter::session(), grp_ident, alice, nullptr);
     log("STATUS: " + status_to_string(status));
     assert(!status);
 }
@@ -203,14 +212,14 @@ int main(int argc, char** argv)
     GroupDriverReplicator gdr{};
 
 
-//    gu = &gde;
-//    gq = nullptr;
+    gu = &gde;
+    gq = nullptr;
 
-//    gu = &gdd;
-//    gq = &gdd;
+    //    gu = &gdd;
+    //    gq = &gdd;
 
-    gu = &gdr;
-    gq = &gdr;
+    //    gu = &gdr;
+    //    gq = &gdr;
 
 
     // Setup Test Context
@@ -224,9 +233,9 @@ int main(int argc, char** argv)
 
     test_group_create();
     logH1("2. Add Bob");
-    //    test_group_invite_member(*bob); // Fails
+    test_group_invite_member(*bob); // Fails
     logH1("3. Add Carol");
-    //    test_group_invite_member(*carol);
+    test_group_invite_member(*carol);
     logH1("4. Remove Carol");
     test_group_remove_member(*carol);
 
