@@ -16,32 +16,30 @@
 #include <memory>
 #include <unordered_map>
 
-//using namespace pEp::Adapter::pEpLog;
 
 namespace pEp {
     namespace PityTest11 {
         // static
-        template<class T, class P>
-        std::string PityUnit<T, P>::_global_root_dir = "./pitytest_data/";
+        template<class TestContext>
+        std::string PityUnit<TestContext>::_global_root_dir = "./pitytest_data/";
         // static
-        template<class T, class P>
-        bool PityUnit<T, P>::debug_log_enabled = false;
+        template<class TestContext>
+        bool PityUnit<TestContext>::debug_log_enabled = false;
         // static
-        template<class T, class P>
-        int PityUnit<T, P>::procUnitsCount = 0;
+        template<class TestContext>
+        int PityUnit<TestContext>::procUnitsCount = 0;
 
         // CONSTRUCTOR
-        template<class T, class P>
-        PityUnit<T, P>::PityUnit(
-            PityUnit<>* const parent,
+        template<class TestContext>
+        PityUnit<TestContext>::PityUnit(
+            PityUnit<TestContext>* const parent,
             const std::string& name,
-            const std::function<void(PityUnit&, T*, P*)> test_func,
-            T* model,
-            P* perspective,
+            TestFunction test_func,
+            TestContext* perspective,
             ExecutionMode exec_mode) :
             _parent{ parent },
-            _model{ model }, _perspective{ perspective }, _name{ _normalizeName(name) },
-            _test_func{ test_func }, _exec_mode{ exec_mode }
+            _perspective{ perspective }, _name{ _normalizeName(name) }, _test_func{ test_func },
+            _exec_mode{ exec_mode }
         {
             logger_debug.set_instancename(getPath());
             if (!_isRootUnit()) {
@@ -50,7 +48,7 @@ namespace pEp {
                 procUnitNr = _parent->procUnitNr;
                 //Or update if procUnit
                 if (_isProcessUnit()) {
-                    createTransport();
+                    _createTransport();
                     procUnitsCount++;
                     procUnitNr = procUnitsCount;
                 }
@@ -59,14 +57,14 @@ namespace pEp {
             }
         }
 
-        template<class T, class P>
-        std::string PityUnit<T, P>::getName() const
+        template<class TestContext>
+        std::string PityUnit<TestContext>::getName() const
         {
             return _name;
         }
 
-        template<class T, class P>
-        std::string PityUnit<T, P>::getPath() const
+        template<class TestContext>
+        std::string PityUnit<TestContext>::getPath() const
         {
             std::string ret;
 
@@ -83,8 +81,8 @@ namespace pEp {
         // ProcessUnit                      - ".../<proc>"
         // When Process as dir. parent      - ".../<proc>/name"
         // When no process as dir. parent   - ".../<proc>/.../name"
-        template<class T, class P>
-        std::string PityUnit<T, P>::getPathShort() const
+        template<class TestContext>
+        std::string PityUnit<TestContext>::getPathShort() const
         {
             std::string ret;
             if (_isRootUnit()) {
@@ -93,10 +91,10 @@ namespace pEp {
                 if (_isProcessUnit()) {
                     ret += ".../" + getName();
                 } else {
-                    if (&(_parentingProcessUnit()) == (_parent)) {
-                        ret = _parentingProcessUnit().getPathShort() + "/" + getName();
+                    if (&(parentingProcessUnit()) == (_parent)) {
+                        ret = parentingProcessUnit().getPathShort() + "/" + getName();
                     } else {
-                        ret = _parentingProcessUnit().getPathShort() + "/.../" + getName();
+                        ret = parentingProcessUnit().getPathShort() + "/.../" + getName();
                     }
                 }
             }
@@ -105,16 +103,16 @@ namespace pEp {
 
 
         // Every RootUnit has its own dir
-        template<class T, class P>
-        std::string PityUnit<T, P>::_rootUnitDir()
+        template<class TestContext>
+        std::string PityUnit<TestContext>::_rootUnitDir()
         {
-            return getGlobalRootDir() + _rootUnit()->getName() + "/";
+            return getGlobalRootDir() + rootUnit()->getName() + "/";
         }
 
         // Every process has its own dir inside its rootUnitDir
         // All other units inherit processDir from their Root/ProcessUnit
-        template<class T, class P>
-        std::string PityUnit<T, P>::processDir()
+        template<class TestContext>
+        std::string PityUnit<TestContext>::processDir()
         {
             if (_isRootUnit()) {
                 return _rootUnitDir();
@@ -129,8 +127,8 @@ namespace pEp {
 
         // Every process has its own dir inside its rootUnitDir
         // All other units inherit transportDir from their Root/ProcessUnit
-        template<class T, class P>
-        std::string PityUnit<T, P>::transportDir()
+        template<class TestContext>
+        std::string PityUnit<TestContext>::transportDir()
         {
             if (_isRootUnit()) {
                 throw std::runtime_error("No transport dir");
@@ -143,28 +141,28 @@ namespace pEp {
             }
         }
 
-        //        template<class T, class P>
-        //        void PityUnit<T, P>::setExecutionMode(ExecutionMode mode)
+        //        template<class TestContext>
+        //        void PityUnit<TestContext>::setExecutionMode(ExecutionMode mode)
         //        {
         //            _exec_mode = mode;
         //        }
 
         // static
-        template<class T, class P>
-        void PityUnit<T, P>::setGlobalRootDir(const std::string& dir)
+        template<class TestContext>
+        void PityUnit<TestContext>::setGlobalRootDir(const std::string& dir)
         {
-            PityUnit<T, P>::_global_root_dir = dir;
+            PityUnit<TestContext>::_global_root_dir = dir;
         }
 
         // static
-        template<class T, class P>
-        std::string PityUnit<T, P>::getGlobalRootDir()
+        template<class TestContext>
+        std::string PityUnit<TestContext>::getGlobalRootDir()
         {
             return PityUnit::_global_root_dir;
         }
 
-        template<class T, class P>
-        void PityUnit<T, P>::run()
+        template<class TestContext>
+        void PityUnit<TestContext>::run()
         {
             pEpLogClass("called");
             _log_mutex = std::make_shared<fs_mutex>("fds");
@@ -176,10 +174,10 @@ namespace pEp {
 
             // Execute in fork and wait here until process ends
             if (_exec_mode == ExecutionMode::PROCESS_SEQUENTIAL) { // fork
-                _executeInFork(std::bind(&PityUnit<T, P>::_run, this), true);
+                _executeInFork(std::bind(&PityUnit<TestContext>::_run, this), true);
                 // Execute in fork and go on, wait for process execution in the end
             } else if (_exec_mode == ExecutionMode::PROCESS_PARALLEL) {
-                _executeInFork(std::bind(&PityUnit<T, P>::_run, this), false);
+                _executeInFork(std::bind(&PityUnit<TestContext>::_run, this), false);
                 // Execute as normal funciton
             } else if (_exec_mode == ExecutionMode::FUNCTION) {
                 _run();
@@ -194,8 +192,8 @@ namespace pEp {
             }
         }
 
-        template<class T, class P>
-        std::string PityUnit<T, P>::to_string(bool recursive, int indent)
+        template<class TestContext>
+        std::string PityUnit<TestContext>::to_string(bool recursive, int indent)
         {
             std::string ret;
             std::stringstream builder;
@@ -212,7 +210,7 @@ namespace pEp {
             if (recursive) {
                 if (!_children.empty()) {
                     indent++;
-                    for (const std::pair<std::string, PityUnit<T, P>&> child : _children) {
+                    for (const std::pair<std::string, PityUnit<TestContext>&> child : _children) {
                         ret += child.second.to_string(true, indent);
                     }
                     indent--;
@@ -221,8 +219,8 @@ namespace pEp {
             return ret;
         }
 
-        template<class T, class P>
-        std::string PityUnit<T, P>::to_string(const ExecutionMode& emode)
+        template<class TestContext>
+        std::string PityUnit<TestContext>::to_string(const ExecutionMode& emode)
         {
             switch (emode) {
                 case ExecutionMode::FUNCTION:
@@ -242,36 +240,36 @@ namespace pEp {
             }
         }
 
-        template<class T, class P>
-        void PityUnit<T, P>::recreateDirsRecursively()
+        template<class TestContext>
+        void PityUnit<TestContext>::recreateDirsRecursively()
         {
             Utils::dir_recreate(processDir());
             if (!_children.empty()) {
-                for (const std::pair<std::string, PityUnit<T, P>&> child : _children) {
+                for (const std::pair<std::string, PityUnit<TestContext>&> child : _children) {
                     child.second.recreateDirsRecursively();
                 }
             }
         }
 
-        template<class T, class P>
-        void PityUnit<T, P>::registerAsTransportEndpoint()
+        template<class TestContext>
+        void PityUnit<TestContext>::registerAsTransportEndpoint()
         {
             transportEndpoints().insert({ getName(), transportDir() });
         }
 
-        template<class T, class P>
-        Endpoints& PityUnit<T, P>::transportEndpoints()
+        template<class TestContext>
+        Endpoints& PityUnit<TestContext>::transportEndpoints()
         {
             if (_isRootUnit()) {
                 return _transport_endpoints;
             } else {
-                return _rootUnit()->transportEndpoints();
+                return rootUnit()->transportEndpoints();
             }
         }
 
 
-        template<class T, class P>
-        void PityUnit<T, P>::log(const std::string& msg) const
+        template<class TestContext>
+        void PityUnit<TestContext>::log(const std::string& msg) const
         {
             std::stringstream builder;
             builder << "[";
@@ -281,39 +279,39 @@ namespace pEp {
             builder << "] -  ";
             builder << msg;
 
-            logRaw(builder.str());
+            _logRaw(builder.str());
         }
 
 
-        template<class T, class P>
-        void PityUnit<T, P>::logH1(const std::string& msg) const
+        template<class TestContext>
+        void PityUnit<TestContext>::logH1(const std::string& msg) const
         {
             Adapter::pEpLog::logH1(msg, _termColor());
         }
 
-        template<class T, class P>
-        void PityUnit<T, P>::logH2(const std::string& msg) const
+        template<class TestContext>
+        void PityUnit<TestContext>::logH2(const std::string& msg) const
         {
             Adapter::pEpLog::logH2(msg, _termColor());
         }
 
-        template<class T, class P>
-        void PityUnit<T, P>::logH3(const std::string& msg) const
+        template<class TestContext>
+        void PityUnit<TestContext>::logH3(const std::string& msg) const
         {
             Adapter::pEpLog::logH3(msg, _termColor());
         }
 
 
         // PRIVATE ---------------------------------------------------------------------------------
-        template<class T, class P>
-        void PityUnit<T, P>::_init()
+        template<class TestContext>
+        void PityUnit<TestContext>::_init()
         {
             logH1("PityTest Starting...");
-            logRaw("RootUnit: " + getPathShort());
-            logRaw("GlobalRootDir: " + getGlobalRootDir());
-            logRaw("\nTestTree");
-            logRaw("--------");
-            logRaw(to_string());
+            _logRaw("RootUnit: " + getPathShort());
+            _logRaw("GlobalRootDir: " + getGlobalRootDir());
+            _logRaw("\nTestTree");
+            _logRaw("--------");
+            _logRaw(to_string());
 
             logH3("INIT");
             Utils::dir_ensure(getGlobalRootDir());
@@ -322,42 +320,42 @@ namespace pEp {
         }
 
 
-        template<class T, class P>
-        void PityUnit<T, P>::_run()
+        template<class TestContext>
+        void PityUnit<TestContext>::_run()
         {
             logH2(_status_string("STARTING"));
             _runSelf();
             _runChildren();
         }
 
-        template<class T, class P>
-        void PityUnit<T, P>::_runSelf()
+        template<class TestContext>
+        void PityUnit<TestContext>::_runSelf()
         {
             if (_test_func != nullptr) {
                 try {
-                    _test_func(*this, _getModel(), _getPerspective());
+                    _test_func(*this, getPerspective());
                     logH3(_status_string("\033[1m\033[32mSUCCESS" + Utils::to_termcol(_termColor())));
                 } catch (const std::exception& e) {
-                    logRaw("reason: " + std::string(e.what()));
+                    _logRaw("reason: " + std::string(e.what()));
                     logH3(_status_string("\033[1m\033[31mFAILED" + Utils::to_termcol(_termColor())));
                 }
             } else {
-                logRaw("No function to execute");
+                _logRaw("No function to execute");
             }
         }
 
-        template<class T, class P>
-        void PityUnit<T, P>::_runChildren() const
+        template<class TestContext>
+        void PityUnit<TestContext>::_runChildren() const
         {
             if (!_children.empty()) {
-                for (const std::pair<std::string, PityUnit<T, P>&> child : _children) {
+                for (const std::pair<std::string, PityUnit<TestContext>&> child : _children) {
                     child.second.run();
                 }
             }
         }
 
-        template<class T, class P>
-        void PityUnit<T, P>::_executeInFork(std::function<void(void)> func, bool wait_child) const
+        template<class TestContext>
+        void PityUnit<TestContext>::_executeInFork(std::function<void(void)> func, bool wait_child) const
         {
             pid_t pid;
             pid = fork();
@@ -372,8 +370,8 @@ namespace pEp {
             }
         }
 
-        template<class T, class P>
-        void PityUnit<T, P>::_waitChildProcesses() const
+        template<class TestContext>
+        void PityUnit<TestContext>::_waitChildProcesses() const
         {
             int status;
             pid_t pid;
@@ -384,14 +382,14 @@ namespace pEp {
             }
         }
 
-        template<class T, class P>
-        void PityUnit<T, P>::_addChildUnit(PityUnit<T, P>& unit)
+        template<class TestContext>
+        void PityUnit<TestContext>::_addChildUnit(PityUnit<TestContext>& unit)
         {
-            _children.insert(std::pair<std::string, PityUnit<T, P>&>(unit.getName(), unit));
+            _children.insert(std::pair<std::string, PityUnit<TestContext>&>(unit.getName(), unit));
         }
 
-        template<class T, class P>
-        bool PityUnit<T, P>::_isProcessUnit() const
+        template<class TestContext>
+        bool PityUnit<TestContext>::_isProcessUnit() const
         {
             bool ret = false;
             if (_exec_mode == ExecutionMode::PROCESS_SEQUENTIAL ||
@@ -401,8 +399,8 @@ namespace pEp {
             return ret;
         }
 
-        template<class T, class P>
-        bool PityUnit<T, P>::_isRootUnit() const
+        template<class TestContext>
+        bool PityUnit<TestContext>::_isRootUnit() const
         {
             if (_parent == nullptr) {
                 return true;
@@ -411,12 +409,12 @@ namespace pEp {
             }
         }
 
-        template<class T, class P>
-        PityUnit<T, P>* PityUnit<T, P>::_rootUnit()
+        template<class TestContext>
+        PityUnit<TestContext>* PityUnit<TestContext>::rootUnit()
         {
-            //            const PityUnit<T, P>* ret = nullptr;
+            //            const PityUnit<TestContext>* ret = nullptr;
             if (!_isRootUnit()) {
-                return _parent->_rootUnit();
+                return _parent->rootUnit();
             } else {
                 return this;
             }
@@ -426,61 +424,45 @@ namespace pEp {
             //            return *ret;
         }
 
-        template<class T, class P>
-        const PityUnit<T, P>& PityUnit<T, P>::_parentingProcessUnit() const
+        template<class TestContext>
+        const PityUnit<TestContext>& PityUnit<TestContext>::parentingProcessUnit() const
         {
             if (_isRootUnit() || _isProcessUnit()) {
                 return *this;
             } else {
-                return _parent->_parentingProcessUnit();
+                return _parent->parentingProcessUnit();
             }
         }
 
-        // Inherited (if null see parent recursively)
-        template<class T, class P>
-        T* PityUnit<T, P>::_getModel() const
-        {
-            pEpLogClass("called");
-            T* ret = nullptr;
-
-            if (_model != nullptr) {
-                ret = _model;
-            } else {
-                if (!_isRootUnit()) {
-                    ret = _parent->_getModel();
-                }
-            }
-            return ret;
-        }
 
         // Inherited (if null see parent recursively)
-        template<class T, class P>
-        P* PityUnit<T, P>::_getPerspective() const
+        template<class TestContext>
+        TestContext* PityUnit<TestContext>::getPerspective() const
         {
             pEpLogClass("called");
-            P* ret = nullptr;
+            TestContext* ret = nullptr;
 
             if (_perspective != nullptr) {
                 ret = _perspective;
             } else {
                 if (!_isRootUnit()) {
-                    ret = _parent->_getPerspective();
+                    ret = _parent->getPerspective();
                 }
             }
             return ret;
         }
 
         // Inherited (if null see parent recursively)
-        template<class T, class P>
-        void PityUnit<T, P>::createTransport()
+        template<class TestContext>
+        void PityUnit<TestContext>::_createTransport()
         {
             registerAsTransportEndpoint();
             _transport = std::make_shared<PityTransport>(transportDir(), transportEndpoints());
         }
 
         // Inherited (if null see parent recursively)
-        template<class T, class P>
-        PityTransport* PityUnit<T, P>::transport() const
+        template<class TestContext>
+        PityTransport* PityUnit<TestContext>::transport() const
         {
             pEpLogClass("called");
             PityTransport* ret = nullptr;
@@ -496,8 +478,8 @@ namespace pEp {
         }
 
         // name is alphanumeric only (everything else will be replaced by an underscore)
-        template<class T, class P>
-        std::string PityUnit<T, P>::_normalizeName(std::string name) const
+        template<class TestContext>
+        std::string PityUnit<TestContext>::_normalizeName(std::string name) const
         {
             replace_if(
                 name.begin(),
@@ -508,8 +490,8 @@ namespace pEp {
             return name;
         }
 
-        template<class T, class P>
-        std::string PityUnit<T, P>::_status_string(const std::string& msg) const
+        template<class TestContext>
+        std::string PityUnit<TestContext>::_status_string(const std::string& msg) const
         {
             std::string ret;
             ret = "[ " + to_string(_exec_mode) + ":" + std::to_string(getpid()) + " ]  [ " +
@@ -518,8 +500,8 @@ namespace pEp {
         }
 
 
-        template<class T, class P>
-        Utils::Color PityUnit<T, P>::_colForProcUnitNr(int procUnitNr) const
+        template<class TestContext>
+        Utils::Color PityUnit<TestContext>::_colForProcUnitNr(int procUnitNr) const
         {
             int nrColors = 7;
             switch (procUnitNr % nrColors) {
@@ -542,14 +524,14 @@ namespace pEp {
             }
         }
 
-        template<class T, class P>
-        Utils::Color PityUnit<T, P>::_termColor() const
+        template<class TestContext>
+        Utils::Color PityUnit<TestContext>::_termColor() const
         {
             return _colForProcUnitNr(procUnitNr);
         }
 
-        template<class T, class P>
-        void PityUnit<T, P>::logRaw(const std::string& msg) const
+        template<class TestContext>
+        void PityUnit<TestContext>::_logRaw(const std::string& msg) const
         {
             _log_mutex->aquire();
             Adapter::pEpLog::log(msg, _termColor());

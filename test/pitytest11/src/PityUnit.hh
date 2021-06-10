@@ -8,6 +8,7 @@
 #include "../../../src/std_utils.hh"
 #include "fs_mutex.hh"
 #include "PityTransport.hh"
+//#include "PityPerspective.hh"
 #include <string>
 #include <map>
 #include <memory>
@@ -17,12 +18,11 @@
 
 namespace pEp {
     namespace PityTest11 {
-        class PityModel;
-        class PityPerspective;
 
-        template<class T = PityModel, class P = PityPerspective>
+        template<class TestContext>
         class PityUnit {
         public:
+            using TestFunction = const std::function<void(PityUnit<TestContext>&, TestContext*)>;
             enum class ExecutionMode
             {
                 FUNCTION,
@@ -35,12 +35,11 @@ namespace pEp {
 
             // Constructors are private
             PityUnit() = delete;
-            explicit PityUnit<T, P>(
-                PityUnit<>* parent,
+            explicit PityUnit<TestContext>(
+                PityUnit<TestContext>* parent,
                 const std::string& name,
-                const std::function<void(PityUnit&, T*, P*)> test_func = nullptr,
-                T* model = nullptr,
-                P* perspective = nullptr,
+                TestFunction test_func = nullptr,
+                TestContext* perspective = nullptr,
                 ExecutionMode exec_mode = ExecutionMode::FUNCTION);
 
             // Read-Only
@@ -49,11 +48,13 @@ namespace pEp {
             std::string getPathShort() const;
             std::string processDir(); // own process dir
             std::string transportDir();
+            PityUnit<TestContext>* rootUnit();
+            TestContext* getPerspective() const;
+            const PityUnit<TestContext>& parentingProcessUnit() const;
+
             // Read-Write
-            //            void setExecutionMode(ExecutionMode mode);
             static void setGlobalRootDir(const std::string& dir);
             static std::string getGlobalRootDir();
-
 
             // Main funcs
             void run();
@@ -68,7 +69,6 @@ namespace pEp {
             void registerAsTransportEndpoint();
             Endpoints& transportEndpoints();
 
-
             // logging service
             void log(const std::string& msg) const;
             void logH1(const std::string& msg) const;
@@ -80,8 +80,6 @@ namespace pEp {
             Adapter::pEpLog::pEpLogger logger_debug{ "PityUnit", debug_log_enabled };
 
         private:
-            // CONSTRUCTORS
-
             // METHODS
             // Execution
             void _init();
@@ -92,17 +90,17 @@ namespace pEp {
             void _waitChildProcesses() const;
 
             // Modify
-            void _addChildUnit(PityUnit& unit);
+            void _addChildUnit(PityUnit<TestContext>& unit);
+
+            // Transport
+            void _createTransport();
 
             // Query
             bool _isProcessUnit() const;
             bool _isRootUnit() const;
-            PityUnit* _rootUnit();
+
             std::string _rootUnitDir();
-            const PityUnit& _parentingProcessUnit() const;
-            T* _getModel() const;
-            P* _getPerspective() const;
-            void createTransport();
+
 
 
             // Util
@@ -110,17 +108,16 @@ namespace pEp {
             std::string _status_string(const std::string& msg) const;
             Utils::Color _colForProcUnitNr(int procUnitNr) const;
             Utils::Color _termColor() const;
-            void logRaw(const std::string& msg) const;
+            void _logRaw(const std::string& msg) const;
 
             // Fields
             const std::string _name;
-            PityUnit* _parent; //nullptr if RootUnit
-            T* _model;               //nullptr if inherited
-            P* _perspective;         //nullptr if inherited
-            const std::function<void(PityUnit&, T*, P*)> _test_func;
+            PityUnit<TestContext>* _parent; //nullptr if RootUnit
+            TestContext* _perspective;         //nullptr if inherited
+            TestFunction _test_func;
             ExecutionMode _exec_mode;
             static std::string _global_root_dir;
-            std::map<const std::string, PityUnit&> _children; // map to guarantee uniqueness of sibling-names
+            std::map<const std::string, PityUnit<TestContext>&> _children; // map to guarantee uniqueness of sibling-names
             int procUnitNr;
             static int procUnitsCount;                 // will be increased in everuy constructor
             std::shared_ptr<PityTransport> _transport; //only ever read via transport()
