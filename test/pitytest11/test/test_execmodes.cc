@@ -1,12 +1,13 @@
 #include "../src/PityUnit.hh"
-#include "../../../src/std_utils.hh"
+#include "../src/PityModel.hh"
+#include "../src/PityPerspective.hh"
 #include <iostream>
 
 using namespace std;
 using namespace pEp;
 using namespace pEp::PityTest11;
 
-void do_some_work(const PityUnit<>& myself, int sleepmilis, int rep_count)
+void do_some_work(PityUnit<>& myself, int sleepmilis, int rep_count)
 {
     int i = 0;
     while (i < rep_count) {
@@ -28,36 +29,46 @@ int main(int argc, char* argv[])
         // Subprocess 1
         PityUnit<> test1 = PityUnit<>{ &root,
                                        "node1",
-                                       [](const PityUnit<>& mynode) {
-                                           do_some_work(mynode, 200, 10);
-                                       },
+                                       [](PityUnit<>& unit,
+                                          PityModel* model,
+                                          PityPerspective* psp) { do_some_work(unit, 200, 10); },
+                                       nullptr,
                                        nullptr,
                                        pEp::PityTest11::PityUnit<>::ExecutionMode::PROCESS_PARALLEL };
 
-        PityUnit<> test1_1 = PityUnit<>{ &test1, "test1.1", [](const PityUnit<>& mynode) {
-                                            do_some_work(mynode, 200, 10);
-                                        } };
+        PityUnit<> test1_1 = PityUnit<>{ &test1,
+                                         "test1.1",
+                                         [](PityUnit<>& unit,
+                                            PityModel* model,
+                                            PityPerspective* psp) { do_some_work(unit, 200, 10); } };
 
-        PityUnit<> test1_2 = PityUnit<>{ &test1, "test1.2", [](const PityUnit<>& mynode) {
-                                            do_some_work(mynode, 200, 10);
-                                        } };
+        PityUnit<> test1_2 = PityUnit<>{ &test1,
+                                         "test1.2",
+                                         [](PityUnit<>& unit,
+                                            PityModel* model,
+                                            PityPerspective* psp) { do_some_work(unit, 200, 10); } };
 
         // Subprocess 2
         PityUnit<> test2 = PityUnit<>{ &root,
                                        "node2",
-                                       [](const PityUnit<>& mynode) {
-                                           do_some_work(mynode, 200, 10);
-                                       },
+                                       [](PityUnit<>& unit,
+                                          PityModel* model,
+                                          PityPerspective* psp) { do_some_work(unit, 200, 10); },
+                                       nullptr,
                                        nullptr,
                                        pEp::PityTest11::PityUnit<>::ExecutionMode::PROCESS_PARALLEL };
 
-        PityUnit<> test2_1 = PityUnit<>{ &test2, "test2.1", [](const PityUnit<>& mynode) {
-                                            do_some_work(mynode, 200, 10);
-                                        } };
+        PityUnit<> test2_1 = PityUnit<>{ &test2,
+                                         "test2.1",
+                                         [](PityUnit<>& unit,
+                                            PityModel* model,
+                                            PityPerspective* psp) { do_some_work(unit, 200, 10); } };
 
-        PityUnit<> test2_2 = PityUnit<>{ &test2, "test2.2", [](const PityUnit<>& mynode) {
-                                            do_some_work(mynode, 200, 10);
-                                        } };
+        PityUnit<> test2_2 = PityUnit<>{ &test2,
+                                         "test2.2",
+                                         [](PityUnit<>& unit,
+                                            PityModel* model,
+                                            PityPerspective* psp) { do_some_work(unit, 200, 10); } };
 
         root.run();
     }
