@@ -32,6 +32,11 @@ namespace pEp {
             Adapter::pEpLog::pEpLogger logger_debug{ "PityNode", debug_log_enabled };
 
         private:
+            // methods
+            void _createPerspective(const PityModel& model, PityPerspective* psp, int node_nr);
+            void _init_process(PityUnit<PityPerspective>& unit, PityPerspective* ctx);
+
+            // fields
             PityModel& _model;
             std::shared_ptr<PityUnit<PityPerspective>> _rootUnit;
             std::vector<std::shared_ptr<PityUnit<PityPerspective>>> _nodeUnits;
