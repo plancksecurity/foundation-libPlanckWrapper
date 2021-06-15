@@ -54,6 +54,8 @@ namespace pEp {
 
         //String formatting
         std::string padTo(const std::string &str, const size_t num, const char paddingChar);
+        std::string clip(const std::string &str, const size_t len);
+        std::string tldr(const std::string &str, const size_t len);
 
         enum class Color
         {

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <cstdio>
 #include <cerrno>
+#include <cmath>
 #include <dirent.h>
 #include <sys/stat.h>
 #include <algorithm>
@@ -227,6 +228,28 @@ namespace pEp {
             return ret;
         }
 
+        std::string clip(const std::string &str, const size_t len)
+        {
+            std::string ret{ str };
+            if (str.length() > len) {
+                ret = str.substr(0, len) + "...";
+            }
+            return ret;
+        }
+
+        std::string tldr(const std::string &str, const size_t len)
+        {
+            std::string decoration = "...";
+            int trunclen = len - decoration.length();
+
+            std::string ret{ str };
+            if (str.length() > len) {
+                ret = "\n" + str.substr(0, (int)floor(trunclen / 2.0)) + "\n... tldr ...\n";
+                ret += str.substr(str.length() - (int)floor(trunclen / 2.0), str.length());
+            }
+            return ret;
+        }
+
         string to_termcol(const Color &col)
         {
             switch (col) {
@@ -253,7 +276,8 @@ namespace pEp {
             }
         }
 
-        void sleep_millis(int milis) {
+        void sleep_millis(int milis)
+        {
             std::chrono::milliseconds timespan(milis);
             std::this_thread::sleep_for(timespan);
         }
