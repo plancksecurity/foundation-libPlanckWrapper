@@ -74,7 +74,9 @@ namespace pEp {
             return ret;
         }
 
-        std::string PityTransport::receiveMsg(int timeout_msec) const
+        // Blocking
+        // Returns when a msg has been received
+        std::string PityTransport::receiveMsg(int poll_interval) const
         {
             pEpLogClass("called");
             std::string ret;
@@ -84,8 +86,8 @@ namespace pEp {
                     ret = pollMsg();
                     retry = false;
                 } catch (const std::underflow_error&) {
-                    pEpLogClass("polling again in [ms]: " + std::to_string(timeout_msec) + "...");
-                    Utils::sleep_millis(timeout_msec);
+                    pEpLogClass("polling again in [ms]: " + std::to_string(poll_interval) + "...");
+                    Utils::sleep_millis(poll_interval);
                     retry = true;
                 }
             } while (retry);

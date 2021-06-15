@@ -25,7 +25,7 @@ namespace pEp {
             bool hasMsg() const;
             void sendMsg(const std::string nodename, const std::string& msg) const;
             std::string pollMsg() const;
-            std::string receiveMsg(int timeout_msec = 100) const;
+            std::string receiveMsg(int poll_interval = 100) const;
 
             //internal logging
             static bool debug_log_enabled;
