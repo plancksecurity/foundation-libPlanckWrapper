@@ -1,8 +1,9 @@
+TARGET=src/libPityTest.a
 LDLIBS=-lstdc++ -lpEpAdapter
 LDFLAGS=-L../../src/
 CXXFLAGS=-std=c++11 -g
 CXXFLAGS+=-I./src
-TEST_EXTRA_OBJS=../framework/utils.o
+#TEST_EXTRA_OBJS=../framework/utils.o
 
 # Src
 SRC=$(wildcard src/*.cc)
@@ -16,12 +17,20 @@ TEST_OBJ=$(subst .cc,,$(TEST_SRC))
 .PHONY: all clean rmtestdata
 .DEFAULT_GOAL := all
 
-all: $(TEST_OBJ)
 
-$(TEST_OBJ): $(OBJ) $(TEST_EXTRA_OBJS)
+all: $(TARGET) test
+
+$(TARGET): $(OBJ)
+	$(AR) -rc $@ $^
+
+
+test : $(TEST_OBJ)
+
+$(TEST_OBJ): $(OBJ)
 
 
 clean:
+	rm -f $(TARGET)
 	rm -f $(OBJ)
 	rm -f $(TEST_OBJ)
 	rm -rf src/*.dSYM
