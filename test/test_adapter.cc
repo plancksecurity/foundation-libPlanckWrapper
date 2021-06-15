@@ -6,12 +6,9 @@
 #include <iostream>
 #include <assert.h>
 #include <unistd.h>
-//#include <sys/param.h>
 
 #include <pEp/sync_api.h>
 #include <pEp/keymanagement.h>
-//#include <pEp/message_api.h>
-
 #include "../src/Adapter.hh"
 
 using namespace std;
