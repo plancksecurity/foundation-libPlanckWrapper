@@ -14,7 +14,7 @@ namespace pEp {
         {
             vector<pEp_identity *> ret{};
             for (const ::identity_list *curr = &idl; curr != nullptr; curr = curr->next) {
-                if(curr->ident) {
+                if (curr->ident) {
                     ret.push_back(curr->ident);
                 }
             }
@@ -29,19 +29,18 @@ namespace pEp {
                     builder << endl;
                     builder << std::string(indent, '\t') << "{" << endl;
                     indent++;
-                    builder << std::string(indent, '\t')
-                            << "address: " << (ident->address != nullptr ? ident->address : "NULL")
+                    builder << std::string(indent, '\t') << "address: \""
+                            << (ident->address != nullptr ? ident->address : "NULL") << "\"" << endl;
+                    builder << std::string(indent, '\t') << "user_id: \""
+                            << (ident->user_id != nullptr ? ident->user_id : "NULL") << "\"" << endl;
+                    builder << std::string(indent, '\t') << "username: \""
+                            << (ident->username != nullptr ? ident->username : "NULL") << "\""
                             << endl;
-                    builder << std::string(indent, '\t')
-                            << "user_id: " << (ident->user_id != nullptr ? ident->user_id : "NULL")
-                            << endl;
-                    builder << std::string(indent, '\t') << "username: "
-                            << (ident->username != nullptr ? ident->username : "NULL") << endl;
-                    builder << std::string(indent, '\t')
-                            << "fpr: " << (ident->fpr != nullptr ? ident->fpr : "NULL") << endl;
+                    builder << std::string(indent, '\t') << "fpr: \""
+                            << (ident->fpr != nullptr ? ident->fpr : "NULL") << "\"" << endl;
                     builder << std::string(indent, '\t') << "comm_type: " << ident->comm_type << endl;
-                    builder << std::string(indent, '\t')
-                            << "lang: " << static_cast<string>(ident->lang) << endl;
+                    builder << std::string(indent, '\t') << "lang: \""
+                            << static_cast<string>(ident->lang) << "\"" << endl;
                     builder << std::string(indent, '\t') << "me: " << ident->me << endl;
                     builder << std::string(indent, '\t') << "major_ver: " << ident->major_ver << endl;
                     builder << std::string(indent, '\t') << "minor_ver: " << ident->minor_ver << endl;
@@ -51,11 +50,105 @@ namespace pEp {
                     indent--;
                     builder << std::string(indent, '\t') << "}";
                 } else {
-                    builder << "{ " << (ident->address != nullptr ? ident->address : "NULL") << "/"
-                            << (ident->user_id != nullptr ? ident->user_id : "NULL") << "/"
-                            << (ident->username != nullptr ? ident->username : "NULL") << "/"
-                            << (ident->fpr != nullptr ? ident->fpr : "NULL") << " }";
+                    builder << std::string(indent, '\t') <<
+                            "{ \"" << (ident->address != nullptr ? ident->address : "NULL") << "\" / \""
+                            << (ident->user_id != nullptr ? ident->user_id : "NULL") << "\" / \""
+                            << (ident->username != nullptr ? ident->username : "NULL") << "\" / \""
+                            << (ident->fpr != nullptr ? ident->fpr : "NULL") << " \" }";
                 }
+            } else {
+                builder << "NULL";
+            }
+
+            return builder.str();
+        }
+
+        std::string to_string(const ::bloblist_t *const blob, bool full, int indent)
+        {
+            stringstream builder;
+            if (blob != nullptr) {
+                builder << endl;
+                builder << std::string(indent, '\t') << "[" << endl;
+                indent++;
+                for (const ::bloblist_t *curr = blob; curr != nullptr; curr = curr->next) {
+                    builder << std::string(indent, '\t') << "{" << endl;
+                    indent++;
+                    builder << std::string(indent, '\t') << "filename: \""
+                            << (curr->filename != nullptr ? curr->filename : "NULL") << "\"" << endl;
+                    builder << std::string(indent, '\t') << "mime_type: \""
+                            << (curr->mime_type != nullptr ? std::string(curr->mime_type) : "NULL")
+                            << "\"" << endl;
+                    builder << std::string(indent, '\t') << "size: " << curr->size << endl;
+                    builder << std::string(indent, '\t') << "value: \""
+                            << (curr->value != nullptr ? Utils::tldr(std::string(curr->value), 300)
+                                                       : "NULL")
+                            << "\"" << endl;
+                    indent--;
+                    builder << std::string(indent, '\t') << "}" << endl;
+                }
+                indent--;
+                builder << std::string(indent, '\t') << "]" << endl;
+            } else {
+                builder << "NULL";
+            }
+
+            return builder.str();
+        }
+
+        std::string to_string(const ::stringpair_list_t *const spl, bool full, int indent)
+        {
+            stringstream builder;
+            if (spl != nullptr) {
+                builder << endl;
+                builder << std::string(indent, '\t') << "[" << endl;
+                indent++;
+                for (const ::stringpair_list_t *curr = spl; curr != nullptr; curr = curr->next) {
+                    builder << std::string(indent, '\t') << "{ \"";
+                    if (curr->value != nullptr) {
+                        builder << (curr->value->key ? curr->value->key : "NULL");
+                        builder << "\" : \"";
+                        builder << (curr->value->value ? curr->value->value : "NULL");
+                    }
+                    builder << "\" }" << endl;
+                }
+                indent--;
+                builder << std::string(indent, '\t') << "]" << endl;
+            } else {
+                builder << "NULL";
+            }
+
+            return builder.str();
+        }
+
+        std::string to_string(const ::message *const msg, bool full, int indent)
+        {
+            stringstream builder;
+            if (msg != nullptr) {
+                builder << endl;
+                builder << std::string(indent, '\t') << "{" << endl;
+                indent++;
+                builder << std::string(indent, '\t') << "from: "
+                        << (msg->from != nullptr ? to_string(msg->from, full, indent) : "NULL")
+                        << endl;
+                builder << std::string(indent, '\t') << "to: "
+                        << (msg->to != nullptr ? to_string(msg->to, full, indent) : "NULL") << endl;
+                builder << std::string(indent, '\t') << "shortmsg: \""
+                        << (msg->shortmsg != nullptr ? msg->shortmsg : "NULL") << "\"" << endl;
+                builder << std::string(indent, '\t') << "longmsg: \""
+                        << (msg->longmsg != nullptr ? msg->longmsg : "NULL") << "\"" << endl;
+                builder << std::string(indent, '\t') << "enc_format: " << msg->enc_format << endl;
+                builder << std::string(indent, '\t')
+                        << "dir: " << (msg->dir == 0 ? "incomming" : "outgoing") << endl;
+                builder << std::string(indent, '\t') << "id: \""
+                        << (msg->id != nullptr ? msg->id : "NULL") << "\"" << endl;
+                builder << std::string(indent, '\t') << "opt_fields: "
+                        << (msg->opt_fields ? to_string(msg->opt_fields, full, indent) : "NULL")
+                        << endl;
+                builder << std::string(indent, '\t') << "attachments: "
+                        << (msg->attachments ? to_string(msg->attachments, full, indent) : "NULL")
+                        << endl;
+                indent--;
+                builder << std::string(indent, '\t') << "}" << endl;
             } else {
                 builder << "NULL";
             }
@@ -107,9 +200,8 @@ namespace pEp {
                 builder << endl;
                 builder << std::string(indent, '\t') << "[" << endl;
                 indent++;
-                for (const member_list *curr_member = mbl; curr_member != nullptr;
-                     curr_member = curr_member->next) {
-                    builder << to_string(curr_member->member, full, indent) << endl;
+                for (const member_list *curr = mbl; curr != nullptr; curr = curr->next) {
+                    builder << to_string(curr->member, full, indent) << endl;
                 }
                 indent--;
                 builder << std::string(indent, '\t') << "]";
@@ -142,6 +234,13 @@ namespace pEp {
             }
 
             return builder.str();
+        }
+
+        std::string readKey()
+        {
+            std::string ret;
+            std::cin >> ret;
+            return ret;
         }
     } // namespace Utils
 } // namespace pEp

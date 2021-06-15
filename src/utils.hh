@@ -19,10 +19,16 @@ namespace pEp {
 
         // pEpEngine datatypes to string
         std::string to_string(const ::pEp_identity *const ident, bool full = true, int indent = 0);
+        std::string to_string(const ::bloblist_t *const ident, bool full = true, int indent = 0);
+        std::string to_string(const ::stringpair_list_t *const spl, bool full = true, int indent = 0);
+        std::string to_string(const ::message *const msg, bool full = true, int indent = 0);
         std::string to_string(const ::identity_list *const idl, bool full = true, int indent = 0);
         std::string to_string(const ::pEp_member *const member, bool full = true, int indent = 0);
         std::string to_string(const ::member_list *const mbl, bool full = true, int indent = 0);
         std::string to_string(const ::pEp_group *const group, bool full = true, int indent = 0);
+
+        // Misc
+        std::string readKey();
 
     } // namespace Utils
 } // namespace pEp
