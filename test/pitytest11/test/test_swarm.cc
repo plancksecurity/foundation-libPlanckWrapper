@@ -7,18 +7,19 @@ using namespace pEp;
 using namespace pEp::Adapter;
 using namespace pEp::PityTest11;
 
-void test_node1(PityUnit<PityPerspective>& unit, PityPerspective* psp)
+void test_node1(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
 {
-    unit.log("ModelName:" + psp->model.getName());
-    unit.log("perspective name:" + psp->name);
-    unit.log("perspective partner:" + psp->partner);
+    unit.log("ModelName:" + ctx->model.getName());
+    unit.log("perspective name:" + ctx->name);
+    unit.log("perspective partner:" + ctx->partner);
+    unit.log("HOME: " + std::string(getenv("HOME")));
 
     std::string msg = "Message from: " + unit.getPathShort();
     int throttle = 1000;
     while (true) {
         Utils::sleep_millis(throttle);
-        for (auto peer : unit.transportEndpoints()) {
-            unit.transport()->sendMsg(peer.first,msg);
+        for (auto peer : ctx->peers) {
+            unit.transport()->sendMsg(peer, msg);
         }
 
         while (unit.transport()->hasMsg()) {
@@ -29,12 +30,12 @@ void test_node1(PityUnit<PityPerspective>& unit, PityPerspective* psp)
 
 int main(int argc, char* argv[])
 {
-    int nodesCount = 23;
+    int nodesCount = 3;
     PityModel model{ "test_swarm", nodesCount };
-    PitySwarm swarm{model};
+    PitySwarm swarm{ model };
 
-    for(int i = 0; i < nodesCount; i++) {
-        swarm.addTestUnit(i,"test1",&test_node1);
+    for (int i = 0; i < nodesCount; i++) {
+        swarm.addTestUnit(i, "test1", &test_node1);
     }
 
     swarm.run();
