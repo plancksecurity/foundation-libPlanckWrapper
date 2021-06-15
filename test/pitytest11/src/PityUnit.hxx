@@ -32,10 +32,10 @@ namespace pEp {
         // CONSTRUCTOR
         template<class TestContext>
         PityUnit<TestContext>::PityUnit(
-            PityUnit<TestContext>* const parent,
-            const std::string& name,
+            PityUnit<TestContext> *const parent,
+            const std::string &name,
             TestFunction test_func,
-            TestContext* perspective,
+            TestContext *perspective,
             ExecutionMode exec_mode) :
             _parent{ parent },
             _perspective{ perspective }, _name{ _normalizeName(name) }, _test_func{ test_func },
@@ -149,7 +149,7 @@ namespace pEp {
 
         // static
         template<class TestContext>
-        void PityUnit<TestContext>::setGlobalRootDir(const std::string& dir)
+        void PityUnit<TestContext>::setGlobalRootDir(const std::string &dir)
         {
             PityUnit<TestContext>::_global_root_dir = dir;
         }
@@ -210,7 +210,7 @@ namespace pEp {
             if (recursive) {
                 if (!_children.empty()) {
                     indent++;
-                    for (const std::pair<std::string, PityUnit<TestContext>&> child : _children) {
+                    for (const std::pair<std::string, PityUnit<TestContext> &> child : _children) {
                         ret += child.second.to_string(true, indent);
                     }
                     indent--;
@@ -220,7 +220,7 @@ namespace pEp {
         }
 
         template<class TestContext>
-        std::string PityUnit<TestContext>::to_string(const ExecutionMode& emode)
+        std::string PityUnit<TestContext>::to_string(const ExecutionMode &emode)
         {
             switch (emode) {
                 case ExecutionMode::FUNCTION:
@@ -245,7 +245,7 @@ namespace pEp {
         {
             Utils::dir_recreate(processDir());
             if (!_children.empty()) {
-                for (const std::pair<std::string, PityUnit<TestContext>&> child : _children) {
+                for (const std::pair<std::string, PityUnit<TestContext> &> child : _children) {
                     child.second.recreateDirsRecursively();
                 }
             }
@@ -258,7 +258,7 @@ namespace pEp {
         }
 
         template<class TestContext>
-        Endpoints& PityUnit<TestContext>::transportEndpoints()
+        Endpoints &PityUnit<TestContext>::transportEndpoints()
         {
             if (_isRootUnit()) {
                 return _transport_endpoints;
@@ -269,14 +269,14 @@ namespace pEp {
 
 
         template<class TestContext>
-        void PityUnit<TestContext>::log(const std::string& msg) const
+        void PityUnit<TestContext>::log(const std::string &msg) const
         {
             std::stringstream builder;
-            builder << "[";
+            builder << "[ ";
             builder << std::to_string(getpid());
             builder << " - ";
             builder << getPathShort();
-            builder << "] -  ";
+            builder << " ] -  ";
             builder << msg;
 
             _logRaw(builder.str());
@@ -284,19 +284,19 @@ namespace pEp {
 
 
         template<class TestContext>
-        void PityUnit<TestContext>::logH1(const std::string& msg) const
+        void PityUnit<TestContext>::logH1(const std::string &msg) const
         {
             Adapter::pEpLog::logH1(msg, _termColor());
         }
 
         template<class TestContext>
-        void PityUnit<TestContext>::logH2(const std::string& msg) const
+        void PityUnit<TestContext>::logH2(const std::string &msg) const
         {
             Adapter::pEpLog::logH2(msg, _termColor());
         }
 
         template<class TestContext>
-        void PityUnit<TestContext>::logH3(const std::string& msg) const
+        void PityUnit<TestContext>::logH3(const std::string &msg) const
         {
             Adapter::pEpLog::logH3(msg, _termColor());
         }
@@ -335,7 +335,7 @@ namespace pEp {
                 try {
                     _test_func(*this, getPerspective());
                     logH3(_status_string("\033[1m\033[32mSUCCESS" + Utils::to_termcol(_termColor())));
-                } catch (const std::exception& e) {
+                } catch (const std::exception &e) {
                     _logRaw("reason: " + std::string(e.what()));
                     logH3(_status_string("\033[1m\033[31mFAILED" + Utils::to_termcol(_termColor())));
                 }
@@ -348,7 +348,7 @@ namespace pEp {
         void PityUnit<TestContext>::_runChildren() const
         {
             if (!_children.empty()) {
-                for (const std::pair<std::string, PityUnit<TestContext>&> child : _children) {
+                for (const std::pair<std::string, PityUnit<TestContext> &> child : _children) {
                     child.second.run();
                 }
             }
@@ -376,16 +376,17 @@ namespace pEp {
             int status;
             pid_t pid;
             while ((pid = wait(&status)) > 0) {
-                pEpLogClass(
-                    "process[" + std::to_string((int)pid) +
-                    "] terminated with status: " + std::to_string(status));
+                logH3(
+                    "\033[1m\033[31mPROCESS [ " + std::to_string((int)pid) +
+                    " ] EXITED with status code: " + std::to_string(status) +
+                    Utils::to_termcol(_termColor()));
             }
         }
 
         template<class TestContext>
-        void PityUnit<TestContext>::_addChildUnit(PityUnit<TestContext>& unit)
+        void PityUnit<TestContext>::_addChildUnit(PityUnit<TestContext> &unit)
         {
-            _children.insert(std::pair<std::string, PityUnit<TestContext>&>(unit.getName(), unit));
+            _children.insert(std::pair<std::string, PityUnit<TestContext> &>(unit.getName(), unit));
         }
 
         template<class TestContext>
@@ -410,7 +411,7 @@ namespace pEp {
         }
 
         template<class TestContext>
-        PityUnit<TestContext>* PityUnit<TestContext>::rootUnit()
+        PityUnit<TestContext> *PityUnit<TestContext>::rootUnit()
         {
             //            const PityUnit<TestContext>* ret = nullptr;
             if (!_isRootUnit()) {
@@ -425,7 +426,7 @@ namespace pEp {
         }
 
         template<class TestContext>
-        const PityUnit<TestContext>& PityUnit<TestContext>::parentingProcessUnit() const
+        const PityUnit<TestContext> &PityUnit<TestContext>::parentingProcessUnit() const
         {
             if (_isRootUnit() || _isProcessUnit()) {
                 return *this;
@@ -437,10 +438,10 @@ namespace pEp {
 
         // Inherited (if null see parent recursively)
         template<class TestContext>
-        TestContext* PityUnit<TestContext>::getPerspective() const
+        TestContext *PityUnit<TestContext>::getPerspective() const
         {
             pEpLogClass("called");
-            TestContext* ret = nullptr;
+            TestContext *ret = nullptr;
 
             if (_perspective != nullptr) {
                 ret = _perspective;
@@ -462,10 +463,10 @@ namespace pEp {
 
         // Inherited (if null see parent recursively)
         template<class TestContext>
-        PityTransport* PityUnit<TestContext>::transport() const
+        PityTransport *PityUnit<TestContext>::transport() const
         {
             pEpLogClass("called");
-            PityTransport* ret = nullptr;
+            PityTransport *ret = nullptr;
 
             if (_transport.get() != nullptr) {
                 ret = _transport.get();
@@ -492,7 +493,7 @@ namespace pEp {
         }
 
         template<class TestContext>
-        std::string PityUnit<TestContext>::_status_string(const std::string& msg) const
+        std::string PityUnit<TestContext>::_status_string(const std::string &msg) const
         {
             std::string ret;
             ret = "[ " + to_string(_exec_mode) + ":" + std::to_string(getpid()) + " ]  [ " +
@@ -532,7 +533,7 @@ namespace pEp {
         }
 
         template<class TestContext>
-        void PityUnit<TestContext>::_logRaw(const std::string& msg) const
+        void PityUnit<TestContext>::_logRaw(const std::string &msg) const
         {
             _log_mutex->aquire();
             Adapter::pEpLog::log(msg, _termColor());
@@ -541,5 +542,6 @@ namespace pEp {
 
     } // namespace PityTest11
 } // namespace pEp
+
 
 #endif // PITYTEST_PITYUNIT_HXX
