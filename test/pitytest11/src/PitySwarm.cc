@@ -68,16 +68,17 @@ namespace pEp {
             }
         }
 
-        void PitySwarm::addTestUnit(
+        PityUnit<PityPerspective>* PitySwarm::addTestUnit(
             int nodeNr,
             const std::string& name,
             PityUnit<PityPerspective>::TestFunction test_func)
         {
-            auto tmp = std::make_shared<PityUnit<PityPerspective>>(
+            std::shared_ptr<PityUnit<PityPerspective>> tmp = std::make_shared<PityUnit<PityPerspective>>(
                 _nodeUnits.at(nodeNr).get(),
                 name,
                 test_func);
             _testUnits.push_back(tmp);
+            return tmp.get();
         }
 
         void PitySwarm::run()

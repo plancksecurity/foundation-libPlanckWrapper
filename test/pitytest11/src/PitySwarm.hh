@@ -19,7 +19,7 @@ namespace pEp {
             // Constructors
             PitySwarm(PityModel& model);
 
-            void addTestUnit(
+            PityUnit<PityPerspective>* addTestUnit(
                 int nodeNr,
                 const std::string& name,
                 PityUnit<PityPerspective>::TestFunction test_func);
