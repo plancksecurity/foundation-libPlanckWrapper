@@ -376,8 +376,14 @@ namespace pEp {
             int status;
             pid_t pid;
             while ((pid = wait(&status)) > 0) {
+                std::string color;
+                if(status == 0) {
+                    color ="\033[1m\033[32m"; // Green
+                } else {
+                    color ="\033[1m\033[31m"; // Red
+                }
                 logH3(
-                    "\033[1m\033[31mPROCESS [ " + std::to_string((int)pid) +
+                    color + "PROCESS [ " + std::to_string((int)pid) +
                     " ] EXITED with status code: " + std::to_string(status) +
                     Utils::to_termcol(_termColor()));
             }
