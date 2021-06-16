@@ -32,14 +32,14 @@ void test_func1(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
     pity.log("processDir: " + pity.processDir());
     pity.log("getGlobalRootDir: " + pity.getGlobalRootDir());
     pity.log("to_string: " + pity.to_string(false));
-    PTASSERT(true);
+    PTASSERT(true,"");
 }
 
 // This is the 2nd test unit
 void test_func2(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
 {
-    pity.log(ctx->name);
-    PTASSERT(false);
+    pity.log(ctx->own_name);
+    PTASSERT(false,"");
 }
 
 

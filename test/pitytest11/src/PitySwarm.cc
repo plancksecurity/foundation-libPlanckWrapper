@@ -16,11 +16,11 @@ namespace pEp {
         // The perspective currently is complete defined by specifying a node, since there is a 1-1 node/ident relationship currently
         void PitySwarm::_createPerspective(const PityModel& model, PityPerspective* psp, int node_nr)
         {
-            psp->name = model.nodeNr(node_nr)->getName();
+            psp->own_name = model.nodeNr(node_nr)->getName();
 
             // Default partner is next node, its a circle
             int partner_node_index = (node_nr + 1) % model.nodes().size();
-            psp->partner = model.nodes().at(partner_node_index)->getName();
+            psp->cpt_name = model.nodes().at(partner_node_index)->getName();
 
             // Create peers, everyone but me
             auto nodes = model.nodes();

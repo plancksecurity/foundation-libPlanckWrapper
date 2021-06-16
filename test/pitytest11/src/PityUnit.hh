@@ -63,7 +63,8 @@ namespace pEp {
 
             // Util
             void recreateDirsRecursively();
-            static std::string _normalizeName(std::string name); //TODO HACK in PityTransport this should be private
+            static std::string _normalizeName(
+                std::string name); //TODO HACK in PityTransport this should be private
 
             //Transport
             PityTransport* transport() const;
@@ -132,11 +133,12 @@ namespace pEp {
             PityAssertException(const std::string& string) : runtime_error(string) {}
         };
 
+
 #ifndef PTASSERT
-    #define PTASSERT(condition)                                                                    \
+    #define PTASSERT(condition, msg)                                                               \
         do {                                                                                       \
             if (!(condition)) {                                                                    \
-                throw PityAssertException("AssertError");                                          \
+                throw PityAssertException(msg);                                                    \
             }                                                                                      \
         } while (0)
 #endif

@@ -5,6 +5,7 @@
 #define PITYTEST_PITYPERSPECTIVE_HH
 
 #include "../../../src/pEpLog.hh"
+#include "../../framework/utils.hh"
 #include "PityModel.hh"
 
 namespace pEp {
@@ -18,9 +19,12 @@ namespace pEp {
             PityModel& model;
 
             // Perspective
-            std::string name;
-            std::string partner;
+            std::string own_name;
+            std::string cpt_name;
             std::vector<std::string> peers;
+
+            Test::Utils::pEpIdent own_ident;
+            Test::Utils::pEpIdent cpt_ident;
 
             //internal logging
             static bool debug_log_enabled;
