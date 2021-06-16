@@ -11,6 +11,9 @@
 #include <thread>
 #include <unistd.h>
 
+#include <pEp/pEpEngine.h>
+#include <pEp/message.h>
+
 // ------------------------------------------------------------------------------------------------
 
 #ifndef ASSERT_EXCEPT
@@ -37,7 +40,7 @@
     #define TESTLOG(msg)                                                                           \
         do {                                                                                       \
             std::stringstream msg_;                                                                \
-            msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";                 \
+            msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";                   \
             msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                     \
             msg_ << " - " << msg;                                                                  \
             pEp::Adapter::pEpLog::log(msg_.str());                                                 \
@@ -49,7 +52,7 @@
     #define TESTLOGH1(msg)                                                                         \
         do {                                                                                       \
             std::stringstream msg_;                                                                \
-            msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";                 \
+            msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";                   \
             msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                     \
             msg_ << " - " << pEp::Adapter::pEpLog::decorateH1(msg);                                \
             pEp::Adapter::pEpLog::log(msg_.str());                                                 \
@@ -61,7 +64,7 @@
     #define TESTLOGH2(msg)                                                                         \
         do {                                                                                       \
             std::stringstream msg_;                                                                \
-            msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";                 \
+            msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";                   \
             msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                     \
             msg_ << " - " << pEp::Adapter::pEpLog::decorateH2(msg);                                \
             pEp::Adapter::pEpLog::log(msg_.str());                                                 \
@@ -70,5 +73,41 @@
 
 // ------------------------------------------------------------------------------------------------
 
+namespace pEp {
+    namespace Test {
+        namespace Utils {
+            using pEpIdent = std::shared_ptr<::pEp_identity>;
+            using pEpMessage = std::shared_ptr<::message>;
+
+            // Datatypes
+            //Ident
+            pEpIdent wrap(::pEp_identity *const ident);
+            pEpIdent appropriate(::pEp_identity *const ident);
+            pEpIdent dup(const ::pEp_identity *const ident);
+            pEpIdent kill(::pEp_identity *const ident);
+
+            //Message
+            pEpMessage wrap(::message *const msg);
+            pEpMessage appropriate(::message *const msg);
+            pEpMessage dup(const ::message *const msg);
+            pEpMessage kill(::message *const msg);
+
+            // helpers
+            pEpIdent createIdentity(const std::string &address, bool myself);
+            pEpMessage createMessage(pEpIdent from, pEpIdent to, const std::string &longmsg);
+            pEpMessage createMessage(pEpIdent from, const std::string &to_addr, const std::string &longmsg);
+
+            std::string mimeEncode(const pEpMessage msg);
+            pEpMessage mimeDecode(const std::string &mime_text);
+
+            pEpMessage encryptMessage(const pEpMessage msg);
+            pEpMessage decryptMessage(const pEpMessage msg);
+
+            std::string encryptAndEncode(const pEpMessage msg);
+            pEpMessage decryptAndDecode(const std::string &mime_data);
+
+        } // namespace Utils
+    }     // namespace Test
+} // namespace pEp
 
 #endif // LIBPEPADAPTER_TEST_UTILS_HH
