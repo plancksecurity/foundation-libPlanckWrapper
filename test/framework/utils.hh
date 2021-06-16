@@ -10,9 +10,10 @@
 #include <chrono>
 #include <thread>
 #include <unistd.h>
-
+#include <tuple>
 #include <pEp/pEpEngine.h>
 #include <pEp/message.h>
+#include <pEp/message_api.h>
 
 // ------------------------------------------------------------------------------------------------
 
@@ -78,6 +79,8 @@ namespace pEp {
         namespace Utils {
             using pEpIdent = std::shared_ptr<::pEp_identity>;
             using pEpMessage = std::shared_ptr<::message>;
+            using DecryptResult = std::tuple<pEpMessage, ::PEP_rating, ::stringlist_t *, unsigned int, bool>;
+            using EncryptResult = std::tuple<pEpMessage, std::string, bool>;
 
             // Datatypes
             //Ident
@@ -100,11 +103,11 @@ namespace pEp {
             std::string mimeEncode(const pEpMessage msg);
             pEpMessage mimeDecode(const std::string &mime_text);
 
-            pEpMessage encryptMessage(const pEpMessage msg);
-            pEpMessage decryptMessage(const pEpMessage msg);
+            EncryptResult encryptMessage(const pEpMessage msg);
+            DecryptResult decryptMessage(const pEpMessage msg);
 
-            std::string encryptAndEncode(const pEpMessage msg);
-            pEpMessage decryptAndDecode(const std::string &mime_data);
+            EncryptResult encryptAndEncode(const pEpMessage msg);
+            DecryptResult decryptAndDecode(const std::string &mime_data);
 
         } // namespace Utils
     }     // namespace Test

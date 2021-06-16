@@ -7,6 +7,7 @@
 #include <pEp/Adapter.hh>
 #include <pEp/status_to_string.hh>
 #include <pEp/mime.h>
+#include <tuple>
 
 namespace pEp {
     namespace Test {
@@ -138,9 +139,10 @@ namespace pEp {
                 return pEpMessage(msg, ::free_message);
             }
 
-            pEpMessage encryptMessage(const pEpMessage msg)
+            EncryptResult encryptMessage(const pEpMessage msg)
             {
-                pEpMessage ret;
+                pEpMessage msg_out;
+                bool could_encrypt = false;
                 ::message *msgenc = nullptr;
                 PEP_STATUS status = ::encrypt_message(
                     Adapter::session(),
@@ -150,24 +152,25 @@ namespace pEp {
                     PEP_enc_PEP,
                     0);
                 throw_status(status);
-                ::message *msg_out = nullptr;
+                ::message *msg_out_p = nullptr;
                 if (msgenc != nullptr) {
-                    ret = appropriate(msgenc);
+                    could_encrypt = true;
+                    msg_out = appropriate(msgenc);
                 } else {
-                    ret = msg;
+                    could_encrypt = false;
+                    msg_out = msg;
                 }
-                //                unit.log("encryptAndSend: ENCRYPT -  " + status_to_string(status));
-                //                unit.log("encryptAndSend" + Utils::to_string(msg_out, false));
-                return ret;
+                return EncryptResult(msg_out, "", could_encrypt);
             }
 
-            pEpMessage decryptMessage(const pEpMessage msg)
+            DecryptResult decryptMessage(const pEpMessage msg)
             {
-                pEpMessage ret;
+                pEpMessage msg_out;
+                bool was_encrypted = false;
 
                 ::message *dec{ nullptr };
                 ::stringlist_t *kl = ::new_stringlist("");
-                PEP_rating rating;
+                ::PEP_rating rating;
                 unsigned int flags{ 0 };
                 PEP_STATUS status = ::decrypt_message(
                     Adapter::session(),
@@ -178,27 +181,26 @@ namespace pEp {
                     &flags);
                 throw_status(status);
                 if (dec != nullptr) {
-                    ret = appropriate(dec);
+                    was_encrypted = true;
+                    msg_out = appropriate(dec);
                 } else {
-                    ret = msg;
-                    //                    unit.log("NOT DECRYPTED");
+                    was_encrypted = false;
+                    msg_out = msg;
                 }
-                //                unit.log("decryptMIME" + status_to_string(status));
-                //                unit.log("decryptMIME" + Utils::to_string(ret.get(), false));
+                return DecryptResult(msg_out, rating, kl, flags, was_encrypted);
+            }
+
+            EncryptResult encryptAndEncode(const pEpMessage msg)
+            {
+                EncryptResult ret = encryptMessage(msg);
+                std::string mime_text = mimeEncode(std::get<0>(ret));
+                std::get<1>(ret) = mime_text;
                 return ret;
             }
 
-            std::string encryptAndEncode(const pEpMessage msg)
+            DecryptResult decryptAndDecode(const std::string &mime_data)
             {
-                std::string ret;
-                pEpMessage msg_enc = encryptMessage(msg);
-                ret = mimeEncode(msg_enc);
-                return ret;
-            }
-
-            pEpMessage decryptAndDecode(const std::string &mime_data)
-            {
-                pEpMessage ret;
+                DecryptResult ret;
                 pEpMessage rx_msg = mimeDecode(mime_data);
                 ret = decryptMessage(rx_msg);
                 return ret;
