@@ -19,45 +19,80 @@ using namespace pEp::Adapter;
 using namespace pEp::Test::Utils;
 using namespace pEp::PityTest11;
 
+bool did_tx_encrypted = false;
+bool did_rx_encrypted = false;
 
-void tofu(PityUnit<PityPerspective> &unit, PityPerspective *ctx, bool init)
+// The most minimal received msg contains of:
+// * from addres
+// * content
+using MinMsgRx =std::tuple<std::string, std::string>;
+
+void send(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
 {
-    unit.log("Model  : " + ctx->model.getName());
-    unit.log("myself : " + ctx->name);
-    unit.log("partner: " + ctx->partner);
-    unit.log("HOME   : " + std::string(getenv("HOME")));
-    unit.log("PUD    : " + std::string(::per_user_directory()));
+    pity.log("Initiating TOFU...");
+    pEpMessage msg = createMessage(ctx->own_ident, ctx->cpt_name, "INIT TOFU");
+    EncryptResult msg_enc = encryptAndEncode(msg);
+    std::string mime_text = std::get<1>(msg_enc);
+    did_tx_encrypted = std::get<2>(msg_enc);
+    pity.transport()->sendMsg(ctx->cpt_name, mime_text);
+}
+
+MinMsgRx receive(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
+{
+    MinMsgRx ret;
+    std::string mime_data_rx = pity.transport()->receiveMsg();
+    DecryptResult msg_rx = decryptAndDecode(mime_data_rx);
+    pEpMessage msg_rx_dec = std::get<0>(msg_rx);
+    did_rx_encrypted = std::get<4>(msg_rx);
+    pity.log("rx msg is encrypted: " + std::to_string(did_rx_encrypted));
+    std::get<0>(ret) = std::string(msg_rx_dec->from->address);
+    std::get<1>(ret) = std::string(msg_rx_dec->longmsg);
+    return ret;
+}
+
+void reply(PityUnit<PityPerspective> &pity, PityPerspective *ctx, MinMsgRx msg_orig)
+{
+    std::string addr_orig = std::get<0>(msg_orig);
+    std::string longmsg_orig = std::get<1>(msg_orig);
+
+    pEpMessage msg = createMessage(
+        ctx->own_ident,
+        addr_orig,
+        "REPLY[ " + std::string(addr_orig) + " ] " + longmsg_orig);
+    EncryptResult eres = encryptAndEncode(msg);
+    std::string mime_data_tx = std::get<1>(eres);
+    did_tx_encrypted = std::get<2>(eres);
+    pity.log("tx msg is encrypted: " + std::to_string(did_tx_encrypted));
+    pity.transport()->sendMsg(addr_orig, mime_data_tx);
+}
+
+void tofu(PityUnit<PityPerspective> &pity, PityPerspective *ctx, bool init)
+{
+    pity.log("Model  : " + ctx->model.getName());
+    pity.log("myself : " + ctx->own_name);
+    pity.log("partner: " + ctx->cpt_name);
+    pity.log("HOME   : " + std::string(getenv("HOME")));
+    pity.log("PUD    : " + std::string(::per_user_directory()));
+
 
     // Create new identity
-    unit.log("updating or creating identity for me");
-    pEpIdent my_ident = createIdentity(ctx->name, true);
-    ::PEP_STATUS status = ::myself(Adapter::session(), my_ident.get());
+    pity.log("updating or creating identity for me");
+    ctx->own_ident = createIdentity(ctx->own_name, true);
+    ::PEP_STATUS status = ::myself(Adapter::session(), ctx->own_ident.get());
     pEp::throw_status(status);
     if (init) {
-        unit.log("Initiating TOFU...");
-        pEpMessage msg = createMessage(my_ident, ctx->partner, "INIT TOFU");
-        std::string mime_data = encryptAndEncode(msg);
-        unit.transport()->sendMsg(ctx->partner, mime_data);
+        send(pity, ctx);
     }
 
-    while (true) {
-        std::string mime_data_rx = unit.transport()->receiveMsg();
-        pEpMessage msg_rx = decryptAndDecode(mime_data_rx);
-        unit.log(">");
-        //
-        pEpIdent rx_from = wrap(msg_rx->from);
-        std::string rx_longmessage = msg_rx->longmsg;
-        //
-        pEpMessage msg = createMessage(
-            my_ident,
-            rx_from->address,
-            "REPLY[ " + std::string(rx_from->address) + " ] " + rx_longmessage);
-        std::string mime_data_tx = encryptAndEncode(msg);
-        unit.transport()->sendMsg(rx_from->address, mime_data_tx);
+    MinMsgRx rx_msg = receive(pity,ctx);
+    reply(pity,ctx, rx_msg);
 
-        unit.log("<");
-        Utils::sleep_millis(1000);
+    if(!init) {
+        receive(pity,ctx);
     }
+
+    PTASSERT(did_tx_encrypted, "could never send encrypted");
+    PTASSERT(did_rx_encrypted, "no encrypted msg received");
 }
 
 
