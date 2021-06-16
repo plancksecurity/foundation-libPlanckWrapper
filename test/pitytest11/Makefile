@@ -1,8 +1,9 @@
+include ../../Makefile.conf
+
 TARGET=src/libPityTest.a
+LDFLAGS:=-L../../src/ $(LDFLAGS)
 LDLIBS=-lstdc++ -lpEpAdapter
-LDFLAGS=-L../../src/
-CXXFLAGS=-std=c++11 -g
-CXXFLAGS+=-I./src
+CXXFLAGS:=-std=c++11 -g -I./src $(CXXFLAGS)
 #TEST_EXTRA_OBJS=../framework/utils.o
 
 # Src
