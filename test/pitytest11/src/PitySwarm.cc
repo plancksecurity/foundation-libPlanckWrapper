@@ -29,6 +29,16 @@ namespace pEp {
                     psp->peers.push_back(nodes.at(i)->getName());
                 }
             }
+
+            // Groups
+            int grp_mod_node_nr = 0;
+            if (grp_mod_node_nr == node_nr) {
+                Test::Utils::Group grp1 = Test::Utils::Group{};
+                grp1.name = "grp_" + psp->own_name;
+                grp1.moderator = psp->own_name;
+                grp1.members = psp->peers;
+                psp->own_groups.push_back(grp1);
+            }
         }
 
         void PitySwarm::_init_process(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
