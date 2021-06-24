@@ -26,6 +26,10 @@ namespace pEp {
             Test::Utils::pEpIdent own_ident;
             Test::Utils::pEpIdent cpt_ident;
 
+            // Groups
+            std::vector<Test::Utils::Group> own_groups;
+
+            //Callbacks
             //internal logging
             static bool debug_log_enabled;
             Adapter::pEpLog::pEpLogger logger_debug{ "PityNode", debug_log_enabled };
