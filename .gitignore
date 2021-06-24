@@ -42,3 +42,6 @@ test_pEpLog_basic
 /test/pitytest11/test/test_model
 /test/pitytest11/pitytest_data/*
 /test/pitytest11/test/test_swarm
+/test/test_update_ident
+/test/test_template_swarm_single
+/test/test_template_swarm_multi
