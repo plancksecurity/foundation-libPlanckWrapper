@@ -43,6 +43,36 @@ namespace pEp {
                 return ret;
             }
 
+            //IdentityList
+            pEpIdentList wrap(::identity_list *const ident)
+            {
+                assert(ident);
+                auto ret = pEpIdentList(ident, [](::identity_list *) {});
+                return ret;
+            }
+
+            pEpIdentList appropriate(::identity_list *const ident)
+            {
+                assert(ident);
+                auto ret = pEpIdentList(ident, ::free_identity_list);
+                return ret;
+            }
+
+            pEpIdentList dup(const ::identity_list *const ident)
+            {
+                assert(ident);
+                auto ret = pEpIdentList(::identity_list_dup(ident), ::free_identity_list);
+                return ret;
+            }
+
+            pEpIdentList kill(::identity_list *const ident)
+            {
+                assert(ident);
+                auto ret = pEpIdentList(::identity_list_dup(ident), ::free_identity_list);
+                ::free_identity_list(ident);
+                return ret;
+            }
+
             //Message
             pEpMessage wrap(::message *const msg)
             {
@@ -74,28 +104,56 @@ namespace pEp {
             }
 
             // helpers
-            pEpIdent createIdentity(const std::string &address, bool myself)
+            pEpIdent createOwnIdent(const std::string &address)
             {
                 std::string name;
-                std::string id;
-                ::pEp_identity *partner = nullptr;
-                if (myself) {
-                    partner = ::new_identity(
-                        strdup(address.c_str()),
-                        "",
-                        PEP_OWN_USERID,
-                        ("myself " + address).c_str());
-                    partner->me = true;
-                } else {
-                    partner = ::new_identity(
-                        strdup(address.c_str()),
-                        "",
-                        "23",
-                        ("partner " + address).c_str());
-                    partner->me = false;
-                }
+                ::pEp_identity *ident = nullptr;
+                ident = ::new_identity(
+                    strdup(address.c_str()),
+                    "",
+                    PEP_OWN_USERID,
+                    ("myself " + address).c_str());
+                ident->me = true;
 
-                return appropriate(partner);
+                return appropriate(ident);
+            }
+
+            pEpIdent createCptIdent(const std::string &address)
+            {
+                std::string name;
+                ::pEp_identity *ident = nullptr;
+                ident = ::new_identity(
+                    strdup(address.c_str()),
+                    "",
+                    "23",
+                    ("partner " + address).c_str());
+                ident->me = false;
+
+                return appropriate(ident);
+            }
+
+            pEpIdent createRawIdent(const std::string &address)
+            {
+                std::string name;
+                ::pEp_identity *ident = nullptr;
+                ident = ::new_identity(
+                    strdup(address.c_str()),
+                    "",
+                    "",
+                    "");
+                ident->me = false;
+
+                return appropriate(ident);
+            }
+
+            pEpIdentList createIdentityList(const std::vector<std::string> &addresses)
+            {
+                ::identity_list *list;
+                list = ::new_identity_list(nullptr);
+                for (std::string addr : addresses) {
+                    ::identity_list_add(list, ::identity_dup(createCptIdent(addr).get()));
+                }
+                return appropriate(list);
             }
 
             pEpMessage createMessage(pEpIdent from, pEpIdent to, const std::string &longmsg)
@@ -112,7 +170,7 @@ namespace pEp {
 
             pEpMessage createMessage(pEpIdent from, const std::string &to_addr, const std::string &longmsg)
             {
-                pEpIdent to_ident = createIdentity(to_addr, false);
+                pEpIdent to_ident = createCptIdent(to_addr);
                 return createMessage(from, to_ident, longmsg);
             }
 

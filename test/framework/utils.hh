@@ -12,6 +12,7 @@
 #include <unistd.h>
 #include <tuple>
 #include <pEp/pEpEngine.h>
+#include <pEp/identity_list.h>
 #include <pEp/message.h>
 #include <pEp/message_api.h>
 
@@ -78,8 +79,11 @@ namespace pEp {
     namespace Test {
         namespace Utils {
             using pEpIdent = std::shared_ptr<::pEp_identity>;
+            using pEpIdentList = std::shared_ptr<::identity_list>;
             using pEpMessage = std::shared_ptr<::message>;
+            // [ DecryptedMessage, Rating, KeyList, Flags, WasEncrypted ]
             using DecryptResult = std::tuple<pEpMessage, ::PEP_rating, ::stringlist_t *, unsigned int, bool>;
+            // [ EncryptedMessage, MimeText, couldEncrypt ]
             using EncryptResult = std::tuple<pEpMessage, std::string, bool>;
 
             // Datatypes
@@ -89,16 +93,33 @@ namespace pEp {
             pEpIdent dup(const ::pEp_identity *const ident);
             pEpIdent kill(::pEp_identity *const ident);
 
+            //IdentityList
+            pEpIdentList wrap(::identity_list *const ident);
+            pEpIdentList appropriate(::identity_list *const ident);
+            pEpIdentList dup(const ::identity_list *const ident);
+            pEpIdentList kill(::identity_list *const ident);
+
             //Message
             pEpMessage wrap(::message *const msg);
             pEpMessage appropriate(::message *const msg);
             pEpMessage dup(const ::message *const msg);
             pEpMessage kill(::message *const msg);
 
+            // Group
+            struct Group {
+                std::string name;
+                std::string moderator;
+                std::vector<std::string> members;
+            };
+
             // helpers
-            pEpIdent createIdentity(const std::string &address, bool myself);
+            pEpIdent createOwnIdent(const std::string &address);
+            pEpIdent createCptIdent(const std::string &address);
+            pEpIdent createRawIdent(const std::string &address);
+            pEpIdentList createIdentityList(const std::vector<std::string> &addresses);
             pEpMessage createMessage(pEpIdent from, pEpIdent to, const std::string &longmsg);
             pEpMessage createMessage(pEpIdent from, const std::string &to_addr, const std::string &longmsg);
+
 
             std::string mimeEncode(const pEpMessage msg);
             pEpMessage mimeDecode(const std::string &mime_text);
