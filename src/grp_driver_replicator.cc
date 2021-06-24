@@ -12,7 +12,7 @@ namespace pEp {
         GroupDriverReplicator::GroupDriverReplicator()
         {
             pEpLogClass("called");
-            const string lm_dummy_db_filename = "listman_dummy.db";
+            /*            const string lm_dummy_db_filename = "listman_dummy.db";
 #ifdef WIN32
             const string lm_dummy_db_path = string(::per_user_directory()) + "\\" +
                                             lm_dummy_db_filename;
@@ -25,6 +25,7 @@ namespace pEp {
 
             default_repl_dst = make_shared<GroupDriverEngine>();
             set_replication_destination(*default_repl_dst);
+            */
         }
 
         void GroupDriverReplicator::set_replication_source(GroupManagerInterface &src)
@@ -129,7 +130,7 @@ namespace pEp {
                 // Rollback
                 PEP_STATUS rb_stat = repl_src->adapter_group_remove_member(
                     session,
-                    group_member,
+                    group_identity,
                     group_member);
                 if (rb_stat != PEP_STATUS_OK) {
                     //FATAL ERROR ON ROLLBACK

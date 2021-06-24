@@ -10,6 +10,7 @@
 extern "C" {
 #endif
 
+DYNAMIC_API PEP_STATUS adapter_group_init();
 
 /*************************************************************************************************
  * Group management functions
@@ -139,7 +140,7 @@ PEP_STATUS adapter_group_remove_member(
  *************************************************************************************************/
 
 /**
- *  <!--       group_query_groups()       -->
+ *  <!--       adapter_group_query_groups()       -->
  *
  *  @brief          queries the list manager which groups currently exist.
  *
@@ -154,10 +155,10 @@ PEP_STATUS adapter_group_remove_member(
  *
  */
 
-DYNAMIC_API PEP_STATUS group_query_groups(PEP_SESSION session, identity_list **groups);
+DYNAMIC_API PEP_STATUS adapter_group_query_groups(PEP_SESSION session, identity_list **groups);
 
 /**
- *  <!--       group_query_manager()       -->
+ *  <!--       adapter_group_query_manager()       -->
  *
  *  @brief          queries the list manager for the group manager of a given group.
  *
@@ -172,11 +173,10 @@ DYNAMIC_API PEP_STATUS group_query_groups(PEP_SESSION session, identity_list **g
  *
  */
 
-DYNAMIC_API PEP_STATUS
-group_query_manager(PEP_SESSION session, const pEp_identity *const group, pEp_identity **manager);
+DYNAMIC_API PEP_STATUS adapter_group_query_manager(PEP_SESSION session, const pEp_identity *const group, pEp_identity **manager);
 
 /**
- *  <!--       group_query_members()       -->
+ *  <!--       adapter_group_query_members()       -->
  *
  *  @brief          queries the list manager for all members of a given group.
  *
@@ -191,8 +191,7 @@ group_query_manager(PEP_SESSION session, const pEp_identity *const group, pEp_id
  *
  */
 
-DYNAMIC_API PEP_STATUS
-group_query_members(PEP_SESSION session, const pEp_identity *const group, identity_list **members);
+DYNAMIC_API PEP_STATUS adapter_group_query_members(PEP_SESSION session, const pEp_identity *const group, identity_list **members);
 
 
 #ifdef __cplusplus
