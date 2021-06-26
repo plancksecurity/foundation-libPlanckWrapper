@@ -5,6 +5,7 @@
 #include "framework/utils.hh"
 
 #include <fstream>
+#include <cassert>
 
 using namespace std;
 using namespace pEp;

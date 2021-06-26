@@ -15,6 +15,7 @@
 #include <exception>
 #include <memory>
 #include <unordered_map>
+#include <sys/wait.h>
 
 
 namespace pEp {

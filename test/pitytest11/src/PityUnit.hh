@@ -8,11 +8,11 @@
 #include "../../../src/std_utils.hh"
 #include "fs_mutex.hh"
 #include "PityTransport.hh"
-//#include "PityPerspective.hh"
 #include <string>
 #include <map>
 #include <memory>
 #include <unordered_map>
+#include <functional>
 
 // Yes, the mem mgmt is purely static on purpose (so far)
 

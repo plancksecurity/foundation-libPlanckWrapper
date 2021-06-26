@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <stdexcept>
 #include <string>
+#include <cstring>
 
 using namespace std;
 

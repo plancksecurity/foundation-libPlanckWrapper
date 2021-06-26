@@ -9,7 +9,7 @@
 #include <exception>
 #include <chrono>
 #include <thread>
-#include <unistd.h>
+#include <cstring>
 #include <tuple>
 #include <pEp/pEpEngine.h>
 #include <pEp/identity_list.h>

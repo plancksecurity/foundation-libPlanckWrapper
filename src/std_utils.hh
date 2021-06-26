@@ -26,11 +26,15 @@ namespace pEp {
 
         // File utils
         // ----------
-        // path (file&dir)
+        // path (file & dir)
         bool path_exists(const std::string &filename);
-        bool path_is_dir(const std::string &path);
         void path_delete(const std::string &filename);
+        bool path_is_dir(const std::string &path);
+
+#ifndef WIN32
         void path_delete_all(const std::string &path);
+#endif
+
         void path_ensure_not_existing(const std::string &path);
 
         // file
@@ -38,9 +42,10 @@ namespace pEp {
         std::string file_read(const std::string &filename);
 
         // dir
+#ifndef WIN32
         void dir_create(const std::string &dirname, const mode_t mode = 0775);
-        void dir_ensure(const std::string& path);
-        void dir_recreate(const std::string& path);
+        void dir_ensure(const std::string &path);
+        void dir_recreate(const std::string &path);
 
         std::vector<std::string> dir_list_all(
             const std::string &path,
@@ -51,6 +56,7 @@ namespace pEp {
             const bool incl_dot_and_dotdot = false);
 
         std::vector<std::string> dir_list_files(const std::string &dirname);
+#endif
 
         //String formatting
         std::string padTo(const std::string &str, const size_t num, const char paddingChar);
@@ -70,7 +76,7 @@ namespace pEp {
             WHITE,
         };
 
-        std::string to_termcol(const Color& col);
+        std::string to_termcol(const Color &col);
 
 
         // Time

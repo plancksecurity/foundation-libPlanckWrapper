@@ -5,7 +5,6 @@
 #include "framework/utils.hh"
 #include <iostream>
 #include <assert.h>
-#include <unistd.h>
 
 #include <pEp/keymanagement.h>
 #include <pEp/sync_api.h>

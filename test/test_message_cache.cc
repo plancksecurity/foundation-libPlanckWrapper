@@ -6,7 +6,7 @@
 #include <iostream>
 #include <cassert>
 #include <sys/param.h>
-#include <unistd.h>
+#include <cstring>
 
 #include "../src/message_cache.hh"
 #include "../src/Adapter.hh"

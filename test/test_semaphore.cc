@@ -3,8 +3,7 @@
 
 #include <iostream>
 #include <thread>
-#include <unistd.h>
-
+#include "../src/std_utils.hh"
 #include "../src/Semaphore.hh"
 
 using namespace std;
@@ -24,7 +23,7 @@ int main()
         cout << "1: keep going\n";
     });
 
-    sleep(1);
+    Utils::sleep_millis(1000);
 
     thread thread2([&]() {
         cout << "2: setting go\n";

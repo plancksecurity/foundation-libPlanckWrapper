@@ -4,7 +4,6 @@
 #include "framework/framework.hh"
 
 #include <iostream>
-#include <unistd.h>
 #include <assert.h>
 #include <sys/param.h>
 

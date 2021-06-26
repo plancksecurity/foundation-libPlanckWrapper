@@ -5,7 +5,6 @@
 
 #include <iostream>
 #include <vector>
-#include <unistd.h>
 
 #include <pEp/sync_api.h>
 

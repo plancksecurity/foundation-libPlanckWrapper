@@ -8,7 +8,6 @@
 #include <utility>
 #include <exception>
 #include <thread>
-#include <unistd.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>

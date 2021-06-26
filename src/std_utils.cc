@@ -7,11 +7,14 @@
 #include <cstdio>
 #include <cerrno>
 #include <cmath>
-#include <dirent.h>
-#include <sys/stat.h>
 #include <algorithm>
 #include <thread>
 #include <random>
+#include <cstring>
+#ifndef WIN32
+    #include <dirent.h>
+    #include <sys/stat.h>
+#endif
 
 using namespace std;
 using namespace pEp;
@@ -42,18 +45,6 @@ namespace pEp {
             return src;
         }
 
-        //            void print_exception(const exception &e, int level)
-        //            {
-        //                cerr << string(level, ' ') << "exception: " << e.what() << endl;
-        //                try {
-        //                    rethrow_if_nested(e);
-        //                } catch (const exception &e) {
-        //                    print_exception(e, level + 1);
-        //                } catch (...) {
-        //                }
-        //            }
-
-
         // File utils
         bool path_exists(const string &filename)
         {
@@ -61,6 +52,16 @@ namespace pEp {
             return (bool)ifile;
         }
 
+        void path_delete(const string &filename)
+        {
+            int status = remove(filename.c_str());
+            if (status) {
+                runtime_error e{ string("path_delete(\"" + filename + "\") -  " + strerror(errno)) };
+                throw(e);
+            }
+        }
+
+#ifndef WIN32
         bool path_is_dir(const string &path)
         {
             bool ret = false;
@@ -73,15 +74,6 @@ namespace pEp {
                 ret = true;
             }
             return ret;
-        }
-
-        void path_delete(const string &filename)
-        {
-            int status = remove(filename.c_str());
-            if (status) {
-                runtime_error e{ string("path_delete(\"" + filename + "\") -  " + strerror(errno)) };
-                throw(e);
-            }
         }
 
         void path_delete_all(const string &path)
@@ -106,6 +98,7 @@ namespace pEp {
                 throw_with_nested(e);
             }
         }
+#endif
 
         ofstream file_create(const string &filename)
         {
@@ -132,6 +125,7 @@ namespace pEp {
             }
         }
 
+#ifndef WIN32
         void dir_create(const string &dirname, const mode_t mode)
         {
             if (mkdir(dirname.c_str(), mode) != 0) {
@@ -139,7 +133,6 @@ namespace pEp {
                 throw(e);
             }
         }
-
 
         void dir_ensure(const std::string &path)
         {
@@ -217,6 +210,7 @@ namespace pEp {
                 ret.end());
             return ret;
         }
+#endif
 
         // Attention, it pads left...
         string padTo(const string &str, const size_t num, const char paddingChar)
@@ -237,6 +231,8 @@ namespace pEp {
             return ret;
         }
 
+        // prints the beginning and the end of the string and clips out
+        // content in the middle replaced by "... tldr  ..."
         std::string tldr(const std::string &str, const size_t len)
         {
             std::string decoration = "...";
