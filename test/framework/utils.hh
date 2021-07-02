@@ -82,7 +82,8 @@ namespace pEp {
             using pEpIdentList = std::shared_ptr<::identity_list>;
             using pEpMessage = std::shared_ptr<::message>;
             // [ DecryptedMessage, Rating, KeyList, Flags, WasEncrypted ]
-            using DecryptResult = std::tuple<pEpMessage, ::PEP_rating, ::stringlist_t *, unsigned int, bool>;
+            using DecryptResult = std::
+                tuple<pEpMessage, ::PEP_rating, ::stringlist_t *, ::PEP_decrypt_flags_t *, bool>;
             // [ EncryptedMessage, MimeText, couldEncrypt ]
             using EncryptResult = std::tuple<pEpMessage, std::string, bool>;
 
@@ -125,6 +126,7 @@ namespace pEp {
             pEpMessage mimeDecode(const std::string &mime_text);
 
             EncryptResult encryptMessage(const pEpMessage msg);
+            DecryptResult decryptMessage(const pEpMessage msg, ::PEP_decrypt_flags_t *flags);
             DecryptResult decryptMessage(const pEpMessage msg);
 
             EncryptResult encryptAndEncode(const pEpMessage msg);

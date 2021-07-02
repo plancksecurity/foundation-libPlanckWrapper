@@ -136,11 +136,7 @@ namespace pEp {
             {
                 std::string name;
                 ::pEp_identity *ident = nullptr;
-                ident = ::new_identity(
-                    strdup(address.c_str()),
-                    "",
-                    "",
-                    "");
+                ident = ::new_identity(strdup(address.c_str()), "", "", "");
                 ident->me = false;
 
                 return appropriate(ident);
@@ -221,7 +217,8 @@ namespace pEp {
                 return EncryptResult(msg_out, "", could_encrypt);
             }
 
-            DecryptResult decryptMessage(const pEpMessage msg)
+
+            DecryptResult decryptMessage(const pEpMessage msg, ::PEP_decrypt_flags_t *flags)
             {
                 pEpMessage msg_out;
                 bool was_encrypted = false;
@@ -229,14 +226,13 @@ namespace pEp {
                 ::message *dec{ nullptr };
                 ::stringlist_t *kl = ::new_stringlist("");
                 ::PEP_rating rating;
-                unsigned int flags{ 0 };
                 PEP_STATUS status = ::decrypt_message(
                     Adapter::session(),
                     msg.get(),
                     &dec,
                     &kl,
                     &rating,
-                    &flags);
+                    flags);
                 throw_status(status);
                 if (dec != nullptr) {
                     was_encrypted = true;
@@ -246,6 +242,12 @@ namespace pEp {
                     msg_out = msg;
                 }
                 return DecryptResult(msg_out, rating, kl, flags, was_encrypted);
+            }
+
+            DecryptResult decryptMessage(const pEpMessage msg)
+            {
+                ::PEP_decrypt_flags_t dummy{ 0 };
+                return decryptMessage(msg, &dummy);
             }
 
             EncryptResult encryptAndEncode(const pEpMessage msg)
