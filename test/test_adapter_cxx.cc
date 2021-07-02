@@ -51,7 +51,6 @@ int main(int argc, char **argv)
     throw_status(status);
 
     // start and stop sync repeatedly
-    useconds_t sleepuSec = 1000 * 100;
     unsigned long long int nrIters = 1000 * 1000 * 1000;
     for (int i = 0; i < nrIters; i++) {
         TESTLOG("RUN NR: ");
@@ -65,7 +64,7 @@ int main(int argc, char **argv)
             &JNISync::onSyncStartup,
             &JNISync::onSyncShutdown);
         TESTLOG("SYNC STOP");
-        usleep(sleepuSec);
+        Utils::sleep_millis(500);
         Adapter::shutdown();
     }
     return 0;
