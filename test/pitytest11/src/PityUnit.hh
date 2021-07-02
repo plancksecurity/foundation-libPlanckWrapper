@@ -98,8 +98,8 @@ namespace pEp {
             void _createTransport();
 
             // Query
-            bool _isProcessUnit() const;
-            bool _isRootUnit() const;
+            bool _isProcessUnit() const; // true if it forks
+            bool _isRootUnit() const;    // true if has no parent
 
             std::string _rootUnitDir();
 
@@ -119,10 +119,11 @@ namespace pEp {
             static std::string _global_root_dir;
             std::map<const std::string, PityUnit<TestContext>&> _children; // map to guarantee uniqueness of sibling-names
             int procUnitNr;
-            static int procUnitsCount;                 // will be increased in everuy constructor
+            static int procUnitsCount;                 // will be increased in every constructor
             std::shared_ptr<PityTransport> _transport; //only ever read via transport()
             Endpoints _transport_endpoints;            // only ever access via transportEndpoints()
 
+            // fs-mutex to sync across processes
             std::shared_ptr<fs_mutex> _log_mutex = nullptr;
             // internal logging
             Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger_debug;

@@ -517,15 +517,15 @@ namespace pEp {
                 case 0:
                     return Utils::Color::WHITE;
                 case 1:
-                    return Utils::Color::CYAN;
-                case 2:
-                    return Utils::Color::MAGENTA;
-                case 3:
-                    return Utils::Color::BLUE;
-                case 4:
                     return Utils::Color::GREEN;
-                case 5:
+                case 2:
                     return Utils::Color::YELLOW;
+                case 3:
+                    return Utils::Color::CYAN;
+                case 4:
+                    return Utils::Color::BLUE;
+                case 5:
+                    return Utils::Color::MAGENTA;
                 case 6:
                     return Utils::Color::RED;
                 default:
@@ -542,6 +542,7 @@ namespace pEp {
         template<class TestContext>
         void PityUnit<TestContext>::_logRaw(const std::string &msg) const
         {
+            // fs-mutex to sync across processes
             _log_mutex->aquire();
             Adapter::pEpLog::log(msg, _termColor());
             _log_mutex->release();
