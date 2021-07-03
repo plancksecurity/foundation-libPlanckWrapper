@@ -34,7 +34,7 @@ namespace pEp {
         private:
             // methods
             void _createPerspective(const PityModel& model, PityPerspective* psp, int node_nr);
-            void _init_process(PityUnit<PityPerspective>& unit, PityPerspective* ctx);
+            int _init_process(PityUnit<PityPerspective>& unit, PityPerspective* ctx);
 
             // fields
             PityModel& _model;

@@ -80,6 +80,13 @@ void reply(PityUnit<PityPerspective> &pity, PityPerspective *ctx, MinMsgRx msg_o
 
     // Encrypt
     pity.log("TX message - BEFORE encrypt: \n" + Utils::to_string(msg.get()));
+
+    //    pEpIdent tmp_ident = createRawIdent(addr_orig);
+    //    tmp_ident.get()->user_id = strdup("23");
+    //    PEP_STATUS status = ::update_identity(Adapter::session(),tmp_ident.get());
+    //    throw_status(status);
+    //    pity.log("IDENTZZZ:" + Utils::to_string(tmp_ident.get()));
+
     EncryptResult eres = encryptMessage(msg);
     pEpMessage msg_encrypted = std::get<0>(eres);
     did_tx_encrypted = std::get<2>(eres);
@@ -93,7 +100,7 @@ void reply(PityUnit<PityPerspective> &pity, PityPerspective *ctx, MinMsgRx msg_o
     pity.transport()->sendMsg(addr_orig, mime_data_tx);
 }
 
-void tofu(PityUnit<PityPerspective> &pity, PityPerspective *ctx, bool init)
+int tofu(PityUnit<PityPerspective> &pity, PityPerspective *ctx, bool init)
 {
     pity.log("Model  : " + ctx->model.getName());
     pity.log("myself : " + ctx->own_name);
@@ -111,15 +118,16 @@ void tofu(PityUnit<PityPerspective> &pity, PityPerspective *ctx, bool init)
         send(pity, ctx);
     }
 
-    MinMsgRx rx_msg = receive(pity,ctx);
-    reply(pity,ctx, rx_msg);
+    MinMsgRx rx_msg = receive(pity, ctx);
+    reply(pity, ctx, rx_msg);
 
-    if(!init) {
-        receive(pity,ctx);
+    if (!init) {
+        receive(pity, ctx);
     }
 
     PTASSERT(did_tx_encrypted, "could never send encrypted");
     PTASSERT(did_rx_encrypted, "no encrypted msg received");
+    return 0;
 }
 
 
@@ -132,10 +140,10 @@ int main(int argc, char *argv[])
     PitySwarm swarm{ model };
 
     swarm.addTestUnit(0, "tofu1", [](PityUnit<PityPerspective> &unit, PityPerspective *ctx) {
-        tofu(unit, ctx, true);
+        return tofu(unit, ctx, true);
     });
     swarm.addTestUnit(1, "tofu2", [](PityUnit<PityPerspective> &unit, PityPerspective *ctx) {
-        tofu(unit, ctx, false);
+        return tofu(unit, ctx, false);
     });
 
     swarm.run();

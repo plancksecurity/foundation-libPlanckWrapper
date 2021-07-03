@@ -21,26 +21,32 @@ int main(int argc, char* argv[])
     // 1
     PityUnit<> test1 = PityUnit<>{ &root, "node 1", [](PityUnit<>& mynode, void* ctx) {
                                       PTASSERT(
-                                          mynode.processDir() == "./pitytest_data/test_processdirs/","");
+                                          mynode.processDir() == "./pitytest_data/test_processdirs/",
+                                          "");
+                                      return 0;
                                   } };
 
     PityUnit<> test1_1 = PityUnit<>{ &test1, "node 1.1", [](PityUnit<>& mynode, void* ctx) {
                                         PTASSERT(
-                                            mynode.processDir() ==
-                                            "./pitytest_data/test_processdirs/","");
+                                            mynode.processDir() == "./pitytest_data/test_processdirs/",
+                                            "");
+                                        return 0;
                                     } };
 
     // 2
     PityUnit<> test2 = PityUnit<>{ &root, "node 2", [](PityUnit<>& mynode, void* ctx) {
                                       PTASSERT(
-                                          mynode.processDir() == "./pitytest_data/test_processdirs/","");
+                                          mynode.processDir() == "./pitytest_data/test_processdirs/",
+                                          "");
+                                      return 0;
                                   } };
 
     PityUnit<> test2_1 = PityUnit<>{
         &test2,
         "node 2.1",
         [](PityUnit<>& mynode, void* ctx) {
-            PTASSERT(mynode.processDir() == "./pitytest_data/test_processdirs/node_2_1/","");
+            PTASSERT(mynode.processDir() == "./pitytest_data/test_processdirs/node_2_1/", "");
+            return 0;
         },
         nullptr,
         pEp::PityTest11::PityUnit<>::ExecutionMode::PROCESS_PARALLEL
@@ -50,7 +56,9 @@ int main(int argc, char* argv[])
     PityUnit<> test2_1_1 = PityUnit<>{ &test2_1, "node 2.1.1", [](PityUnit<> mynode, void* ctx) {
                                           PTASSERT(
                                               mynode.processDir() ==
-                                              "./pitytest_data/test_processdirs/node_2_1/","");
+                                                  "./pitytest_data/test_processdirs/node_2_1/",
+                                              "");
+                                          return 0;
                                       } };
 
 
@@ -59,7 +67,8 @@ int main(int argc, char* argv[])
         &root,
         "node 3",
         [](PityUnit<>& mynode, void* ctx) {
-            PTASSERT(mynode.processDir() == "./pitytest_data/test_processdirs/node_3/","");
+            PTASSERT(mynode.processDir() == "./pitytest_data/test_processdirs/node_3/", "");
+            return 0;
         },
         nullptr,
         PityUnit<>::ExecutionMode::PROCESS_PARALLEL
@@ -68,20 +77,25 @@ int main(int argc, char* argv[])
     PityUnit<> test3_1 = PityUnit<>{ &test3, "node 3.1", [](PityUnit<>& mynode, void* ctx) {
                                         PTASSERT(
                                             mynode.processDir() ==
-                                            "./pitytest_data/test_processdirs/node_3/","");
+                                                "./pitytest_data/test_processdirs/node_3/",
+                                            "");
+                                        return 0;
                                     } };
 
     PityUnit<> test3_1_1 = PityUnit<>{ &test3_1, "node 3.1.1", [](PityUnit<>& mynode, void* ctx) {
                                           PTASSERT(
                                               mynode.processDir() ==
-                                              "./pitytest_data/test_processdirs/node_3/","");
+                                                  "./pitytest_data/test_processdirs/node_3/",
+                                              "");
+                                          return 0;
                                       } };
 
     PityUnit<> test3_1_1_1 = PityUnit<>{
         &test3_1_1,
         "node 3.1.1",
         [](PityUnit<>& mynode, void* ctx) {
-            PTASSERT(mynode.processDir() == "./pitytest_data/test_processdirs/node_3_1_1/","");
+            PTASSERT(mynode.processDir() == "./pitytest_data/test_processdirs/node_3_1_1/", "");
+            return 0;
         },
         nullptr,
         PityUnit<>::ExecutionMode::PROCESS_PARALLEL
@@ -91,7 +105,8 @@ int main(int argc, char* argv[])
         &test3_1_1_1,
         "node 3.1.1.1",
         [](PityUnit<>& mynode, void* ctx) {
-            PTASSERT(mynode.processDir() == "./pitytest_data/test_processdirs/node_3_1_1/","");
+            PTASSERT(mynode.processDir() == "./pitytest_data/test_processdirs/node_3_1_1/", "");
+            return 0;
         }
     };
 

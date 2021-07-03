@@ -22,7 +22,7 @@ using namespace pEp::PityTest11;
 // Test template for 3 nodes (processes) running the same 2 tests each in their own environment in parallel
 
 // This is the 1st test unit
-void test_func1(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
+int test_func1(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
 {
     pity.log(ctx->own_name);
     pity.log("getName: " + pity.getName());
@@ -34,13 +34,15 @@ void test_func1(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
     pity.log("to_string: " +pity.to_string());
 
     PTASSERT(true,"");
+    return 0;
 }
 
 // This is the 2nd test unit
-void test_func2(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
+int test_func2(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
 {
     pity.log(ctx->own_name);
     PTASSERT(false,"");
+    return 0;
 }
 
 

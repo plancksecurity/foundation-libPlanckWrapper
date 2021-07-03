@@ -41,11 +41,12 @@ namespace pEp {
             }
         }
 
-        void PitySwarm::_init_process(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
+        int PitySwarm::_init_process(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
         {
-            std::cout << "PROC INIT" << std::endl;
+            std::cout << "Node init, setting $HOME" << std::endl;
             std::string home = unit.processDir();
             setenv("HOME", home.c_str(), true);
+            return 0;
         }
 
         PitySwarm::PitySwarm(PityModel& model) : _model{ model }

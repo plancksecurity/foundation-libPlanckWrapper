@@ -7,7 +7,7 @@ using namespace pEp;
 using namespace pEp::Adapter;
 using namespace pEp::PityTest11;
 
-void test_node1(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
+int test_node1(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
 {
     unit.log("ModelName:" + ctx->model.getName());
     unit.log("perspective name:" + ctx->own_name);

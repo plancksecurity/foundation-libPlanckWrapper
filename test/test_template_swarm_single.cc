@@ -22,7 +22,7 @@ using namespace pEp::PityTest11;
 // Test template for a single process with 2 test units that run in sequence
 
 // This is the 1st test unit
-void test_func1(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
+int test_func1(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
 {
     // here some example values from the PityUnit
     pity.log("getName: " + pity.getName());
@@ -33,13 +33,15 @@ void test_func1(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
     pity.log("getGlobalRootDir: " + pity.getGlobalRootDir());
     pity.log("to_string: " + pity.to_string(false));
     PTASSERT(true,"");
+    return 0;
 }
 
 // This is the 2nd test unit
-void test_func2(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
+int test_func2(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
 {
     pity.log(ctx->own_name);
     PTASSERT(false,"");
+    return 0;
 }
 
 
