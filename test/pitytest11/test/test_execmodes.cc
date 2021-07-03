@@ -7,59 +7,58 @@ using namespace std;
 using namespace pEp;
 using namespace pEp::PityTest11;
 
-void do_some_work(PityUnit<>& myself, int sleepmilis, int rep_count)
+
+struct CTXExecmodes {
+    int sleepmilis;
+    int rep_count;
+};
+
+using TestContext = CTXExecmodes;
+using TestUnit = PityUnit<TestContext>;
+
+int do_some_work(TestUnit& pity, TestContext* ctx)
 {
     int i = 0;
-    while (i < rep_count) {
-        myself.log(myself.getName() + " - " + to_string(i));
-        Utils::sleep_millis(sleepmilis);
+    while (i < ctx->rep_count) {
+        pity.log(pity.getName() + " - " + to_string(i));
+        Utils::sleep_millis(ctx->sleepmilis);
         i++;
     }
+    return 0;
 }
 
 int main(int argc, char* argv[])
 {
-    {
-        // DEBUG Logging of PityTestUnit itself
-        PityUnit<>::debug_log_enabled = false;
+    // DEBUG Logging of PityTestUnit itself
+    TestUnit::debug_log_enabled = false;
+    CTXExecmodes ctxe;
+    ctxe.sleepmilis = 100;
+    ctxe.rep_count = 3;
 
-        // The RootNode is the
-        PityUnit<> root = PityUnit<>{ nullptr, "Test Execution Model" };
+    // The RootNode is the
+    TestUnit root = TestUnit{ nullptr, "Test Execution Model" };
 
-        // Subprocess 1
-        PityUnit<> test1 = PityUnit<>{ &root,
-                                       "node1",
-                                       [](PityUnit<>& unit, void* ctx) {
-                                           do_some_work(unit, 200, 10);
-                                       },
-                                       nullptr,
-                                       pEp::PityTest11::PityUnit<>::ExecutionMode::PROCESS_PARALLEL };
+    // Subprocess 1
+    TestUnit test1 = TestUnit{ &root,
+                               "node1",
+                               do_some_work,
+                               &ctxe,
+                               TestUnit::ExecutionMode::PROCESS_PARALLEL };
 
-        PityUnit<> test1_1 = PityUnit<>{ &test1, "test1.1", [](PityUnit<>& unit, void* ctx) {
-                                            do_some_work(unit, 200, 10);
-                                        } };
+    TestUnit test1_1 = TestUnit{ &test1, "test1.1", do_some_work };
 
-        PityUnit<> test1_2 = PityUnit<>{ &test1, "test1.2", [](PityUnit<>& unit, void* ctx) {
-                                            do_some_work(unit, 200, 10);
-                                        } };
+    TestUnit test1_2 = TestUnit{ &test1, "test1.2", do_some_work };
 
-        // Subprocess 2
-        PityUnit<> test2 = PityUnit<>{ &root,
-                                       "node2",
-                                       [](PityUnit<>& unit, void* ctx) {
-                                           do_some_work(unit, 200, 10);
-                                       },
-                                       nullptr,
-                                       pEp::PityTest11::PityUnit<>::ExecutionMode::PROCESS_PARALLEL };
+    // Subprocess 2
+    TestUnit test2 = TestUnit{ &root,
+                               "node2",
+                               do_some_work,
+                               &ctxe,
+                               TestUnit::ExecutionMode::PROCESS_PARALLEL };
 
-        PityUnit<> test2_1 = PityUnit<>{ &test2, "test2.1", [](PityUnit<>& unit, void* ctx) {
-                                            do_some_work(unit, 200, 10);
-                                        } };
+    TestUnit test2_1 = TestUnit{ &test2, "test2.1", do_some_work };
 
-        PityUnit<> test2_2 = PityUnit<>{ &test2, "test2.2", [](PityUnit<>& unit, void* ctx) {
-                                            do_some_work(unit, 200, 10);
-                                        } };
+    TestUnit test2_2 = TestUnit{ &test2, "test2.2", do_some_work };
 
-        root.run();
-    }
+    root.run();
 }
