@@ -142,12 +142,6 @@ namespace pEp {
             }
         }
 
-        //        template<class TestContext>
-        //        void PityUnit<TestContext>::setExecutionMode(ExecutionMode mode)
-        //        {
-        //            _exec_mode = mode;
-        //        }
-
         // static
         template<class TestContext>
         void PityUnit<TestContext>::setGlobalRootDir(const std::string &dir)
@@ -166,8 +160,10 @@ namespace pEp {
         void PityUnit<TestContext>::run()
         {
             pEpLogClass("called");
-            _log_mutex = std::make_shared<fs_mutex>("fds");
+            _log_mutex = std::make_shared<fs_mutex>("log.mutex");
             _log_mutex->release();
+
+            setenv("HOME",  processDir().c_str(), true);
 
             if (_isRootUnit()) {
                 _init();
@@ -320,7 +316,6 @@ namespace pEp {
             logH3("INIT DONE");
         }
 
-
         template<class TestContext>
         void PityUnit<TestContext>::_run()
         {
@@ -442,7 +437,6 @@ namespace pEp {
             }
         }
 
-
         // Inherited (if null see parent recursively)
         template<class TestContext>
         TestContext *PityUnit<TestContext>::getPerspective() const
@@ -507,7 +501,6 @@ namespace pEp {
                   getPathShort() + " ]  [ " + msg + " ]";
             return ret;
         }
-
 
         template<class TestContext>
         Utils::Color PityUnit<TestContext>::_colForProcUnitNr(int procUnitNr) const

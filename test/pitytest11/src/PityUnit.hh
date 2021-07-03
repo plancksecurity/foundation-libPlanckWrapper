@@ -22,7 +22,10 @@ namespace pEp {
         template<class TestContext = void>
         class PityUnit {
         public:
-            using TestFunction = const std::function<void(PityUnit<TestContext>&, TestContext*)>;
+            // Test success if TestFunction:
+            // * does not throw
+            // * returns 0
+            using TestFunction = const std::function<int(PityUnit<TestContext>&, TestContext*)>;
             enum class ExecutionMode
             {
                 FUNCTION,
