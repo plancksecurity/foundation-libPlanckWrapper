@@ -22,14 +22,14 @@ namespace pEp {
             pEpLogClass("Address: " + nodename + " msg: " + msg);
 
             // HACK TODO
-            std::string nodename_normalize = PityUnit<>::_normalizeName(nodename);
+            std::string nodename_normalized = AbstractPityUnit::_normalizeName(nodename);
 
             bool found = false;
             std::string dir;
             try {
-                dir = _endpoints.at(nodename_normalize);
+                dir = _endpoints.at(nodename_normalized);
             } catch (std::out_of_range&) {
-                throw std::runtime_error("no such nodename: " + nodename_normalize);
+                throw std::runtime_error("no such nodename: " + nodename_normalized);
             }
             Utils::dir_ensure(dir);
             std::stringstream filename;
