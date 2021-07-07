@@ -43,7 +43,7 @@ namespace pEp {
 
         int PitySwarm::_init_process(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
         {
-            std::cout << "Node init, setting $HOME" << std::endl;
+            std::cout << "Node _init, setting $HOME" << std::endl;
             std::string home = unit.processDir();
             setenv("HOME", home.c_str(), true);
             return 0;
@@ -61,7 +61,6 @@ namespace pEp {
 
             // Construct Tree
             _rootUnit = std::make_shared<PityUnit<PityPerspective>>(
-                nullptr,
                 _model.getName(),
                 nullptr,
                 nullptr);
@@ -69,7 +68,7 @@ namespace pEp {
             for (auto n : _model.nodes()) {
 
                 auto tmp = std::make_shared<PityUnit<PityPerspective>>(
-                    _rootUnit.get(),
+                    *_rootUnit.get(),
                     n->getName(),
                     std::bind(&PitySwarm::_init_process,this, std::placeholders::_1, std::placeholders::_2),
                     _perspectives.at(n->getNr()).get(),
@@ -85,7 +84,7 @@ namespace pEp {
             PityUnit<PityPerspective>::TestFunction test_func)
         {
             std::shared_ptr<PityUnit<PityPerspective>> tmp = std::make_shared<PityUnit<PityPerspective>>(
-                _nodeUnits.at(nodeNr).get(),
+                *_nodeUnits.at(nodeNr).get(),
                 name,
                 test_func);
             _testUnits.push_back(tmp);
