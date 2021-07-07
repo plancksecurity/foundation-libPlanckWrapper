@@ -10,24 +10,23 @@
 #include "PityPerspective.hh"
 
 #ifndef PITYASSERT
-    #define PITYASSERT(condition, msg)                                                               \
+    #define PITYASSERT(condition, msg)                                                             \
         do {                                                                                       \
             if (!(condition)) {                                                                    \
                 throw PityAssertException(msg);                                                    \
             }                                                                                      \
-        } while (0)
+        } while (0);
 #endif
 
-#ifndef PITYASSERT_THROWS
-    #define PITYASSERT_THROWS(func, msg)                                                             \
-        do {                                                                                       \
-            try {                                                                                  \
-                (func);                                                                            \
-                PITYASSERT(false, msg);                                                              \
-            } catch (const std::exception& e) {                                                    \
-            } catch (...) {                                                                        \
-            }                                                                                      \
-        } while (0)
-#endif
-
+#define PITYASSERT_THROWS(func, msg)                                                               \
+    do {                                                                                           \
+        try {                                                                                      \
+            (func);                                                                                \
+            PITYASSERT(false, msg);                                                                \
+        } catch (const PityAssertException& pae) {                                                 \
+            throw(pae);                                                                            \
+        } catch (const std::exception& e) {                                                        \
+        } catch (...) {                                                                            \
+        }                                                                                          \
+    } while (0);
 #endif
