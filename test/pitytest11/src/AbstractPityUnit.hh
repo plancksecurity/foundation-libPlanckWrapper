@@ -78,6 +78,7 @@ namespace pEp {
 
         private:
             // METHODS
+            void _init();
             // Execution
             void _initProcUnitNrRecurse();
             void _initTransportRecurse();

@@ -171,7 +171,7 @@ namespace pEp {
 
             if (init_tree) {
                 logH1("PityTest Starting...");
-                _logRaw("RootUnit: " + getPathShort());
+                _logRaw("RootUnit: " + getPath());
                 _logRaw("GlobalRootDir: " + getGlobalRootDir());
 
                 _logRaw("Ensuring GlobalRootDir...");
