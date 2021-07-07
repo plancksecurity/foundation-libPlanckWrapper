@@ -1,6 +1,4 @@
-#include "../src/PityUnit.hh"
-#include "../src/PityModel.hh"
-#include "../src/PityPerspective.hh"
+#include "../src/PityTest.hh"
 #include "../../../src/utils.hh"
 #include <iostream>
 
@@ -34,7 +32,7 @@ int main(int argc, char* argv[])
     TestUnit::debug_log_enabled = false;
     CTXExecmodes ctxe;
     ctxe.sleepmilis = 100;
-    ctxe.rep_count = 3;
+    ctxe.rep_count = 100;
     //    Utils::readKey();
 
     // The RootNode is the

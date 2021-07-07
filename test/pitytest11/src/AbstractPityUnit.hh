@@ -115,27 +115,6 @@ namespace pEp {
         public:
             PityAssertException(const std::string& string) : runtime_error(string) {}
         };
-
-#ifndef PTASSERT
-    #define PTASSERT(condition, msg)                                                               \
-        do {                                                                                       \
-            if (!(condition)) {                                                                    \
-                throw PityAssertException(msg);                                                    \
-            }                                                                                      \
-        } while (0)
-#endif
-
-#ifndef PTASSERT_EXCEPT
-    #define PTASSERT_EXCEPT(func)                                                                  \
-        do {                                                                                       \
-            try {                                                                                  \
-                (func);                                                                            \
-                PTASSERT(false);                                                                   \
-            } catch (const exception& e) {                                                         \
-            }                                                                                      \
-        } while (0)
-#endif
-
     }; // namespace PityTest11
 };     // namespace pEp
 

@@ -1,7 +1,4 @@
-#include "pitytest11/src/PityUnit.hh"
-#include "pitytest11/src/PityModel.hh"
-#include "pitytest11/src/PitySwarm.hh"
-#include "pitytest11/src/PityPerspective.hh"
+#include "pitytest11/src/PityTest.hh"
 #include "../src/utils.hh"
 #include "framework/framework.hh"
 #include "framework/utils.hh"
@@ -125,8 +122,8 @@ int tofu(PityUnit<PityPerspective> &pity, PityPerspective *ctx, bool init)
         receive(pity, ctx);
     }
 
-    PTASSERT(did_tx_encrypted, "could never send encrypted");
-    PTASSERT(did_rx_encrypted, "no encrypted msg received");
+    PITYASSERT(did_tx_encrypted, "could never send encrypted");
+    PITYASSERT(did_rx_encrypted, "no encrypted msg received");
     return 0;
 }
 

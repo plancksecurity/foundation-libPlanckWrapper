@@ -1,7 +1,4 @@
-#include "pitytest11/src/PityUnit.hh"
-#include "pitytest11/src/PityModel.hh"
-#include "pitytest11/src/PitySwarm.hh"
-#include "pitytest11/src/PityPerspective.hh"
+#include "pitytest11/src/PityTest.hh"
 #include "../src/utils.hh"
 #include "framework/framework.hh"
 #include "framework/utils.hh"
@@ -32,7 +29,7 @@ int test_func1(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
     pity.log("processDir: " + pity.processDir());
     pity.log("getGlobalRootDir: " + pity.getGlobalRootDir());
     pity.log("to_string: " + pity.to_string(false));
-    PTASSERT(true,"");
+    PITYASSERT(true,"");
     return 0;
 }
 
@@ -40,7 +37,7 @@ int test_func1(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
 int test_func2(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
 {
     pity.log(ctx->own_name);
-    PTASSERT(false,"");
+    PITYASSERT(false,"");
     return 0;
 }
 

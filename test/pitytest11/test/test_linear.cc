@@ -1,4 +1,4 @@
-#include "../src/PityUnit.hh"
+#include "../src/PityTest.hh"
 #include <iostream>
 #include <algorithm>
 

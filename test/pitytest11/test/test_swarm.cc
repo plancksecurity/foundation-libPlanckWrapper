@@ -1,7 +1,4 @@
-#include "../src/PityUnit.hh"
-#include "../src/PityModel.hh"
-#include "../src/PitySwarm.hh"
-#include "../src/PityPerspective.hh"
+#include "../src/PityTest.hh"
 
 using namespace pEp;
 using namespace pEp::Adapter;
@@ -26,6 +23,7 @@ int test_node1(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
             unit.log("MSG RX:" + unit.transport()->receiveMsg());
         }
     }
+    return 0;
 }
 
 int main(int argc, char* argv[])
