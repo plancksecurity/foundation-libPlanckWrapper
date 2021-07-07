@@ -21,13 +21,13 @@ namespace pEp {
     namespace PityTest11 {
 
         template<class T>
-        PityTree<T>::PityTree(T& self, const std::string &name) :
+        PityTree<T>::PityTree(T& self, const std::string& name) :
             _self{ self }, _nodename{ _normalizeName(name) }
         {
         }
 
         template<class T>
-        PityTree<T>::PityTree(T& self, const std::string &name, T& parent) :
+        PityTree<T>::PityTree(T& self, const std::string& name, T& parent) :
             _self(self), _nodename{ _normalizeName(name) }
         {
             parent.add(_self);
@@ -42,13 +42,13 @@ namespace pEp {
         }
 
         template<class T>
-        void PityTree<T>::setParent(T *parent)
+        void PityTree<T>::setParent(T* parent)
         {
             _parent = parent;
         }
 
         template<class T>
-        T *PityTree<T>::getParent() const
+        T* PityTree<T>::getParent() const
         {
             return _parent;
         }
@@ -61,6 +61,12 @@ namespace pEp {
             } else {
                 return false;
             }
+        }
+
+        template<class T>
+        void PityTree<T>::setName(const std::string& name)
+        {
+            _nodename = name;
         }
 
         template<class T>
@@ -118,6 +124,12 @@ namespace pEp {
         typename PityTree<T>::Children PityTree<T>::getChildren() const
         {
             return _children;
+        }
+
+        template<class T>
+        T& PityTree<T>::getChild(const std::string& name)
+        {
+            return _children.at(name);
         }
 
         // name is alphanumeric only (everything else will be replaced by an underscore)

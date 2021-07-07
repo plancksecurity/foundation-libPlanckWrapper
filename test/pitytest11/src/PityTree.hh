@@ -28,9 +28,10 @@ namespace pEp {
 
             T* getParent() const;
             Children getChildren() const;
-
+            T& getChild(const std::string& name);
             T& getRoot();
 
+            void setName(const std::string& name);
             std::string getName() const;
             std::string getPath() const;
             bool isRoot() const; // true if has no parent
@@ -47,7 +48,7 @@ namespace pEp {
 
         private:
             // Fields
-            const std::string _nodename;
+            std::string _nodename;
             T& _self;
             T* _parent = nullptr; //nullptr if RootUnit
             Children _children;   // map to guarantee uniqueness of sibling-names
