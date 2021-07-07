@@ -45,3 +45,8 @@ test_pEpLog_basic
 /test/test_update_ident
 /test/test_template_swarm_single
 /test/test_template_swarm_multi
+/test/pitytest11/test/test_copy
+/test/pitytest11/test/test_pitytree
+/test/test_suite_all
+/test/test_sync_init
+/test/test_tofu2
