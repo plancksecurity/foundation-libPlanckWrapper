@@ -18,7 +18,7 @@ int test_node1(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
     int throttle = 1000;
     while (true) {
         Utils::sleep_millis(throttle);
-        for (auto peer : ctx->peers) {
+        for (const auto& peer : ctx->peers) {
             unit.transport()->sendMsg(peer, msg);
         }
 

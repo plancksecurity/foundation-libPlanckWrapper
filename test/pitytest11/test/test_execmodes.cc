@@ -1,6 +1,7 @@
 #include "../src/PityUnit.hh"
 #include "../src/PityModel.hh"
 #include "../src/PityPerspective.hh"
+#include "../../../src/utils.hh"
 #include <iostream>
 
 using namespace std;
@@ -34,31 +35,56 @@ int main(int argc, char* argv[])
     CTXExecmodes ctxe;
     ctxe.sleepmilis = 100;
     ctxe.rep_count = 3;
+    //    Utils::readKey();
 
     // The RootNode is the
-    TestUnit root = TestUnit{ nullptr, "Test Execution Model" };
+    TestUnit root = TestUnit{ "Test Execution Model" };
 
     // Subprocess 1
-    TestUnit test1 = TestUnit{ &root,
+    TestUnit test1 = TestUnit{ "node1", do_some_work, &ctxe, TestUnit::ExecutionMode::PROCESS_PARALLEL };
+    TestUnit test1_1 = TestUnit{ "test1.1", do_some_work };
+    TestUnit test1_2 = TestUnit{ "test1.2", do_some_work };
+
+    root.add(test1);
+    test1.add(test1_1);
+    test1.add(test1_2);
+
+    // Subprocess 2
+    TestUnit test2 = TestUnit{ "node2", do_some_work, &ctxe, TestUnit::ExecutionMode::PROCESS_PARALLEL };
+    TestUnit test2_1 = TestUnit{ "test2.1", do_some_work };
+    TestUnit test2_2 = TestUnit{ "test2.2", do_some_work };
+    root.add(test2);
+    test2.add(test2_1);
+    test2.add(test2_2);
+
+    root.run();
+
+    /*
+// The RootNode is the
+    TestUnit root = TestUnit{  "Test Execution Model" };
+
+    // Subprocess 1
+    TestUnit test1 = TestUnit{ root,
                                "node1",
                                do_some_work,
                                &ctxe,
                                TestUnit::ExecutionMode::PROCESS_PARALLEL };
 
-    TestUnit test1_1 = TestUnit{ &test1, "test1.1", do_some_work };
+    TestUnit test1_1 = TestUnit{ test1, "test1.1", do_some_work };
 
-    TestUnit test1_2 = TestUnit{ &test1, "test1.2", do_some_work };
+    TestUnit test1_2 = TestUnit{ test1, "test1.2", do_some_work };
 
     // Subprocess 2
-    TestUnit test2 = TestUnit{ &root,
+    TestUnit test2 = TestUnit{ root,
                                "node2",
                                do_some_work,
                                &ctxe,
                                TestUnit::ExecutionMode::PROCESS_PARALLEL };
 
-    TestUnit test2_1 = TestUnit{ &test2, "test2.1", do_some_work };
+    TestUnit test2_1 = TestUnit{ test2, "test2.1", do_some_work };
 
-    TestUnit test2_2 = TestUnit{ &test2, "test2.2", do_some_work };
+    TestUnit test2_2 = TestUnit{ test2, "test2.2", do_some_work };
 
     root.run();
+     */
 }

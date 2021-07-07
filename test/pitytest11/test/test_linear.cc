@@ -6,6 +6,8 @@ using namespace std;
 using namespace pEp;
 using namespace pEp::PityTest11;
 
+// eeks_test
+// The test framework for geeks without the g
 
 class Car {
 private:
@@ -53,11 +55,11 @@ int main(int argc, char* argv[])
 {
     // Linear Test
     CarTestModel model{ "CarTestModel" };
-    PityUnit<CarTestModel> testnode_car{ nullptr, "test car", nullptr, &model };
-    PityUnit<CarTestModel> testnode_setGear{ &testnode_car, "test car setGear()", test_setGear };
-    PityUnit<CarTestModel> testnode_driv{ &testnode_setGear, "test car drive()", &test_drive };
+    PityUnit<CarTestModel> testnode_car{ "test car", nullptr, &model };
+    PityUnit<CarTestModel> testnode_setGear{ testnode_car, "test car setGear()", test_setGear };
+    PityUnit<CarTestModel> testnode_driv{ testnode_setGear, "test car drive()", &test_drive };
 
-    PityUnit<CarTestModel> testnode_driv_before_gear{ &testnode_car,
+    PityUnit<CarTestModel> testnode_driv_before_gear{ testnode_car,
                                                       "testnode_driv_before_gear",
                                                       &test_drive };
 
