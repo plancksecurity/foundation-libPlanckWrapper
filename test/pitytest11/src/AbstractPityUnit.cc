@@ -26,10 +26,8 @@ namespace pEp {
         int AbstractPityUnit::procUnitsCount = 0;
 
         AbstractPityUnit::AbstractPityUnit(const std::string &name, ExecutionMode exec_mode) :
-            PityTree<AbstractPityUnit>(*this, name),
-            _exec_mode{ exec_mode }
+            PityTree<AbstractPityUnit>(*this, name), _exec_mode{ exec_mode }, procUnitNr{ 0 }
         {
-            _init();
         }
 
         AbstractPityUnit::AbstractPityUnit(
@@ -37,27 +35,11 @@ namespace pEp {
             const std::string &name,
             ExecutionMode exec_mode) :
             PityTree<AbstractPityUnit>(*this, name, parent),
-            _exec_mode{ exec_mode }
+            _exec_mode{ exec_mode }, procUnitNr{ 0 }
         {
-            _init();
         }
 
-        void AbstractPityUnit::_init()
-        {
-            logger_debug.set_instancename(getPath());
-            if (!isRoot()) {
-                // Inherit
-                procUnitNr = getParent()->procUnitNr;
-                //Or update if procUnit
-                if (_isProcessUnit()) {
-                    _createTransport();
-                    procUnitsCount++;
-                    procUnitNr = procUnitsCount;
-                }
-            } else {
-                procUnitNr = procUnitsCount;
-            }
-        }
+
         // static
         void AbstractPityUnit::setGlobalRootDir(const std::string &dir)
         {
@@ -131,34 +113,97 @@ namespace pEp {
             }
         }
 
-        void AbstractPityUnit::run()
+        void AbstractPityUnit::_initProcUnitNrRecurse()
+        {
+            if (!isRoot()) {
+                // Inherit
+                procUnitNr = getParent()->procUnitNr;
+                //Or update if procUnit
+                if (_isProcessUnit()) {
+                    procUnitsCount++;
+                    procUnitNr = procUnitsCount;
+                }
+            } else {
+                procUnitNr = procUnitsCount;
+            }
+
+            // Recurse
+            for (const auto &chld : getChildren()) {
+                chld.second._initProcUnitNrRecurse();
+            }
+        }
+
+        void AbstractPityUnit::_initTransportRecurse()
+        {
+            logger_debug.set_instancename(getPath());
+            if (!isRoot()) {
+                if (_isProcessUnit()) {
+                    _createTransport();
+                }
+            }
+
+            // Recurse
+            for (const auto &chld : getChildren()) {
+                chld.second._initTransportRecurse();
+            }
+        }
+
+        void AbstractPityUnit::_initDirsRecursive()
+        {
+            Utils::dir_recreate(processDir());
+
+            // Recurse
+            for (const auto &child : getChildren()) {
+                child.second._initDirsRecursive();
+            }
+        }
+
+
+        void AbstractPityUnit::run(bool init_tree)
         {
             pEpLogClass("called");
             _log_mutex = std::make_shared<fs_mutex>("log.mutex");
             _log_mutex->release();
 
-            setenv("HOME", processDir().c_str(), true);
+            if (init_tree) {
+                logH1("PityTest Starting...");
+                _logRaw("RootUnit: " + getPathShort());
+                _logRaw("GlobalRootDir: " + getGlobalRootDir());
 
-            if (isRoot()) {
-                _initrun();
+                _logRaw("Ensuring GlobalRootDir...");
+                Utils::dir_ensure(getGlobalRootDir());
+                _logRaw("Determining process numbers recursively...");
+                _initProcUnitNrRecurse();
+                _logRaw("Initializing Transport recursively...");
+                _initTransportRecurse();
+                _logRaw("Recreating process dirs recursively...");
+                _initDirsRecursive();
+
+                _logRaw("\n\nTestTree");
+                _logRaw("--------");
+                _logRaw(to_string() + "\n");
             }
+
+
+            // TODO: hack
+            setenv("HOME", processDir().c_str(), true);
 
             // Execute in fork and wait here until process ends
             if (_exec_mode == ExecutionMode::PROCESS_SEQUENTIAL) { // fork
-                _executeInFork(std::bind(&AbstractPityUnit::_run, this), true);
+                _executeInFork(std::bind(&AbstractPityUnit::_runRecurse, this), true);
                 // Execute in fork and go on, wait for process execution in the end
             } else if (_exec_mode == ExecutionMode::PROCESS_PARALLEL) {
-                _executeInFork(std::bind(&AbstractPityUnit::_run, this), false);
+                _executeInFork(std::bind(&AbstractPityUnit::_runRecurse, this), false);
                 // Execute as normal function
             } else if (_exec_mode == ExecutionMode::FUNCTION) {
-                _run();
+                _runRecurse();
             } else if (_exec_mode == ExecutionMode::THREAD_PARALLEL) {
                 throw std::invalid_argument(to_string(_exec_mode) + " - not implemented");
             } else if (_exec_mode == ExecutionMode::THREAD_SEQUENTIAL) {
                 throw std::invalid_argument(to_string(_exec_mode) + " - not implemented");
             }
 
-            if (isRoot()) {
+            if (init_tree) {
                 _waitChildProcesses();
             }
         }
@@ -209,15 +254,6 @@ namespace pEp {
             }
         }
 
-        void AbstractPityUnit::recreateDirsRecursively()
-        {
-            Utils::dir_recreate(processDir());
-            if (!getChildren().empty()) {
-                for (const auto child : getChildren()) {
-                    child.second.recreateDirsRecursively();
-                }
-            }
-        }
 
         void AbstractPityUnit::registerAsTransportEndpoint()
         {
@@ -248,47 +284,27 @@ namespace pEp {
 
         void AbstractPityUnit::logH1(const std::string &msg) const
         {
-            Adapter::pEpLog::logH1(msg, _termColor());
+            Adapter::pEpLog::logH1(msg, _color());
         }
 
         void AbstractPityUnit::logH2(const std::string &msg) const
         {
-            Adapter::pEpLog::logH2(msg, _termColor());
+            Adapter::pEpLog::logH2(msg, _color());
         }
 
         void AbstractPityUnit::logH3(const std::string &msg) const
         {
-            Adapter::pEpLog::logH3(msg, _termColor());
+            Adapter::pEpLog::logH3(msg, _color());
         }
 
         // PRIVATE ---------------------------------------------------------------------------------
-        void AbstractPityUnit::_initrun()
-        {
-            logH1("PityTest Starting...");
-            _logRaw("RootUnit: " + getPathShort());
-            _logRaw("GlobalRootDir: " + getGlobalRootDir());
-            _logRaw("\nTestTree");
-            _logRaw("--------");
-            _logRaw(to_string());
-
-            logH3("INIT");
-            Utils::dir_ensure(getGlobalRootDir());
-            recreateDirsRecursively();
-            logH3("INIT DONE");
-        }
-
-        void AbstractPityUnit::_run()
+        void AbstractPityUnit::_runRecurse()
         {
             logH2(_status_string("STARTING"));
             _runSelf();
-            _runChildren();
-        }
-
-        void AbstractPityUnit::_runChildren() const
-        {
             if (!getChildren().empty()) {
                 for (const auto child : getChildren()) {
-                    child.second.run();
+                    child.second.run(false);
                 }
             }
         }
@@ -322,7 +338,7 @@ namespace pEp {
                 logH3(
                     color + "PROCESS [ " + std::to_string((int)pid) +
                     " ] EXITED with status code: " + std::to_string(status) +
-                    Utils::to_termcol(_termColor()));
+                    Utils::to_termcol(_color()));
             }
         }
 
@@ -402,7 +418,7 @@ namespace pEp {
             }
         }
 
-        Utils::Color AbstractPityUnit::_termColor() const
+        Utils::Color AbstractPityUnit::_color() const
         {
             return _colForProcUnitNr(procUnitNr);
         }
@@ -411,7 +427,7 @@ namespace pEp {
         {
             // fs-mutex to sync across processes
             _log_mutex->aquire();
-            Adapter::pEpLog::log(msg, _termColor());
+            Adapter::pEpLog::log(msg, _color());
             _log_mutex->release();
         }
 

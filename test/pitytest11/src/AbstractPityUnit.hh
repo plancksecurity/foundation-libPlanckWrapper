@@ -31,8 +31,8 @@ namespace pEp {
                 INHERIT
             };
 
-            AbstractPityUnit(const std::string& name, ExecutionMode exec_mode = ExecutionMode::FUNCTION);
-            AbstractPityUnit(
+            explicit AbstractPityUnit(const std::string& name, ExecutionMode exec_mode = ExecutionMode::FUNCTION);
+            explicit AbstractPityUnit(
                 AbstractPityUnit& parent,
                 const std::string& name,
                 ExecutionMode exec_mode = ExecutionMode::FUNCTION);
@@ -47,7 +47,7 @@ namespace pEp {
             std::string transportDir();
 
             // Main funcs
-            void run();
+            void run(bool init_tree = true);
 
             std::string to_string(bool recursive = true, int indent = 0);
             static std::string to_string(const ExecutionMode& emode);
@@ -57,9 +57,6 @@ namespace pEp {
             void logH1(const std::string& msg) const;
             void logH2(const std::string& msg) const;
             void logH3(const std::string& msg) const;
-
-            // Util
-            void recreateDirsRecursively();
 
             //Transport
             PityTransport* transport() const;
@@ -73,7 +70,7 @@ namespace pEp {
         protected:
             std::string _status_string(const std::string& msg) const;
             static Utils::Color _colForProcUnitNr(int procUnitNr);
-            Utils::Color _termColor() const;
+            Utils::Color _color() const;
             void _logRaw(const std::string& msg) const;
 
             // internal logging
@@ -82,11 +79,11 @@ namespace pEp {
         private:
             // METHODS
             // Execution
-            void _init();
-            void _initrun();
-            void _run();
+            void _initProcUnitNrRecurse();
+            void _initTransportRecurse();
+            void _initDirsRecursive();
+            void _runRecurse();
             virtual void _runSelf() = 0;
-            void _runChildren() const;
             void _executeInFork(std::function<void(void)> func, bool wait_child) const;
             void _waitChildProcesses() const;
 

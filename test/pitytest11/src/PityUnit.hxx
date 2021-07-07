@@ -50,10 +50,10 @@ namespace pEp {
             if (_test_func != nullptr) {
                 try {
                     _test_func(*this, getPerspective());
-                    logH3(_status_string("\033[1m\033[32mSUCCESS" + Utils::to_termcol(_termColor())));
+                    logH3(_status_string("\033[1m\033[32mSUCCESS" + Utils::to_termcol(_color())));
                 } catch (const std::exception &e) {
                     _logRaw("reason: " + std::string(e.what()));
-                    logH3(_status_string("\033[1m\033[31mFAILED" + Utils::to_termcol(_termColor())));
+                    logH3(_status_string("\033[1m\033[31mFAILED" + Utils::to_termcol(_color())));
                 }
             } else {
                 _logRaw("No function to execute");
