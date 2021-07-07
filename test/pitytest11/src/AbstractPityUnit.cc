@@ -25,18 +25,29 @@ namespace pEp {
         // static
         int AbstractPityUnit::procUnitsCount = 0;
 
+        AbstractPityUnit::AbstractPityUnit(const std::string &name, ExecutionMode exec_mode) :
+            PityTree<AbstractPityUnit>(*this, name),
+            _exec_mode{ exec_mode }
+        {
+            _init();
+        }
+
         AbstractPityUnit::AbstractPityUnit(
-            AbstractPityUnit *const parent,
+            AbstractPityUnit &parent,
             const std::string &name,
             ExecutionMode exec_mode) :
-            _parent{ parent },
-            _name{ _normalizeName(name) }, _exec_mode{ exec_mode }
+            PityTree<AbstractPityUnit>(*this, name, parent),
+            _exec_mode{ exec_mode }
+        {
+            _init();
+        }
+
+        void AbstractPityUnit::_init()
         {
             logger_debug.set_instancename(getPath());
-            if (!_isRootUnit()) {
-                parent->_addChildUnit(*this);
+            if (!isRoot()) {
                 // Inherit
-                procUnitNr = _parent->procUnitNr;
+                procUnitNr = getParent()->procUnitNr;
                 //Or update if procUnit
                 if (_isProcessUnit()) {
                     _createTransport();
@@ -47,102 +58,6 @@ namespace pEp {
                 procUnitNr = procUnitsCount;
             }
         }
-
-        std::string AbstractPityUnit::getName() const
-        {
-            return _name;
-        }
-
-        // name is alphanumeric only (everything else will be replaced by an underscore)
-        // static
-        std::string AbstractPityUnit::_normalizeName(std::string name)
-        {
-            replace_if(
-                name.begin(),
-                name.end(),
-                [](char c) -> bool { return !isalnum(c); },
-                '_');
-
-            return name;
-        }
-
-        std::string AbstractPityUnit::getPath() const
-        {
-            std::string ret;
-
-            if (!_isRootUnit()) {
-                ret = _parent->getPath() + "/" + getName();
-            } else {
-                ret = getName();
-            }
-            return ret;
-        }
-
-        // For:
-        // RootUnit                         - "<name>"
-        // ProcessUnit                      - ".../<proc>"
-        // When Process as dir. parent      - ".../<proc>/name"
-        // When no process as dir. parent   - ".../<proc>/.../name"
-        std::string AbstractPityUnit::getPathShort() const
-        {
-            std::string ret;
-            if (_isRootUnit()) {
-                ret = getName();
-            } else {
-                if (_isProcessUnit()) {
-                    ret += ".../" + getName();
-                } else {
-                    if (&(parentingProcessUnit()) == (_parent)) {
-                        ret = parentingProcessUnit().getPathShort() + "/" + getName();
-                    } else {
-                        ret = parentingProcessUnit().getPathShort() + "/.../" + getName();
-                    }
-                }
-            }
-            return ret;
-        }
-
-        AbstractPityUnit *AbstractPityUnit::getParent() const
-        {
-            return _parent;
-        }
-
-        // Every process has its own dir inside its rootUnitDir
-        // All other units inherit processDir from their Root/ProcessUnit
-        std::string AbstractPityUnit::processDir()
-        {
-            if (_isRootUnit()) {
-                return _rootUnitDir();
-            } else {
-                if (_isProcessUnit()) {
-                    return _rootUnitDir() + getName() + "/";
-                } else {
-                    return _parent->processDir();
-                }
-            }
-        }
-
-        // Every RootUnit has its own dir
-        std::string AbstractPityUnit::_rootUnitDir()
-        {
-            return getGlobalRootDir() + rootUnit()->getName() + "/";
-        }
-
-        // Every process has its own dir inside its rootUnitDir
-        // All other units inherit transportDir from their Root/ProcessUnit
-        std::string AbstractPityUnit::transportDir()
-        {
-            if (_isRootUnit()) {
-                throw std::runtime_error("No transport dir");
-            } else {
-                if (_isProcessUnit()) {
-                    return processDir() + "inbox/";
-                } else {
-                    return _parent->transportDir();
-                }
-            }
-        }
-
         // static
         void AbstractPityUnit::setGlobalRootDir(const std::string &dir)
         {
@@ -155,6 +70,67 @@ namespace pEp {
             return AbstractPityUnit::_global_root_dir;
         }
 
+
+        // For:
+        // RootUnit                         - "<name>"
+        // ProcessUnit                      - ".../<proc>"
+        // When Process as dir. parent      - ".../<proc>/name"
+        // When no process as dir. parent   - ".../<proc>/.../name"
+        std::string AbstractPityUnit::getPathShort() const
+        {
+            std::string ret;
+            if (isRoot()) {
+                ret = getName();
+            } else {
+                if (_isProcessUnit()) {
+                    ret += ".../" + getName();
+                } else {
+                    if (&(parentingProcessUnit()) == (getParent())) {
+                        ret = parentingProcessUnit().getPathShort() + "/" + getName();
+                    } else {
+                        ret = parentingProcessUnit().getPathShort() + "/.../" + getName();
+                    }
+                }
+            }
+            return ret;
+        }
+
+        // Every process has its own dir inside its rootUnitDir
+        // All other units inherit processDir from their Root/ProcessUnit
+        std::string AbstractPityUnit::processDir()
+        {
+            if (isRoot()) {
+                return _rootUnitDir();
+            } else {
+                if (_isProcessUnit()) {
+                    return _rootUnitDir() + getName() + "/";
+                } else {
+                    return getParent()->processDir();
+                }
+            }
+        }
+
+        // Every RootUnit has its own dir
+        std::string AbstractPityUnit::_rootUnitDir()
+        {
+            return getGlobalRootDir() + getRoot().getName() + "/";
+        }
+
+        // Every process has its own dir inside its rootUnitDir
+        // All other units inherit transportDir from their Root/ProcessUnit
+        std::string AbstractPityUnit::transportDir()
+        {
+            if (isRoot()) {
+                throw std::runtime_error("No transport dir");
+            } else {
+                if (_isProcessUnit()) {
+                    return processDir() + "inbox/";
+                } else {
+                    return getParent()->transportDir();
+                }
+            }
+        }
+
         void AbstractPityUnit::run()
         {
             pEpLogClass("called");
@@ -163,8 +139,8 @@ namespace pEp {
 
             setenv("HOME", processDir().c_str(), true);
 
-            if (_isRootUnit()) {
-                _init();
+            if (isRoot()) {
+                _initrun();
             }
 
             // Execute in fork and wait here until process ends
@@ -182,7 +158,7 @@ namespace pEp {
                 throw std::invalid_argument(to_string(_exec_mode) + " - not implemented");
             }
 
-            if (_isRootUnit()) {
+            if (isRoot()) {
                 _waitChildProcesses();
             }
         }
@@ -202,9 +178,9 @@ namespace pEp {
             ret = builder.str();
 
             if (recursive) {
-                if (!_children.empty()) {
+                if (!getChildren().empty()) {
                     indent++;
-                    for (const std::pair<std::string, AbstractPityUnit &> child : _children) {
+                    for (const auto child : getChildren()) {
                         ret += child.second.to_string(true, indent);
                     }
                     indent--;
@@ -236,8 +212,8 @@ namespace pEp {
         void AbstractPityUnit::recreateDirsRecursively()
         {
             Utils::dir_recreate(processDir());
-            if (!_children.empty()) {
-                for (const std::pair<std::string, AbstractPityUnit &> child : _children) {
+            if (!getChildren().empty()) {
+                for (const auto child : getChildren()) {
                     child.second.recreateDirsRecursively();
                 }
             }
@@ -250,10 +226,10 @@ namespace pEp {
 
         Endpoints &AbstractPityUnit::transportEndpoints()
         {
-            if (_isRootUnit()) {
+            if (isRoot()) {
                 return _transport_endpoints;
             } else {
-                return rootUnit()->transportEndpoints();
+                return getRoot().transportEndpoints();
             }
         }
 
@@ -286,7 +262,7 @@ namespace pEp {
         }
 
         // PRIVATE ---------------------------------------------------------------------------------
-        void AbstractPityUnit::_init()
+        void AbstractPityUnit::_initrun()
         {
             logH1("PityTest Starting...");
             _logRaw("RootUnit: " + getPathShort());
@@ -310,8 +286,8 @@ namespace pEp {
 
         void AbstractPityUnit::_runChildren() const
         {
-            if (!_children.empty()) {
-                for (const std::pair<std::string, AbstractPityUnit &> child : _children) {
+            if (!getChildren().empty()) {
+                for (const auto child : getChildren()) {
                     child.second.run();
                 }
             }
@@ -350,11 +326,6 @@ namespace pEp {
             }
         }
 
-        void AbstractPityUnit::_addChildUnit(AbstractPityUnit &unit)
-        {
-            _children.insert(std::pair<std::string, AbstractPityUnit &>(unit.getName(), unit));
-        }
-
         bool AbstractPityUnit::_isProcessUnit() const
         {
             bool ret = false;
@@ -365,30 +336,12 @@ namespace pEp {
             return ret;
         }
 
-        bool AbstractPityUnit::_isRootUnit() const
-        {
-            if (_parent == nullptr) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-        AbstractPityUnit *AbstractPityUnit::rootUnit()
-        {
-            if (!_isRootUnit()) {
-                return _parent->rootUnit();
-            } else {
-                return this;
-            }
-        }
-
         const AbstractPityUnit &AbstractPityUnit::parentingProcessUnit() const
         {
-            if (_isRootUnit() || _isProcessUnit()) {
+            if (isRoot() || _isProcessUnit()) {
                 return *this;
             } else {
-                return _parent->parentingProcessUnit();
+                return getParent()->parentingProcessUnit();
             }
         }
 
@@ -409,8 +362,8 @@ namespace pEp {
             if (_transport != nullptr) {
                 ret = _transport.get();
             } else {
-                if (!_isRootUnit()) {
-                    ret = _parent->transport();
+                if (!isRoot()) {
+                    ret = getParent()->transport();
                 }
             }
             return ret;
@@ -449,7 +402,6 @@ namespace pEp {
             }
         }
 
-
         Utils::Color AbstractPityUnit::_termColor() const
         {
             return _colForProcUnitNr(procUnitNr);
@@ -465,4 +417,3 @@ namespace pEp {
 
     } // namespace PityTest11
 } // namespace pEp
-

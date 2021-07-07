@@ -7,6 +7,7 @@
 #include "../../../src/pEpLog.hh"
 #include "../../../src/std_utils.hh"
 #include "fs_mutex.hh"
+#include "PityTree.hh"
 #include "PityTransport.hh"
 #include <string>
 #include <map>
@@ -18,7 +19,7 @@
 
 namespace pEp {
     namespace PityTest11 {
-        class AbstractPityUnit {
+        class AbstractPityUnit : public PityTree<AbstractPityUnit> {
         public:
             enum class ExecutionMode
             {
@@ -30,8 +31,9 @@ namespace pEp {
                 INHERIT
             };
 
+            AbstractPityUnit(const std::string& name, ExecutionMode exec_mode = ExecutionMode::FUNCTION);
             AbstractPityUnit(
-                AbstractPityUnit* const parent,
+                AbstractPityUnit& parent,
                 const std::string& name,
                 ExecutionMode exec_mode = ExecutionMode::FUNCTION);
 
@@ -40,13 +42,9 @@ namespace pEp {
             static std::string getGlobalRootDir();
 
             // Read-Only
-            std::string getName() const;
-            std::string getPath() const;
             std::string getPathShort() const;
             std::string processDir(); // own process dir
             std::string transportDir();
-            AbstractPityUnit* getParent() const;
-            bool _isRootUnit() const; // true if has no parent
 
             // Main funcs
             void run();
@@ -61,8 +59,6 @@ namespace pEp {
             void logH3(const std::string& msg) const;
 
             // Util
-            static std::string _normalizeName(
-                std::string name); //TODO HACK in PityTransport this should be private
             void recreateDirsRecursively();
 
             //Transport
@@ -87,17 +83,13 @@ namespace pEp {
             // METHODS
             // Execution
             void _init();
+            void _initrun();
             void _run();
             virtual void _runSelf() = 0;
             void _runChildren() const;
             void _executeInFork(std::function<void(void)> func, bool wait_child) const;
             void _waitChildProcesses() const;
 
-
-            // Modify
-            void _addChildUnit(AbstractPityUnit& unit);
-
-            AbstractPityUnit* rootUnit();
             const AbstractPityUnit& parentingProcessUnit() const;
 
             // Query
@@ -107,13 +99,9 @@ namespace pEp {
             // Transport
             void _createTransport();
 
-
             // Fields
             // ------
-            AbstractPityUnit* _parent;                                //nullptr if RootUnit
-            std::map<const std::string, AbstractPityUnit&> _children; // map to guarantee uniqueness of sibling-names
             static std::string _global_root_dir;
-            const std::string _name;
             int procUnitNr;
             ExecutionMode _exec_mode;
             static int procUnitsCount; // will be increased in every constructor
