@@ -55,13 +55,13 @@ int main(int argc, char *argv[])
     // 1. Create the swarm process TestUnit
     // 2. Append a PityUnit to process 1 unit
     auto unit1 = swarm.addTestUnit(0, "unit1", test_func1);
-    auto unit1_1 = PityUnit<PityPerspective>(unit1,"unit1_1", test_func2);
+    auto unit1_1 = PityUnit<PityPerspective>(*unit1,"unit1_1", test_func2);
     
     auto unit2 = swarm.addTestUnit(1, "unit2", test_func1);
-    auto unit2_1 = PityUnit<PityPerspective>(unit2,"unit2_1", test_func2);
+    auto unit2_1 = PityUnit<PityPerspective>(*unit2,"unit2_1", test_func2);
 
     auto unit3 = swarm.addTestUnit(2, "unit3", test_func1);
-    auto unit3_1 = PityUnit<PityPerspective>(unit3,"unit3_1", test_func2);
+    auto unit3_1 = PityUnit<PityPerspective>(*unit3,"unit3_1", test_func2);
 
     swarm.run();
 }

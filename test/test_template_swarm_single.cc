@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
     PitySwarm swarm{ model };
 
     auto unit1 = swarm.addTestUnit(0, "unit1", test_func1);
-    auto unit1_1 = PityUnit<PityPerspective>(unit1, "unit1_1", test_func2);
+    auto unit1_1 = PityUnit<PityPerspective>(*unit1, "unit1_1", test_func2);
 
     swarm.run();
 }
