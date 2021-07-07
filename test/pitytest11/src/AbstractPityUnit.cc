@@ -28,6 +28,7 @@ namespace pEp {
         AbstractPityUnit::AbstractPityUnit(const std::string &name, ExecutionMode exec_mode) :
             PityTree<AbstractPityUnit>(*this, name), _exec_mode{ exec_mode }, procUnitNr{ 0 }
         {
+            _init();
         }
 
         AbstractPityUnit::AbstractPityUnit(
@@ -37,8 +38,13 @@ namespace pEp {
             PityTree<AbstractPityUnit>(*this, name, parent),
             _exec_mode{ exec_mode }, procUnitNr{ 0 }
         {
+            _init();
         }
 
+        void AbstractPityUnit::_init() {
+            _log_mutex = std::make_shared<fs_mutex>("log.mutex");
+            _log_mutex->release();
+        }
 
         // static
         void AbstractPityUnit::setGlobalRootDir(const std::string &dir)
@@ -162,8 +168,6 @@ namespace pEp {
         void AbstractPityUnit::run(bool init_tree)
         {
             pEpLogClass("called");
-            _log_mutex = std::make_shared<fs_mutex>("log.mutex");
-            _log_mutex->release();
 
             if (init_tree) {
                 logH1("PityTest Starting...");
