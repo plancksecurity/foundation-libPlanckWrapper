@@ -172,16 +172,19 @@ namespace pEp {
 
                 _logRaw("Ensuring GlobalRootDir...");
                 Utils::dir_ensure(getGlobalRootDir());
-                _logRaw("Determining process numbers recursively...");
-                _initProcUnitNrRecurse();
-                _logRaw("Initializing Transport recursively...");
-                _initTransportRecurse();
+
                 _logRaw("Recreating process dirs recursively...");
                 _initDirsRecursive();
+
+                _logRaw("Initializing Transport recursively...");
+                _initTransportRecurse();
 
                 _logRaw("\n\nTestTree");
                 _logRaw("--------");
                 _logRaw(to_string() + "\n");
+
+
+                _initProcUnitNrRecurse();
             }
 
 
