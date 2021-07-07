@@ -28,7 +28,7 @@ namespace pEp {
         std::string to_string(const ::pEp_group *const group, bool full = true, int indent = 0);
 
         // Misc
-        std::string readKey();
+        std::string readKey(); // TODO: Move to std_utils
 
     } // namespace Utils
 } // namespace pEp

@@ -248,6 +248,7 @@ namespace pEp {
             return builder.str();
         }
 
+        // TODO: Move to std_utils
         std::string readKey()
         {
             std::string ret;
