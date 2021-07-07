@@ -20,14 +20,25 @@
 
 namespace pEp {
     namespace PityTest11 {
-            // CONSTRUCTOR
-            template<class TestContext>
-            PityUnit<TestContext>::PityUnit(
-                AbstractPityUnit *const parent,
-                const std::string &name,
-                TestFunction test_func,
-                TestContext *perspective,
-                ExecutionMode exec_mode) :
+
+        template<class TestContext>
+        PityUnit<TestContext>::PityUnit(
+            const std::string &name,
+            TestFunction test_func,
+            TestContext *perspective,
+            ExecutionMode exec_mode) :
+            AbstractPityUnit(name, exec_mode),
+            _perspective{ perspective }, _test_func{ test_func }
+        {
+        }
+
+        template<class TestContext>
+        PityUnit<TestContext>::PityUnit(
+            AbstractPityUnit &parent,
+            const std::string &name,
+            TestFunction test_func,
+            TestContext *perspective,
+            ExecutionMode exec_mode) :
             AbstractPityUnit(parent, name, exec_mode),
             _perspective{ perspective }, _test_func{ test_func }
         {
@@ -59,7 +70,7 @@ namespace pEp {
             if (_perspective != nullptr) {
                 ret = _perspective;
             } else {
-                if (!_isRootUnit()) {
+                if (!isRoot()) {
                     ret = (dynamic_cast<PityUnit<TestContext> *>(getParent()))->getPerspective();
                 }
             }

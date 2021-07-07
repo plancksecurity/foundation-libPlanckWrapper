@@ -28,7 +28,13 @@ namespace pEp {
             // Constructors are private
             PityUnit() = delete;
             explicit PityUnit<TestContext>(
-                AbstractPityUnit* const parent,
+                const std::string& name,
+                TestFunction test_func = nullptr,
+                TestContext* perspective = nullptr,
+                ExecutionMode exec_mode = ExecutionMode::FUNCTION);
+
+            explicit PityUnit<TestContext>(
+                AbstractPityUnit& parent,
                 const std::string& name,
                 TestFunction test_func = nullptr,
                 TestContext* perspective = nullptr,
