@@ -34,32 +34,36 @@ namespace pEp {
             explicit PityUnit<TestContext>(
                 const std::string& name,
                 TestFunction test_func = nullptr,
-                TestContext* perspective = nullptr,
+                TestContext* ctx = nullptr,
                 ExecutionMode exec_mode = ExecutionMode::FUNCTION);
 
             explicit PityUnit<TestContext>(
                 AbstractPityUnit& parent,
                 const std::string& name,
                 TestFunction test_func = nullptr,
-                TestContext* perspective = nullptr,
+                TestContext* ctx = nullptr,
                 ExecutionMode exec_mode = ExecutionMode::FUNCTION);
 
-            PityUnit<TestContext>(const PityUnit<TestContext> &rhs);
+            PityUnit<TestContext>(const PityUnit<TestContext>& rhs);
 
             // copy-assign
             PityUnit<TestContext>& operator=(const PityUnit<TestContext>& rhs);
 
             // clone
-            PityUnit<TestContext> *clone() override;
+            PityUnit<TestContext>* clone() override;
 
             // Read-Only
-            TestContext* getPerspective() const;
+            TestContext* getContext() const;
 
-        private:
+        protected:
             void _runSelf() override;
 
+        private:
+            void _copyContext(const PityUnit<TestContext>& rhs);
+
             // Fields
-            TestContext* _perspective; //nullptr if inherited
+            TestContext* _ctx;                       // nullptr if inherited
+            std::shared_ptr<TestContext> _owned_ctx; // if you copy
             TestFunction _test_func;
         };
     }; // namespace PityTest11
