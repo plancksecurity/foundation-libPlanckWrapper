@@ -12,20 +12,24 @@
 #include <memory>
 #include <functional>
 
+// PitySwarm creates a swarm of independent process nodes.
+// Each node has its own perspective
+// The perspective is a derivate of the model
+// The model is the objective reality
+// The perspective is the subjective reality
+
 namespace pEp {
     namespace PityTest11 {
         class PitySwarm {
         public:
+            using TestUnit = PityUnit<PityPerspective>;
             // Constructors
-            PitySwarm(PityModel& model);
+            explicit PitySwarm(const std::string& name, PityModel& model);
 
-            PityUnit<PityPerspective>* addTestUnit(
-                int nodeNr,
-                const std::string& name,
-                PityUnit<PityPerspective>::TestFunction test_func);
-
-            //Run
+            TestUnit& addTestUnit(int nodeNr, const TestUnit& unit);
             void run();
+
+            TestUnit& getSwarmUnit();
 
             //internal logging
             static bool debug_log_enabled;
@@ -34,15 +38,14 @@ namespace pEp {
         private:
             // methods
             void _createPerspective(const PityModel& model, PityPerspective* psp, int node_nr);
-            int _init_process(PityUnit<PityPerspective>& unit, PityPerspective* ctx);
+            int _init_process(TestUnit& unit, PityPerspective* ctx);
 
             // fields
             PityModel& _model;
-            std::shared_ptr<PityUnit<PityPerspective>> _rootUnit;
-            std::vector<std::shared_ptr<PityUnit<PityPerspective>>> _nodeUnits;
-            std::vector<std::shared_ptr<PityUnit<PityPerspective>>> _testUnits;
+            TestUnit _swarmUnit;
+            // each node has
             std::vector<std::shared_ptr<PityPerspective>> _perspectives;
-
+            std::map<int, TestUnit*> _leafunit;
             //internal logging
             Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger_debug;
         };

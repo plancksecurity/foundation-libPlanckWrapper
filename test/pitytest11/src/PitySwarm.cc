@@ -13,6 +13,51 @@ namespace pEp {
     namespace PityTest11 {
         bool PitySwarm::debug_log_enabled = false;
 
+        PitySwarm::PitySwarm(const std::string& name, PityModel& model) :
+            _model{ model }, _swarmUnit(name)
+        {
+            pEpLogClass("called");
+            // Create perspective
+            for (auto n : _model.nodes()) {
+                auto tmp = std::make_shared<PityPerspective>(model);
+                _createPerspective(_model, tmp.get(), n->getNr());
+                _perspectives.push_back(tmp);
+            }
+
+            // Construct swarm
+            _swarmUnit = TestUnit(_model.getName(), nullptr, nullptr);
+
+            for (auto n : _model.nodes()) {
+                TestUnit* tmp = &_swarmUnit.addNew<TestUnit>(
+                    n->getName(),
+                    std::bind(
+                        &PitySwarm::_init_process,
+                        this,
+                        std::placeholders::_1,
+                        std::placeholders::_2),
+                    _perspectives.at(n->getNr()).get(),
+                    TestUnit::ExecutionMode::PROCESS_PARALLEL);
+                _leafunit.insert(std::pair<int, TestUnit*>(n->getNr(), tmp));
+            }
+        }
+
+        PitySwarm::TestUnit& PitySwarm::getSwarmUnit()
+        {
+            return _swarmUnit;
+        }
+
+        PitySwarm::TestUnit& PitySwarm::addTestUnit(int nodeNr, const TestUnit& unit)
+        {
+            TestUnit& ret = _leafunit.at(nodeNr)->addCopy(std::move(unit));
+            _leafunit.at(nodeNr) = &ret;
+            return ret;
+        }
+
+        void PitySwarm::run()
+        {
+            _swarmUnit.run();
+        }
+
         // The perspective currently is complete defined by specifying a node, since there is a 1-1 node/ident relationship currently
         void PitySwarm::_createPerspective(const PityModel& model, PityPerspective* psp, int node_nr)
         {
@@ -41,59 +86,14 @@ namespace pEp {
             }
         }
 
-        int PitySwarm::_init_process(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
+        int PitySwarm::_init_process(TestUnit& unit, PityPerspective* ctx)
         {
-            std::cout << "Node _init, setting $HOME" << std::endl;
+            std::cout << "Node _initProcUnitNrRecurse, setting $HOME" << std::endl;
             std::string home = unit.processDir();
             setenv("HOME", home.c_str(), true);
             return 0;
         }
 
-        PitySwarm::PitySwarm(PityModel& model) : _model{ model }
-        {
-            pEpLogClass("called");
-            // Create perspective
-            for (auto n : _model.nodes()) {
-                auto tmp = std::make_shared<PityPerspective>(model);
-                _createPerspective(_model, tmp.get(), n->getNr());
-                _perspectives.push_back(tmp);
-            }
 
-            // Construct Tree
-            _rootUnit = std::make_shared<PityUnit<PityPerspective>>(
-                _model.getName(),
-                nullptr,
-                nullptr);
-
-            for (auto n : _model.nodes()) {
-
-                auto tmp = std::make_shared<PityUnit<PityPerspective>>(
-                    *_rootUnit.get(),
-                    n->getName(),
-                    std::bind(&PitySwarm::_init_process,this, std::placeholders::_1, std::placeholders::_2),
-                    _perspectives.at(n->getNr()).get(),
-                    PityUnit<PityPerspective>::ExecutionMode::PROCESS_PARALLEL);
-
-                _nodeUnits.push_back(tmp);
-            }
-        }
-
-        PityUnit<PityPerspective>* PitySwarm::addTestUnit(
-            int nodeNr,
-            const std::string& name,
-            PityUnit<PityPerspective>::TestFunction test_func)
-        {
-            std::shared_ptr<PityUnit<PityPerspective>> tmp = std::make_shared<PityUnit<PityPerspective>>(
-                *_nodeUnits.at(nodeNr).get(),
-                name,
-                test_func);
-            _testUnits.push_back(tmp);
-            return tmp.get();
-        }
-
-        void PitySwarm::run()
-        {
-            _rootUnit->run();
-        }
     } // namespace PityTest11
 } // namespace pEp
