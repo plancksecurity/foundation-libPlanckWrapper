@@ -29,6 +29,10 @@ namespace pEp {
             explicit PityTree(T& self, const std::string& name, T& parent);
             explicit PityTree(const PityTree& rhs, T& owner);
 
+            // copy-assign
+            PityTree& operator=(const PityTree<T>& rhs);
+
+            // clone
             virtual PityTree* clone() = 0;
 
             // Append
@@ -62,6 +66,7 @@ namespace pEp {
             void setParent(T* const parent);
 
         private:
+            void _cloneChildRefs(const PityTree<T>& rhs);
             // Fields
             std::string _nodename;
             T& _self;

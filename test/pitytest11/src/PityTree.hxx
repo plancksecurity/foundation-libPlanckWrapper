@@ -44,12 +44,15 @@ namespace pEp {
         {
             _nodename = rhs._nodename;
             _parent = nullptr;
+            _cloneChildRefs(rhs);
+        }
 
-            for (const ChildRef& cr : rhs.getChildRefs()) {
-                _childobjs.push_back(ChildObj(cr.second.clone()));
-                T& ret = *_childobjs.back().get();
-                addRef(ret);
-            }
+        template<class T>
+        PityTree<T>& PityTree<T>::operator=(const PityTree<T>& rhs) {
+            _nodename = rhs._nodename;
+            _parent = nullptr;
+            _cloneChildRefs(rhs);
+            return *this;
         }
 
         template<class T>
@@ -195,6 +198,17 @@ namespace pEp {
                 '_');
 
             return name;
+        }
+
+        // When you copy a treenode, you need to create a copy of all children
+        // and take ownership
+        template<class T>
+        void PityTree<T>::_cloneChildRefs(const PityTree<T>& rhs) {
+            for (const ChildRef& cr : rhs.getChildRefs()) {
+                _childobjs.push_back(ChildObj(cr.second.clone()));
+                T& ret = *_childobjs.back().get();
+                addRef(ret);
+            }
         }
     } // namespace PityTest11
 } // namespace pEp
