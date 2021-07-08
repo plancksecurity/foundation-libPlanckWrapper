@@ -51,6 +51,16 @@ namespace pEp {
             _init();
         }
 
+        AbstractPityUnit &AbstractPityUnit::operator=(const AbstractPityUnit &rhs)
+        {
+            _procUnitNr = rhs._procUnitNr;
+            _exec_mode = rhs._exec_mode;
+            _transport = rhs._transport;
+            _transport_endpoints = rhs._transport_endpoints;
+            return *this;
+        }
+
+
         void AbstractPityUnit::_init()
         {
             _log_mutex = std::make_shared<fs_mutex>("log.mutex");
@@ -447,7 +457,5 @@ namespace pEp {
             Adapter::pEpLog::log(msg, _color());
             _log_mutex->release();
         }
-
-
     } // namespace PityTest11
 } // namespace pEp

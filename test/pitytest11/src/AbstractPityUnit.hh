@@ -31,6 +31,8 @@ namespace pEp {
                 INHERIT
             };
 
+            // Constructors
+            // ------------
             // RootNode
             explicit AbstractPityUnit(
                 const std::string& name,
@@ -44,6 +46,9 @@ namespace pEp {
 
             // Copy
             explicit AbstractPityUnit(const AbstractPityUnit& rhs, AbstractPityUnit& self);
+
+            // copy-assign
+            AbstractPityUnit& operator=(const AbstractPityUnit& rhs);
 
             AbstractPityUnit* clone() override = 0;
 
