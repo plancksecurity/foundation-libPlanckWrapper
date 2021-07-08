@@ -17,7 +17,11 @@
 
 namespace pEp {
     namespace PityTest11 {
-        template<class TestContext = void>
+        //TODO We need a context basetype
+        class PityBaseCTX {
+        };
+
+        template<class TestContext = PityBaseCTX>
         class PityUnit : public AbstractPityUnit {
         public:
             // Test success if TestFunction:
