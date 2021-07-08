@@ -23,10 +23,10 @@ namespace pEp {
         // static
         bool AbstractPityUnit::debug_log_enabled = false;
         // static
-        int AbstractPityUnit::procUnitsCount = 0;
+        int AbstractPityUnit::_procUnitsCount = 0;
 
         AbstractPityUnit::AbstractPityUnit(const std::string &name, ExecutionMode exec_mode) :
-            PityTree<AbstractPityUnit>(*this, name), _exec_mode{ exec_mode }, procUnitNr{ 0 }
+            PityTree<AbstractPityUnit>(*this, name), _exec_mode{ exec_mode }, _procUnitNr{ 0 }
         {
             _init();
         }
@@ -36,12 +36,23 @@ namespace pEp {
             const std::string &name,
             ExecutionMode exec_mode) :
             PityTree<AbstractPityUnit>(*this, name, parent),
-            _exec_mode{ exec_mode }, procUnitNr{ 0 }
+            _exec_mode{ exec_mode }, _procUnitNr{ 0 }
         {
             _init();
         }
 
-        void AbstractPityUnit::_init() {
+        AbstractPityUnit::AbstractPityUnit(const AbstractPityUnit &rhs, AbstractPityUnit &self) :
+            PityTree<AbstractPityUnit>(rhs, self)
+        {
+            _procUnitNr = rhs._procUnitNr;
+            _exec_mode = rhs._exec_mode;
+            _transport = rhs._transport;
+            _transport_endpoints = rhs._transport_endpoints;
+            _init();
+        }
+
+        void AbstractPityUnit::_init()
+        {
             _log_mutex = std::make_shared<fs_mutex>("log.mutex");
             _log_mutex->release();
         }
@@ -123,18 +134,18 @@ namespace pEp {
         {
             if (!isRoot()) {
                 // Inherit
-                procUnitNr = getParent()->procUnitNr;
+                _procUnitNr = getParent()->_procUnitNr;
                 //Or update if procUnit
                 if (_isProcessUnit()) {
-                    procUnitsCount++;
-                    procUnitNr = procUnitsCount;
+                    _procUnitsCount++;
+                    _procUnitNr = _procUnitsCount;
                 }
             } else {
-                procUnitNr = procUnitsCount;
+                _procUnitNr = _procUnitsCount;
             }
 
             // Recurse
-            for (const auto &chld : getChildren()) {
+            for (const auto &chld : getChildRefs()) {
                 chld.second._initProcUnitNrRecurse();
             }
         }
@@ -149,7 +160,7 @@ namespace pEp {
             }
 
             // Recurse
-            for (const auto &chld : getChildren()) {
+            for (const auto &chld : getChildRefs()) {
                 chld.second._initTransportRecurse();
             }
         }
@@ -159,7 +170,7 @@ namespace pEp {
             Utils::dir_recreate(processDir());
 
             // Recurse
-            for (const auto &child : getChildren()) {
+            for (const auto &child : getChildRefs()) {
                 child.second._initDirsRecursive();
             }
         }
@@ -186,8 +197,7 @@ namespace pEp {
                 _logRaw("\n\nTestTree");
                 _logRaw("--------");
                 _logRaw(to_string() + "\n");
-
-
+                _procUnitsCount = 0;
                 _initProcUnitNrRecurse();
             }
 
@@ -230,9 +240,9 @@ namespace pEp {
             ret = builder.str();
 
             if (recursive) {
-                if (!getChildren().empty()) {
+                if (!getChildRefs().empty()) {
                     indent++;
-                    for (const auto child : getChildren()) {
+                    for (const auto child : getChildRefs()) {
                         ret += child.second.to_string(true, indent);
                     }
                     indent--;
@@ -309,8 +319,8 @@ namespace pEp {
         {
             logH2(_status_string("STARTING"));
             _runSelf();
-            if (!getChildren().empty()) {
-                for (const auto child : getChildren()) {
+            if (!getChildRefs().empty()) {
+                for (const auto child : getChildRefs()) {
                     child.second.run(false);
                 }
             }
@@ -427,7 +437,7 @@ namespace pEp {
 
         Utils::Color AbstractPityUnit::_color() const
         {
-            return _colForProcUnitNr(procUnitNr);
+            return _colForProcUnitNr(_procUnitNr);
         }
 
         void AbstractPityUnit::_logRaw(const std::string &msg) const
@@ -437,6 +447,7 @@ namespace pEp {
             Adapter::pEpLog::log(msg, _color());
             _log_mutex->release();
         }
+
 
     } // namespace PityTest11
 } // namespace pEp

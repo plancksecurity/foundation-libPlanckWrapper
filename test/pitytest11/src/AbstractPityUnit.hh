@@ -31,11 +31,21 @@ namespace pEp {
                 INHERIT
             };
 
-            explicit AbstractPityUnit(const std::string& name, ExecutionMode exec_mode = ExecutionMode::FUNCTION);
+            // RootNode
+            explicit AbstractPityUnit(
+                const std::string& name,
+                ExecutionMode exec_mode = ExecutionMode::FUNCTION);
+
+            // LeafNode
             explicit AbstractPityUnit(
                 AbstractPityUnit& parent,
                 const std::string& name,
                 ExecutionMode exec_mode = ExecutionMode::FUNCTION);
+
+            // Copy
+            explicit AbstractPityUnit(const AbstractPityUnit& rhs, AbstractPityUnit& self);
+
+            AbstractPityUnit* clone() override = 0;
 
             // Read-Write
             static void setGlobalRootDir(const std::string& dir);
@@ -100,11 +110,12 @@ namespace pEp {
             // Fields
             // ------
             static std::string _global_root_dir;
-            int procUnitNr;
+            int _procUnitNr;
             ExecutionMode _exec_mode;
-            static int procUnitsCount; // will be increased in every constructor
+            static int _procUnitsCount; // will be increased in every constructor
             // transport
             std::shared_ptr<PityTransport> _transport; //only ever read via transport()
+            // TODO move endpoints into PityTransport
             Endpoints _transport_endpoints;            // only ever access via transportEndpoints()
 
             // fs-mutex to sync across processes
