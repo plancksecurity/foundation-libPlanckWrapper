@@ -130,10 +130,10 @@ int main(int argc, char *argv[])
     PITYASSERT(b.getChildRefs().size() == 0, "8");
 
     // Create a copy of the node in the parent node
-    b.addCopy(ANode("c")).addCopy(ANode("d"));
+    b.addNew<ANode>("c").addNew<ANode>("d");
     std::cout << a.to_string() << std::endl;
 
-    b.addCopy(BNode("c1")).addCopy(BNode("e"));
+    b.addNew<BNode>("c1").addNew<BNode>("e");
     std::cout << a.to_string() << std::endl;
 
     b.getChild("c1").getChild("e").addCopy(ANode(a), "a1");

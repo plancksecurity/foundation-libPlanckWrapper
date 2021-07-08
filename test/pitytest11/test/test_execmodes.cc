@@ -36,28 +36,31 @@ int main(int argc, char* argv[])
 
     // NEW API
     {
-        // Subprocess 1
-        TestUnit grp1 = TestUnit{ "grp1",
-                                  do_some_work,
-                                  &ctxe,
-                                  TestUnit::ExecutionMode::PROCESS_PARALLEL };
-        grp1.addCopy(TestUnit("test1.1", do_some_work));
-        grp1.addCopy(TestUnit("test1.2", do_some_work));
-
-        // Subprocess 2
-        TestUnit grp2 = TestUnit{ "grp2",
-                                  do_some_work,
-                                  &ctxe,
-                                  TestUnit::ExecutionMode::PROCESS_PARALLEL };
-        grp2.addCopy(TestUnit("unit_2.1", do_some_work));
-        grp2.addCopy(TestUnit("unit_2.2", do_some_work));
-
         // Suite
-        TestUnit root = TestUnit{ "Test Execution Model" };
-        root.addRef(grp1);
-        root.addRef(grp2);
+        TestUnit suite = TestUnit("Test Execution Model");
 
-        root.run();
+        // Groups
+        auto grp1 = suite.addNew<TestUnit>(
+            "grp1",
+            do_some_work,
+            &ctxe,
+            TestUnit::ExecutionMode::PROCESS_PARALLEL);
+
+        auto grp2 = suite.addNew<TestUnit>(
+            "grp2",
+            do_some_work,
+            &ctxe,
+            TestUnit::ExecutionMode::PROCESS_PARALLEL);
+
+        // Units
+        grp1.addNew<TestUnit>("test1.1", do_some_work);
+        grp1.addNew<TestUnit>("test1.2", do_some_work);
+
+        // Units
+        grp2.addNew<TestUnit>("unit_2.1", do_some_work);
+        grp2.addNew<TestUnit>("unit_2.2", do_some_work);
+
+        suite.run();
     }
     // Old API
     {
