@@ -16,6 +16,7 @@ using namespace pEp::Adapter;
 using namespace pEp::Test::Utils;
 using namespace pEp::PityTest11;
 
+using TestUnit = PityUnit<PityPerspective>;
 // Test template for a single process with 2 test units that run in sequence
 
 // This is the 1st test unit
@@ -29,7 +30,7 @@ int test_func1(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
     pity.log("processDir: " + pity.processDir());
     pity.log("getGlobalRootDir: " + pity.getGlobalRootDir());
     pity.log("to_string: " + pity.to_string(false));
-    PITYASSERT(true,"");
+    PITYASSERT(true, "");
     return 0;
 }
 
@@ -37,7 +38,7 @@ int test_func1(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
 int test_func2(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
 {
     pity.log(ctx->own_name);
-    PITYASSERT(false,"");
+    PITYASSERT(false, "");
     return 0;
 }
 
@@ -45,10 +46,10 @@ int test_func2(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
 int main(int argc, char *argv[])
 {
     PityModel model{ "templ_swarm_single", 1 };
-    PitySwarm swarm{ model };
+    PitySwarm swarm{ "swarm_single", model };
 
-    auto unit1 = swarm.addTestUnit(0, "unit1", test_func1);
-    auto unit1_1 = PityUnit<PityPerspective>(*unit1, "unit1_1", test_func2);
+    swarm.addTestUnit(0, TestUnit("unit1", test_func1));
+    swarm.addTestUnit(0, TestUnit("unit1_1", test_func2));
 
     swarm.run();
 }
