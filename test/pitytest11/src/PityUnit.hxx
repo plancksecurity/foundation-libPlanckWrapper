@@ -5,6 +5,8 @@
 #define PITYTEST_PITYUNIT_HXX
 
 #include "../../../src/std_utils.hh"
+#include "PityUnit.hh"
+
 #include <iostream>
 #include <unistd.h>
 #include <cstdlib>
@@ -42,6 +44,20 @@ namespace pEp {
             AbstractPityUnit(parent, name, exec_mode),
             _perspective{ perspective }, _test_func{ test_func }
         {
+        }
+
+        template<class TestContext>
+        PityUnit<TestContext>::PityUnit(const PityUnit<TestContext> &rhs) :
+            AbstractPityUnit(rhs, *this)
+        {
+            _perspective = rhs._perspective;
+            _test_func = rhs._test_func;
+        }
+
+        template<class TestContext>
+        PityUnit<TestContext> *PityUnit<TestContext>::clone()
+        {
+            return new PityUnit<TestContext>(*this);
         }
 
         template<class TestContext>

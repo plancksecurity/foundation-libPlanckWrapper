@@ -23,7 +23,7 @@ namespace pEp {
             // Test success if TestFunction:
             // * does not throw
             // * returns 0
-            using TestFunction = const std::function<int(PityUnit<TestContext>&, TestContext*)>;
+            using TestFunction = std::function<int(PityUnit<TestContext>&, TestContext*)>;
 
             // Constructors are private
             PityUnit() = delete;
@@ -40,11 +40,14 @@ namespace pEp {
                 TestContext* perspective = nullptr,
                 ExecutionMode exec_mode = ExecutionMode::FUNCTION);
 
+            PityUnit<TestContext>(const PityUnit<TestContext> &rhs);
+            PityUnit<TestContext> *clone() override;
+
             // Read-Only
             TestContext* getPerspective() const;
 
         private:
-            void _runSelf();
+            void _runSelf() override;
 
             // Fields
             TestContext* _perspective; //nullptr if inherited
