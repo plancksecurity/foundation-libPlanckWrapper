@@ -10,9 +10,7 @@
 #include "PityTree.hh"
 #include "PityTransport.hh"
 #include <string>
-#include <map>
 #include <memory>
-#include <unordered_map>
 #include <functional>
 
 // Yes, the mem mgmt is purely static on purpose (so far)

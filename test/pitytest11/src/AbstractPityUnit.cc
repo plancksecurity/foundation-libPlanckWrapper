@@ -7,12 +7,8 @@
 #include <unistd.h>
 #include <cstdlib>
 #include <sys/stat.h>
-#include <functional>
-#include <algorithm>
-#include <sstream>
 #include <exception>
 #include <memory>
-#include <unordered_map>
 #include <sys/wait.h>
 
 
