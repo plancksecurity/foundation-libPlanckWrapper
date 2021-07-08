@@ -10,9 +10,7 @@
 #include "fs_mutex.hh"
 #include "PityTransport.hh"
 #include <string>
-#include <map>
 #include <memory>
-#include <unordered_map>
 #include <functional>
 
 namespace pEp {
