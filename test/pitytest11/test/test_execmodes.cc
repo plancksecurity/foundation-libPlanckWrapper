@@ -32,57 +32,60 @@ int main(int argc, char* argv[])
     TestUnit::debug_log_enabled = false;
     CTXExecmodes ctxe;
     ctxe.sleepmilis = 100;
-    ctxe.rep_count = 100;
-    //    Utils::readKey();
+    ctxe.rep_count = 10;
 
-    // The RootNode is the
-    TestUnit root = TestUnit{ "Test Execution Model" };
+    // NEW API
+    {
+        // Subprocess 1
+        TestUnit grp1 = TestUnit{ "grp1",
+                                  do_some_work,
+                                  &ctxe,
+                                  TestUnit::ExecutionMode::PROCESS_PARALLEL };
+        grp1.addCopy(TestUnit("test1.1", do_some_work));
+        grp1.addCopy(TestUnit("test1.2", do_some_work));
 
-    // Subprocess 1
-    TestUnit test1 = TestUnit{ "node1", do_some_work, &ctxe, TestUnit::ExecutionMode::PROCESS_PARALLEL };
-    TestUnit test1_1 = TestUnit{ "test1.1", do_some_work };
-    TestUnit test1_2 = TestUnit{ "test1.2", do_some_work };
+        // Subprocess 2
+        TestUnit grp2 = TestUnit{ "grp2",
+                                  do_some_work,
+                                  &ctxe,
+                                  TestUnit::ExecutionMode::PROCESS_PARALLEL };
+        grp2.addCopy(TestUnit("unit_2.1", do_some_work));
+        grp2.addCopy(TestUnit("unit_2.2", do_some_work));
 
-    root.add(test1);
-    test1.add(test1_1);
-    test1.add(test1_2);
+        // Suite
+        TestUnit root = TestUnit{ "Test Execution Model" };
+        root.addRef(grp1);
+        root.addRef(grp2);
 
-    // Subprocess 2
-    TestUnit test2 = TestUnit{ "node2", do_some_work, &ctxe, TestUnit::ExecutionMode::PROCESS_PARALLEL };
-    TestUnit test2_1 = TestUnit{ "test2.1", do_some_work };
-    TestUnit test2_2 = TestUnit{ "test2.2", do_some_work };
-    root.add(test2);
-    test2.add(test2_1);
-    test2.add(test2_2);
+        root.run();
+    }
+    // Old API
+    {
+        // The RootNode is the
+        TestUnit root_old = TestUnit{ "Test Execution Model" };
 
-    root.run();
+        // Subprocess 1
+        TestUnit test1 = TestUnit{ root_old,
+                                   "node1",
+                                   do_some_work,
+                                   &ctxe,
+                                   TestUnit::ExecutionMode::PROCESS_PARALLEL };
 
-    /*
-// The RootNode is the
-    TestUnit root = TestUnit{  "Test Execution Model" };
+        TestUnit test1_1 = TestUnit{ test1, "test1.1", do_some_work };
 
-    // Subprocess 1
-    TestUnit test1 = TestUnit{ root,
-                               "node1",
-                               do_some_work,
-                               &ctxe,
-                               TestUnit::ExecutionMode::PROCESS_PARALLEL };
+        TestUnit test1_2 = TestUnit{ test1, "test1.2", do_some_work };
 
-    TestUnit test1_1 = TestUnit{ test1, "test1.1", do_some_work };
+        // Subprocess 2
+        TestUnit test2 = TestUnit{ root_old,
+                                   "node2",
+                                   do_some_work,
+                                   &ctxe,
+                                   TestUnit::ExecutionMode::PROCESS_PARALLEL };
 
-    TestUnit test1_2 = TestUnit{ test1, "test1.2", do_some_work };
+        TestUnit test2_1 = TestUnit{ test2, "test2.1", do_some_work };
 
-    // Subprocess 2
-    TestUnit test2 = TestUnit{ root,
-                               "node2",
-                               do_some_work,
-                               &ctxe,
-                               TestUnit::ExecutionMode::PROCESS_PARALLEL };
+        TestUnit test2_2 = TestUnit{ test2, "test2.2", do_some_work };
 
-    TestUnit test2_1 = TestUnit{ test2, "test2.1", do_some_work };
-
-    TestUnit test2_2 = TestUnit{ test2, "test2.2", do_some_work };
-
-    root.run();
-     */
+        root_old.run();
+    }
 }
