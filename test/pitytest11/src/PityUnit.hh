@@ -25,7 +25,7 @@ namespace pEp {
             // * returns 0
             using TestFunction = std::function<int(PityUnit<TestContext>&, TestContext*)>;
 
-            // Constructors are private
+            // Constructors
             PityUnit() = delete;
             explicit PityUnit<TestContext>(
                 const std::string& name,
@@ -41,6 +41,11 @@ namespace pEp {
                 ExecutionMode exec_mode = ExecutionMode::FUNCTION);
 
             PityUnit<TestContext>(const PityUnit<TestContext> &rhs);
+
+            // copy-assign
+            PityUnit<TestContext>& operator=(const PityUnit<TestContext>& rhs);
+
+            // clone
             PityUnit<TestContext> *clone() override;
 
             // Read-Only

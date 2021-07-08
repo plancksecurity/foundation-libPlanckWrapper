@@ -55,6 +55,14 @@ namespace pEp {
         }
 
         template<class TestContext>
+        PityUnit<TestContext> &PityUnit<TestContext>::operator=(const PityUnit<TestContext> &rhs)
+        {
+            _perspective = rhs._perspective;
+            _test_func = rhs._test_func;
+            return *this;
+        }
+
+        template<class TestContext>
         PityUnit<TestContext> *PityUnit<TestContext>::clone()
         {
             return new PityUnit<TestContext>(*this);
