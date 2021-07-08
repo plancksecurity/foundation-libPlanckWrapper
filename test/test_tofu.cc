@@ -13,6 +13,9 @@ using namespace pEp::Adapter;
 using namespace pEp::Test::Utils;
 using namespace pEp::PityTest11;
 
+using TestUnit = PityUnit<PityPerspective>;
+
+
 bool did_tx_encrypted = false;
 bool did_rx_encrypted = false;
 
@@ -134,14 +137,18 @@ int main(int argc, char *argv[])
 
     int nodesCount = 2;
     PityModel model{ "test_tofu", nodesCount };
-    PitySwarm swarm{ model };
 
-    swarm.addTestUnit(0, "tofu1", [](PityUnit<PityPerspective> &unit, PityPerspective *ctx) {
-        return tofu(unit, ctx, true);
-    });
-    swarm.addTestUnit(1, "tofu2", [](PityUnit<PityPerspective> &unit, PityPerspective *ctx) {
-        return tofu(unit, ctx, false);
-    });
+    TestUnit suite("suite_tofu");
+    PitySwarm swarm{ "swarm_tofu", model };
+    suite.addRef(swarm.getSwarmUnit());
 
-    swarm.run();
+    swarm.addTestUnit(0, TestUnit("tofu1", [](PityUnit<PityPerspective> &unit, PityPerspective *ctx) {
+                          return tofu(unit, ctx, true);
+                      }));
+
+    swarm.addTestUnit(1, TestUnit("tofu2", [](PityUnit<PityPerspective> &unit, PityPerspective *ctx) {
+                          return tofu(unit, ctx, false);
+                      }));
+
+    suite.run();
 }
