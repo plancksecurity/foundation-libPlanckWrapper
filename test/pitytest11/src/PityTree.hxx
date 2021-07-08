@@ -44,49 +44,49 @@ namespace pEp {
         {
             _nodename = rhs._nodename;
             _parent = nullptr;
-            _cloneChildRefs(rhs);
+            _copyChildRefs(rhs);
         }
 
         template<class T>
-        PityTree<T>& PityTree<T>::operator=(const PityTree<T>& rhs) {
+        PityTree<T>& PityTree<T>::operator=(const PityTree<T>& rhs)
+        {
             _nodename = rhs._nodename;
             _parent = nullptr;
-            _cloneChildRefs(rhs);
+            _copyChildRefs(rhs);
             return *this;
         }
 
-        template<class T>
-        T& PityTree<T>::addRef(T& node)
-        {
-            node.setParent(&_self);
-            _childrefs.insert(ChildRef(node.getName(), node));
-            return node;
-        }
-
-
         template<typename T>
-        template<typename... Args>
-        T& PityTree<T>::addNew(Args&&... args)
+        template<typename CT, typename... Args>
+        CT& PityTree<T>::addNew(Args&&... args)
         {
-            _childobjs.push_back(ChildObj(new T(std::forward<Args>(args)...)));
-            T& ret = *_childobjs.back().get();
-            addRef(ret);
-            return ret;
+            static_assert(std::is_base_of<T, CT>::value, "T must be base of CT");
+            std::shared_ptr<CT> tmp = std::make_shared<CT>(std::forward<Args>(args)...);
+            _childobjs.push_back(tmp);
+            addRef(*tmp.get());
+            return *tmp.get();
         }
-
 
         template<typename T>
         template<typename CT>
-        T& PityTree<T>::addCopy(const CT&& t, const std::string& new_name)
+        CT& PityTree<T>::addCopy(const CT&& child, const std::string& new_name)
         {
             static_assert(std::is_base_of<T, CT>::value, "PityTree<T> must be a base of T");
-            _childobjs.push_back(ChildObj(new CT(t)));
-            T& ret = *_childobjs.back().get();
+            CT* tmpraw = new CT(child);
+            _childobjs.push_back(ChildObj(tmpraw));
             if (new_name != "") {
-                ret.setName(new_name);
+                tmpraw->setName(new_name);
             }
-            addRef(ret);
-            return ret;
+            addRef(*tmpraw);
+            return *tmpraw;
+        }
+
+        template<class T>
+        T& PityTree<T>::addRef(T& child)
+        {
+            child.setParent(&_self);
+            _childrefs.insert(ChildRef(child.getName(), child));
+            return child;
         }
 
         template<class T>
@@ -203,7 +203,8 @@ namespace pEp {
         // When you copy a treenode, you need to create a copy of all children
         // and take ownership
         template<class T>
-        void PityTree<T>::_cloneChildRefs(const PityTree<T>& rhs) {
+        void PityTree<T>::_copyChildRefs(const PityTree<T>& rhs)
+        {
             for (const ChildRef& cr : rhs.getChildRefs()) {
                 _childobjs.push_back(ChildObj(cr.second.clone()));
                 T& ret = *_childobjs.back().get();

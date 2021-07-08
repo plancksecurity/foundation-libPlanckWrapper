@@ -36,13 +36,16 @@ namespace pEp {
             virtual PityTree* clone() = 0;
 
             // Append
-            T& addRef(T& node);
+            // creates a new instance of CT, add the new instance as child and returns a ref to it
+            template<typename CT, typename... Args>
+            CT& addNew(Args&&... args);
 
-            template<typename... Args>
-            T& addNew(Args&&... args);
-
+            // Creates a copy, add the copy as child and returns a ref to it
             template<typename CT>
-            T& addCopy(const CT&& t, const std::string& new_name = "");
+            CT& addCopy(const CT&& child, const std::string& new_name = "");
+
+            // Just adds child as a non-owned reference.
+            T& addRef(T& child);
 
             // Query
             T* getParent() const;
@@ -66,7 +69,7 @@ namespace pEp {
             void setParent(T* const parent);
 
         private:
-            void _cloneChildRefs(const PityTree<T>& rhs);
+            void _copyChildRefs(const PityTree<T>& rhs);
             // Fields
             std::string _nodename;
             T& _self;
