@@ -17,17 +17,32 @@ namespace pEp {
         template<class T>
         class PityTree {
             // TODO: NEEEEED THIS
-//            static_assert(std::is_base_of<PityTree<T>, T>::value, "PityTree<T> must be a base of T");
+            // static_assert(std::is_base_of<PityTree<T>, T>::value, "PityTree<T> must be a base of T");
         public:
-            using Children = std::map<const std::string, T&>;
+            using ChildObj = std::shared_ptr<T>;
+            using ChildObjs = std::vector<ChildObj>;
+            using ChildRef = std::pair<const std::string, T&>;
+            using ChildRefs = std::map<const std::string, T&>;
 
+            // Constructors
             explicit PityTree(T& self, const std::string& name);
             explicit PityTree(T& self, const std::string& name, T& parent);
+            explicit PityTree(const PityTree& rhs, T& owner);
 
-            T& add(T& node);
+            virtual PityTree* clone() = 0;
 
+            // Append
+            T& addRef(T& node);
+
+            template<typename... Args>
+            T& addNew(Args&&... args);
+
+            template<typename CT>
+            T& addCopy(const CT&& t, const std::string& new_name = "");
+
+            // Query
             T* getParent() const;
-            Children getChildren() const;
+            ChildRefs getChildRefs() const;
             T& getChild(const std::string& name);
             T& getRoot();
 
@@ -50,8 +65,9 @@ namespace pEp {
             // Fields
             std::string _nodename;
             T& _self;
-            T* _parent = nullptr; //nullptr if RootUnit
-            Children _children;   // map to guarantee uniqueness of sibling-names
+            T* _parent;           //nullptr if RootUnit
+            ChildRefs _childrefs; // map to guarantee uniqueness of sibling-names
+            ChildObjs _childobjs;
         };
     }; // namespace PityTest11
 };     // namespace pEp

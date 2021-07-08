@@ -15,30 +15,75 @@
 #include <memory>
 #include <unordered_map>
 #include <sys/wait.h>
+#include "PityTree.hh"
 
 
 namespace pEp {
     namespace PityTest11 {
 
+        // RootNode
         template<class T>
         PityTree<T>::PityTree(T& self, const std::string& name) :
-            _self{ self }, _nodename{ _normalizeName(name) }
+            _self{ self }, _parent{ nullptr }, _nodename{ _normalizeName(name) }, _childrefs{},
+            _childobjs{}
         {
         }
 
+        // LeafNode
         template<class T>
         PityTree<T>::PityTree(T& self, const std::string& name, T& parent) :
-            _self(self), _nodename{ _normalizeName(name) }
+            _self(self), _parent{ nullptr }, _nodename{ _normalizeName(name) }, _childrefs{},
+            _childobjs{}
         {
-            parent.add(_self);
+            parent.addRef(_self);
+        }
+
+        // Copy
+        template<class T>
+        PityTree<T>::PityTree(const PityTree<T>& rhs, T& owner) : _self{ owner }
+        {
+            _nodename = rhs._nodename;
+            _parent = nullptr;
+
+            for (const ChildRef& cr : rhs.getChildRefs()) {
+                _childobjs.push_back(ChildObj(cr.second.clone()));
+                T& ret = *_childobjs.back().get();
+                addRef(ret);
+            }
         }
 
         template<class T>
-        T& PityTree<T>::add(T& node)
+        T& PityTree<T>::addRef(T& node)
         {
             node.setParent(&_self);
-            _children.insert(std::pair<const std::string, T&>(node.getName(), node));
+            _childrefs.insert(ChildRef(node.getName(), node));
             return node;
+        }
+
+
+        template<typename T>
+        template<typename... Args>
+        T& PityTree<T>::addNew(Args&&... args)
+        {
+            _childobjs.push_back(ChildObj(new T(std::forward<Args>(args)...)));
+            T& ret = *_childobjs.back().get();
+            addRef(ret);
+            return ret;
+        }
+
+
+        template<typename T>
+        template<typename CT>
+        T& PityTree<T>::addCopy(const CT&& t, const std::string& new_name)
+        {
+            static_assert(std::is_base_of<T, CT>::value, "PityTree<T> must be a base of T");
+            _childobjs.push_back(ChildObj(new CT(t)));
+            T& ret = *_childobjs.back().get();
+            if (new_name != "") {
+                ret.setName(new_name);
+            }
+            addRef(ret);
+            return ret;
         }
 
         template<class T>
@@ -99,9 +144,9 @@ namespace pEp {
             ret = builder.str();
 
             if (recursive) {
-                if (!getChildren().empty()) {
+                if (!getChildRefs().empty()) {
                     indent++;
-                    for (auto child : getChildren()) {
+                    for (ChildRef child : getChildRefs()) {
                         ret += child.second.to_string(true, indent);
                     }
                     indent--;
@@ -121,15 +166,21 @@ namespace pEp {
         }
 
         template<class T>
-        typename PityTree<T>::Children PityTree<T>::getChildren() const
+        typename PityTree<T>::ChildRefs PityTree<T>::getChildRefs() const
         {
-            return _children;
+            return _childrefs;
         }
 
         template<class T>
         T& PityTree<T>::getChild(const std::string& name)
         {
-            return _children.at(name);
+            T* ret = nullptr;
+            try {
+                ret = &getChildRefs().at(name);
+            } catch (const std::exception& e) {
+                throw std::invalid_argument("PityNode not found: '" + name + "'");
+            }
+            return *ret;
         }
 
         // name is alphanumeric only (everything else will be replaced by an underscore)
