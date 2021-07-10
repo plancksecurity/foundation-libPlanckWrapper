@@ -13,10 +13,10 @@ namespace pEp {
         class PityPerspective {
         public:
             // Constructors
-            PityPerspective(PityModel& model);
+            PityPerspective(const PityModel& model);
 
             // Lets grant access to the whole model too
-            PityModel& model;
+            const PityModel& model;
 
             // Perspective
             std::string own_name;
