@@ -50,3 +50,4 @@ test_pEpLog_basic
 /test/test_suite_all
 /test/test_sync_init
 /test/test_tofu2
+/test/pitytest11/test/test_assert
