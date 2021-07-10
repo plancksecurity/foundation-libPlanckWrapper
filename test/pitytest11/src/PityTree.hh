@@ -29,7 +29,7 @@ namespace pEp {
             explicit PityTree(const PityTree& rhs, T& owner);
 
             // copy-assign
-            PityTree& operator=(const PityTree<T>& rhs);
+//            PityTree& operator=(const PityTree<T>& rhs);
 
             // clone
             virtual PityTree* clone() = 0;
@@ -39,16 +39,21 @@ namespace pEp {
             template<typename CT, typename... Args>
             CT& addNew(Args&&... args);
 
-            // Creates a copy, add the copy as child and returns a ref to it
+            // Creates a copy, adds the copy as child and returns a ref to it
             template<typename CT>
             CT& addCopy(const CT&& child, const std::string& new_name = "");
+
+            template<typename CT>
+            CT& addCopy(const CT& child, const std::string& new_name = "");
 
             // Just adds child as a non-owned reference.
             T& addRef(T& child);
 
             // Query
+            virtual T& getSelf() = 0;
             T* getParent() const;
             ChildRefs getChildRefs() const;
+            int getChildCount() const;
             T& getChild(const std::string& name);
             T& getRoot();
 

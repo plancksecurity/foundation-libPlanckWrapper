@@ -37,15 +37,15 @@ namespace pEp {
             _copyChildRefs(rhs);
         }
 
-        template<class T>
-        PityTree<T>& PityTree<T>::operator=(const PityTree<T>& rhs)
-        {
-            _nodename = rhs._nodename;
-            _parent = nullptr;
-            _copyChildRefs(rhs);
-            return *this;
-        }
-
+//        template<class T>
+//        PityTree<T>& PityTree<T>::operator=(const PityTree<T>& rhs)
+//        {
+//            _nodename = rhs._nodename;
+//            _parent = nullptr;
+//            _copyChildRefs(rhs);
+//            return *this;
+//        }
+//
         template<typename T>
         template<typename CT, typename... Args>
         CT& PityTree<T>::addNew(Args&&... args)
@@ -69,6 +69,13 @@ namespace pEp {
             }
             addRef(*tmpraw);
             return *tmpraw;
+        }
+
+        template<typename T>
+        template<typename CT>
+        CT& PityTree<T>::addCopy(const CT& child, const std::string& new_name)
+        {
+            return addCopy(std::move(child));
         }
 
         template<class T>
@@ -200,6 +207,12 @@ namespace pEp {
                 T& ret = *_childobjs.back().get();
                 addRef(ret);
             }
+        }
+
+        template<class T>
+        int PityTree<T>::getChildCount() const
+        {
+            return _childrefs.size();
         }
     } // namespace PityTest11
 } // namespace pEp
