@@ -14,7 +14,10 @@ namespace pEp {
         bool PitySwarm::debug_log_enabled = false;
 
         PitySwarm::PitySwarm(const std::string& name, PityModel& model) :
-            _model{ model }, _swarmUnit{ name, nullptr, nullptr, PityUnit<>::ExecutionMode::PROCESS_SEQUENTIAL }
+            _model{ model }, _swarmUnit{ name,
+                                         nullptr,
+                                         nullptr,
+                                         PityUnit<>::ExecutionMode::PROCESS_SEQUENTIAL }
         {
             logger_debug.set_instancename(name);
             pEpLogClass("called");
@@ -45,7 +48,7 @@ namespace pEp {
             _swarmUnit.setExecMode(PityUnit<>::ExecutionMode::PROCESS_SEQUENTIAL);
             _swarmUnit.setName(new_name);
             for (auto n : rhs._nodeUnits) {
-                TestUnit* tmp = &_swarmUnit.addCopy(TestUnit (*n.second));
+                TestUnit* tmp = &_swarmUnit.addCopy(TestUnit(*n.second));
                 _nodeUnits.insert(std::pair<int, TestUnit*>(n.first, tmp));
             }
         }
@@ -91,27 +94,41 @@ namespace pEp {
             PityPerspective psp{ model };
             psp.own_name = model.nodeNr(node_nr)->getName();
 
-            // Default partner is next node, its a circle
-            int partner_node_index = (node_nr + 1) % model.nodes().size();
-            psp.cpt_name = model.nodes().at(partner_node_index)->getName();
-
             // Create peers, everyone but me
-            auto nodes = model.nodes();
-            for (int i = 0; i < nodes.size(); i++) {
+            for (int i = 0; i < model.nodes().size(); i++) {
                 if (i != node_nr) {
-                    psp.peers.push_back(nodes.at(i)->getName());
+                    psp.peers.push_back(TestIdent(model.nodes().at(i)->getIdent()));
+                }
+            }
+
+            // Default partner is next node, its a circle
+            //            int partner_node_index = (node_nr + 1) % model.nodes().size();
+            //            psp.cpt_name = model.nodes().at(partner_node_index)->getName();
+
+            //Default partner is node 0
+            if (node_nr == 0) {
+                psp.setPeerNrAsCpt(0);
+            } else {
+                for (int i = 0; i < psp.peers.size(); i++) {
+                    if (psp.peers.at(i).addr == model.nodeNr(0)->getIdent().addr) {
+                        psp.setPeerNrAsCpt(i);
+                    }
                 }
             }
 
             // Groups
-            int grp_mod_node_nr = 0;
-            if (grp_mod_node_nr == node_nr) {
-                Test::Utils::Group grp1 = Test::Utils::Group{};
-                grp1.name = "grp_" + psp.own_name;
-                grp1.moderator = psp.own_name;
-                grp1.members = psp.peers;
-                psp.own_groups.push_back(grp1);
+            int grpOwneNode = 0;
+            Group grp1 = Group{};
+            grp1.addr = "grp_" + model.nodeNr(grpOwneNode)->getName();
+            grp1.moderator = model.nodeNr(grpOwneNode)->getName();
+            // Create peers, everyone but me
+            for (int i = 0; i < model.nodes().size(); i++) {
+                if (i != grpOwneNode) {
+                    grp1.members.push_back(TestIdent(model.nodes().at(i)->getIdent()));
+                }
             }
+            psp.groups.push_back(grp1);
+
             return psp;
         }
 
