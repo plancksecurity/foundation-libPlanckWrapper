@@ -57,8 +57,12 @@ namespace pEp {
 
             // Read-Only
             std::string getPathShort() const;
-            std::string processDir(); // own process dir
-            std::string transportDir();
+            std::string getProcessDir(); // own process dir
+            std::string getTransportDir();
+            std::string getRootUnitDir();
+            bool isProcessUnit() const; // true if it forks
+            const AbstractPityUnit& getParentProcessUnit() const;
+
 
             // Main funcs
             void run(bool init_tree = true);
@@ -101,12 +105,6 @@ namespace pEp {
             virtual void _runSelf() = 0;
             void _executeInFork(std::function<void(void)> func, bool wait_child) const;
             void _waitChildProcesses() const;
-
-            const AbstractPityUnit& parentingProcessUnit() const;
-
-            // Query
-            bool _isProcessUnit() const; // true if it forks
-            std::string _rootUnitDir();
 
             // Transport
             void _createTransport();

@@ -91,13 +91,13 @@ namespace pEp {
             if (isRoot()) {
                 ret = getName();
             } else {
-                if (_isProcessUnit()) {
+                if (isProcessUnit()) {
                     ret += ".../" + getName();
                 } else {
-                    if (&(parentingProcessUnit()) == (getParent())) {
-                        ret = parentingProcessUnit().getPathShort() + "/" + getName();
+                    if (&(getParentProcessUnit()) == (getParent())) {
+                        ret = getParentProcessUnit().getPathShort() + "/" + getName();
                     } else {
-                        ret = parentingProcessUnit().getPathShort() + "/.../" + getName();
+                        ret = getParentProcessUnit().getPathShort() + "/.../" + getName();
                     }
                 }
             }
@@ -106,38 +106,30 @@ namespace pEp {
 
         // Every process has its own dir inside its rootUnitDir
         // All other units inherit processDir from their Root/ProcessUnit
-        std::string AbstractPityUnit::processDir()
+        std::string AbstractPityUnit::getProcessDir()
         {
             if (isRoot()) {
-                return _rootUnitDir();
+                return getRootUnitDir();
             } else {
-                if (_isProcessUnit()) {
-                    return _rootUnitDir() + getName() + "/";
+                if (isProcessUnit()) {
+                    return getGlobalRootDir() + _normalizeName(getPath()) + "/";
                 } else {
-                    return getParent()->processDir();
+                    return getParent()->getProcessDir();
                 }
             }
         }
 
         // Every RootUnit has its own dir
-        std::string AbstractPityUnit::_rootUnitDir()
+        std::string AbstractPityUnit::getRootUnitDir()
         {
             return getGlobalRootDir() + getRoot().getName() + "/";
         }
 
         // Every process has its own dir inside its rootUnitDir
         // All other units inherit transportDir from their Root/ProcessUnit
-        std::string AbstractPityUnit::transportDir()
+        std::string AbstractPityUnit::getTransportDir()
         {
-            if (isRoot()) {
-                throw std::runtime_error("No transport dir");
-            } else {
-                if (_isProcessUnit()) {
-                    return processDir() + "inbox/";
-                } else {
-                    return getParent()->transportDir();
-                }
-            }
+            return getProcessDir() + "inbox/";
         }
 
         void AbstractPityUnit::_initProcUnitNrRecurse()
@@ -146,7 +138,7 @@ namespace pEp {
                 // Inherit
                 _procUnitNr = getParent()->_procUnitNr;
                 //Or update if procUnit
-                if (_isProcessUnit()) {
+                if (isProcessUnit()) {
                     _procUnitsCount++;
                     _procUnitNr = _procUnitsCount;
                 }
@@ -162,9 +154,9 @@ namespace pEp {
 
         void AbstractPityUnit::_initTransportRecurse()
         {
-            logger_debug.set_instancename(getPath());
+
             if (!isRoot()) {
-                if (_isProcessUnit()) {
+                if (isProcessUnit()) {
                     _createTransport();
                 }
             }
@@ -177,7 +169,7 @@ namespace pEp {
 
         void AbstractPityUnit::_initDirsRecursive()
         {
-            Utils::dir_recreate(processDir());
+            Utils::dir_recreate(getProcessDir());
 
             // Recurse
             for (const auto &child : getChildRefs()) {
@@ -200,6 +192,8 @@ namespace pEp {
 
                 _logRaw("Recreating process dirs recursively...");
                 _initDirsRecursive();
+                //TODO:HACK wait for dir
+                Utils::sleep_millis(500);
 
                 _logRaw("Initializing Transport recursively...");
                 _initTransportRecurse();
@@ -213,7 +207,7 @@ namespace pEp {
 
 
             // TODO: hack
-            setenv("HOME", processDir().c_str(), true);
+            setenv("HOME", getProcessDir().c_str(), true);
 
             // Execute in fork and wait here until process ends
             if (_exec_mode == ExecutionMode::PROCESS_SEQUENTIAL) { // fork
@@ -244,7 +238,7 @@ namespace pEp {
             builder << getName();
             builder << " [ ";
             builder << to_string(_exec_mode) << " - ";
-            builder << "\"" << processDir() << "\"";
+            builder << "\"" << getProcessDir() << "\"";
             builder << " ]";
             builder << std::endl;
             ret = builder.str();
@@ -284,7 +278,7 @@ namespace pEp {
 
         void AbstractPityUnit::registerAsTransportEndpoint()
         {
-            transportEndpoints().insert({ getName(), transportDir() });
+            transportEndpoints().insert({ getName(), getTransportDir() });
         }
 
         Endpoints &AbstractPityUnit::transportEndpoints()
@@ -334,6 +328,9 @@ namespace pEp {
                     child.second.run(false);
                 }
             }
+
+            // This should be fine
+            _waitChildProcesses();
         }
 
         void AbstractPityUnit::_executeInFork(std::function<void(void)> func, bool wait_child) const
@@ -369,7 +366,7 @@ namespace pEp {
             }
         }
 
-        bool AbstractPityUnit::_isProcessUnit() const
+        bool AbstractPityUnit::isProcessUnit() const
         {
             bool ret = false;
             if (_exec_mode == ExecutionMode::PROCESS_SEQUENTIAL ||
@@ -379,12 +376,12 @@ namespace pEp {
             return ret;
         }
 
-        const AbstractPityUnit &AbstractPityUnit::parentingProcessUnit() const
+        const AbstractPityUnit &AbstractPityUnit::getParentProcessUnit() const
         {
-            if (isRoot() || _isProcessUnit()) {
+            if (isRoot() || isProcessUnit()) {
                 return *this;
             } else {
-                return getParent()->parentingProcessUnit();
+                return getParent()->getParentProcessUnit();
             }
         }
 
@@ -393,7 +390,7 @@ namespace pEp {
         void AbstractPityUnit::_createTransport()
         {
             registerAsTransportEndpoint();
-            _transport = std::make_shared<PityTransport>(transportDir(), transportEndpoints());
+            _transport = std::make_shared<PityTransport>(getTransportDir(), transportEndpoints());
         }
 
         // Inherited (if null see parent recursively)
@@ -424,7 +421,7 @@ namespace pEp {
         //static
         Utils::Color AbstractPityUnit::_colForProcUnitNr(int procUnitNr)
         {
-            int nrColors = 7;
+            int nrColors = 6;
             switch (procUnitNr % nrColors) {
                 case 0:
                     return Utils::Color::WHITE;
@@ -438,8 +435,6 @@ namespace pEp {
                     return Utils::Color::BLUE;
                 case 5:
                     return Utils::Color::MAGENTA;
-                case 6:
-                    return Utils::Color::RED;
                 default:
                     return Utils::Color::WHITE;
             }
