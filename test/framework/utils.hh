@@ -106,13 +106,6 @@ namespace pEp {
             pEpMessage dup(const ::message *const msg);
             pEpMessage kill(::message *const msg);
 
-            // Group
-            struct Group {
-                std::string name;
-                std::string moderator;
-                std::vector<std::string> members;
-            };
-
             // helpers
             pEpIdent createOwnIdent(const std::string &address);
             pEpIdent createCptIdent(const std::string &address);

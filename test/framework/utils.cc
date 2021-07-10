@@ -125,7 +125,7 @@ namespace pEp {
                 ident = ::new_identity(
                     strdup(address.c_str()),
                     "",
-                    "23",
+                    "",
                     ("partner " + address).c_str());
                 ident->me = false;
 
