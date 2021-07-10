@@ -17,7 +17,7 @@ using namespace pEp::Test::Utils;
 using namespace pEp::PityTest11;
 
 // Test template for 3 nodes (processes) running the same 2 tests each in their own environment in parallel
-using TestUnit = PityUnit<PityPerspective>;
+using TestUnitSwarm = PityUnit<PityPerspective>;
 
 // This is the 1st test unit
 int test_func1(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
@@ -26,8 +26,8 @@ int test_func1(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
     pity.log("getName: " + pity.getName());
     pity.log("getPath: " + pity.getPath());
     pity.log("getPathShort: " + pity.getPathShort());
-    pity.log("transportDir: " + pity.transportDir());
-    pity.log("processDir: " + pity.processDir());
+    pity.log("getTransportDir: " + pity.getTransportDir());
+    pity.log("getProcessDir: " + pity.getProcessDir());
     pity.log("getGlobalRootDir: " + pity.getGlobalRootDir());
     pity.log("to_string: " + pity.to_string());
 
@@ -52,14 +52,14 @@ int main(int argc, char *argv[])
 
     // 1. Create the swarm process TestUnit
     // 2. Append a PityUnit to process 1 unit
-    swarm.addTestUnit(0, TestUnit("unit1", test_func1));
-    swarm.addTestUnit(0, TestUnit("unit1_1", test_func2));
+    swarm.addTestUnit(0, TestUnitSwarm("unit1", test_func1));
+    swarm.addTestUnit(0, TestUnitSwarm("unit1_1", test_func2));
 
-    swarm.addTestUnit(1, TestUnit("unit2", test_func1));
-    swarm.addTestUnit(1, TestUnit("unit2_1", test_func2));
+    swarm.addTestUnit(1, TestUnitSwarm("unit2", test_func1));
+    swarm.addTestUnit(1, TestUnitSwarm("unit2_1", test_func2));
 
-    swarm.addTestUnit(2, TestUnit("unit3", test_func1));
-    swarm.addTestUnit(2, TestUnit("unit3_1", test_func2));
+    swarm.addTestUnit(2, TestUnitSwarm("unit3", test_func1));
+    swarm.addTestUnit(2, TestUnitSwarm("unit3_1", test_func2));
 
     swarm.run();
 }
