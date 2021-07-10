@@ -1,10 +1,10 @@
 include ../../Makefile.conf
 
 TARGET=src/libPityTest.a
-LDFLAGS:=-L../../src/ $(LDFLAGS)
-LDLIBS=-lstdc++ -lpEpAdapter
+LDFLAGS:=-L../../src/ $(LDFLAGS) -L../framework/
+LDLIBS=-lstdc++ -lpEpAdapter -lpEpEngine
 CXXFLAGS:=-std=c++11 -g -I./src $(CXXFLAGS)
-#TEST_EXTRA_OBJS=../framework/utils.o
+TEST_EXTRA_OBJS=../framework/utils.o
 
 # Src
 SRC=$(wildcard src/*.cc)
@@ -21,13 +21,13 @@ TEST_OBJ=$(subst .cc,,$(TEST_SRC))
 
 all: $(TARGET) test
 
-$(TARGET): $(OBJ)
+$(TARGET): $(OBJ) $(TEST_EXTRA_OBJS)
 	$(AR) -rc $@ $^
 
 
 test : $(TEST_OBJ)
 
-$(TEST_OBJ): $(OBJ)
+$(TEST_OBJ): $(OBJ) $(TEST_EXTRA_OBJS)
 
 
 clean:
