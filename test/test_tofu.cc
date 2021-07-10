@@ -13,7 +13,7 @@ using namespace pEp::Adapter;
 using namespace pEp::Test::Utils;
 using namespace pEp::PityTest11;
 
-using TestUnit = PityUnit<PityPerspective>;
+using TestUnitSwarm = PityUnit<PityPerspective>;
 
 
 bool did_tx_encrypted = false;
@@ -28,7 +28,7 @@ void send(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
 {
     // Create Message
     pity.log("Initiating TOFU...");
-    pEpMessage msg = createMessage(ctx->own_ident, ctx->cpt_name, "INIT TOFU");
+    pEpMessage msg = createMessage(ctx->own_ident, ctx->getCpt().addr, "INIT TOFU");
     pity.log("BEFORE encrypt: \n" + Utils::to_string(msg.get()));
 
     //Encrypt
@@ -41,10 +41,10 @@ void send(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
     std::string mime_text = mimeEncode(std::get<0>(msg_encrypted));
 
     // Send
-    pity.transport()->sendMsg(ctx->cpt_name, mime_text);
+    pity.transport()->sendMsg(ctx->getCpt().addr, mime_text);
 }
 
-MinMsgRx receive(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
+MinMsgRx tofu_receive(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
 {
     MinMsgRx ret;
     // Receive
@@ -67,7 +67,7 @@ MinMsgRx receive(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
     return ret;
 }
 
-void reply(PityUnit<PityPerspective> &pity, PityPerspective *ctx, MinMsgRx msg_orig)
+void receiveAndReply(PityUnit<PityPerspective> &pity, PityPerspective *ctx, MinMsgRx msg_orig)
 {
     // Create Message
     std::string addr_orig = std::get<0>(msg_orig);
@@ -80,12 +80,6 @@ void reply(PityUnit<PityPerspective> &pity, PityPerspective *ctx, MinMsgRx msg_o
 
     // Encrypt
     pity.log("TX message - BEFORE encrypt: \n" + Utils::to_string(msg.get()));
-
-    //    pEpIdent tmp_ident = createRawIdent(addr_orig);
-    //    tmp_ident.get()->user_id = strdup("23");
-    //    PEP_STATUS status = ::update_identity(Adapter::session(),tmp_ident.get());
-    //    throw_status(status);
-    //    pity.log("IDENTZZZ:" + Utils::to_string(tmp_ident.get()));
 
     EncryptResult eres = encryptMessage(msg);
     pEpMessage msg_encrypted = std::get<0>(eres);
@@ -104,7 +98,7 @@ int tofu(PityUnit<PityPerspective> &pity, PityPerspective *ctx, bool init)
 {
     pity.log("Model  : " + ctx->model.getName());
     pity.log("myself : " + ctx->own_name);
-    pity.log("partner: " + ctx->cpt_name);
+    pity.log("partner: " + ctx->getCpt().addr);
     pity.log("HOME   : " + std::string(getenv("HOME")));
     pity.log("PUD    : " + std::string(::per_user_directory()));
 
@@ -118,14 +112,14 @@ int tofu(PityUnit<PityPerspective> &pity, PityPerspective *ctx, bool init)
         send(pity, ctx);
     }
 
-    MinMsgRx rx_msg = receive(pity, ctx);
-    reply(pity, ctx, rx_msg);
+    MinMsgRx rx_msg = tofu_receive(pity, ctx);
+    receiveAndReply(pity, ctx, rx_msg);
 
     if (!init) {
-        receive(pity, ctx);
+        tofu_receive(pity, ctx);
     }
 
-    PITYASSERT(did_tx_encrypted, "could never send encrypted");
+    PITYASSERT(did_tx_encrypted, "could never tofu_send encrypted");
     PITYASSERT(did_rx_encrypted, "no encrypted msg received");
     return 0;
 }
@@ -136,19 +130,23 @@ int main(int argc, char *argv[])
     PityUnit<PityPerspective>::debug_log_enabled = false;
 
     int nodesCount = 2;
-    PityModel model{ "test_tofu", nodesCount };
+    PityModel model{ "test_tofu_react", nodesCount };
 
-    TestUnit suite("suite_tofu");
+    TestUnitSwarm suite("suite_tofu");
     PitySwarm swarm{ "swarm_tofu", model };
     suite.addRef(swarm.getSwarmUnit());
 
-    swarm.addTestUnit(0, TestUnit("tofu1", [](PityUnit<PityPerspective> &unit, PityPerspective *ctx) {
-                          return tofu(unit, ctx, true);
-                      }));
+    swarm.addTestUnit(
+        0,
+        TestUnitSwarm("tofu1", [](PityUnit<PityPerspective> &unit, PityPerspective *ctx) {
+            return tofu(unit, ctx, true);
+        }));
 
-    swarm.addTestUnit(1, TestUnit("tofu2", [](PityUnit<PityPerspective> &unit, PityPerspective *ctx) {
-                          return tofu(unit, ctx, false);
-                      }));
+    swarm.addTestUnit(
+        1,
+        TestUnitSwarm("tofu2", [](PityUnit<PityPerspective> &unit, PityPerspective *ctx) {
+            return tofu(unit, ctx, false);
+        }));
 
     suite.run();
 }
