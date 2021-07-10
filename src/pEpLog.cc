@@ -58,12 +58,12 @@ namespace pEp {
 
             void logH2(const string& msg, Utils::Color col)
             {
-                log(decorate_centered(msg, '='), col);
+                log( "\n" +decorate_centered(msg, '='), col);
             }
 
             void logH3(const string& msg, Utils::Color col)
             {
-                log(decorate_centered(msg, '-'), col);
+                log(  decorate_centered(msg, '-'), col);
             }
 
             string decorate_three_lines(const string& msg, char decoration)
@@ -90,8 +90,7 @@ namespace pEp {
                 int decolen = static_cast<int>(
                     floor((double(line_width - msg_truncated.length()))) / 2.0);
 
-                tmp << endl
-                    << std::string(decolen, decoration) << ' ' << msg_truncated << ' '
+                tmp << std::string(decolen, decoration) << ' ' << msg_truncated << ' '
                     << std::string(decolen, decoration);
                 return tmp.str();
             }
