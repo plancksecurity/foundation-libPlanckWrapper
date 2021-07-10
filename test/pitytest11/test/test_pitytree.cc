@@ -19,6 +19,7 @@ public:
 
     // methods
     virtual int implMe(int magic_nr) = 0;
+    AbstractNode& getSelf() override = 0;
     AbstractNode *clone() override = 0;
 
     // fields
@@ -48,6 +49,7 @@ public:
     explicit ANode(const std::string &name);
     explicit ANode(const std::string &name, AbstractNode &parent);
     ANode(const ANode &rhs);
+    ANode &getSelf() override;
     ANode *clone() override;
     int implMe(int magic_nr) override;
 };
@@ -59,6 +61,11 @@ ANode::ANode(const ANode &rhs) : AbstractNode(rhs, *this) {}
 int ANode::implMe(int magic_nr)
 {
     return 23;
+}
+
+ANode &ANode::getSelf()
+{
+    return *this;
 }
 
 ANode *ANode::clone()
@@ -73,6 +80,7 @@ public:
     explicit BNode(const std::string &name);
     explicit BNode(const std::string &name, AbstractNode &parent);
     BNode(const BNode &rhs);
+    BNode &getSelf() override;
     BNode *clone() override;
     int implMe(int magic_nr) override;
 };
@@ -84,6 +92,11 @@ BNode::BNode(const BNode &rhs) : AbstractNode(rhs, *this) {}
 int BNode::implMe(int magic_nr)
 {
     return 42;
+}
+
+BNode &BNode::getSelf()
+{
+    return *this;
 }
 
 BNode *BNode::clone()
@@ -141,4 +154,8 @@ int main(int argc, char *argv[])
 
     a.getChild("b").addCopy(ANode(a), a.getName() + "1");
     std::cout << a.to_string() << std::endl;
+
+    ANode a2 = ANode(a);
+    a2.setName("a2");
+    std::cout << a2.to_string() << std::endl;
 }
