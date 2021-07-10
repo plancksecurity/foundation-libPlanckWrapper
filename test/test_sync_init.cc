@@ -25,19 +25,6 @@ PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, ::sync_hands
     return PEP_STATUS_OK;
 }
 
-class JNISync {
-public:
-    void onSyncStartup()
-    {
-        TESTLOG("called");
-    }
-
-    void onSyncShutdown()
-    {
-        TESTLOG("called");
-    }
-} o;
-
 int main(int argc, char **argv)
 {
     pEp::Test::setup(argc, argv);
@@ -57,12 +44,8 @@ int main(int argc, char **argv)
         TESTLOG(i);
         TESTLOG("SYNC START");
         TESTLOG("starting the adapter including sync");
-        Adapter::startup<JNISync>(
-            messageToSend,
-            notifyHandshake,
-            &o,
-            &JNISync::onSyncStartup,
-            &JNISync::onSyncShutdown);
+
+        Adapter::sync_initialize(Adapter::SyncModes::Off, messageToSend, notifyHandshake, false);
         TESTLOG("SYNC STOP");
         Utils::sleep_millis(500);
         Adapter::shutdown();
