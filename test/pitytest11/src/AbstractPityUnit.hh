@@ -53,6 +53,7 @@ namespace pEp {
             // Read-Write
             static void setGlobalRootDir(const std::string& dir);
             static std::string getGlobalRootDir();
+            void setExecMode(ExecutionMode execMode);
 
             // Read-Only
             std::string getPathShort() const;
@@ -113,13 +114,14 @@ namespace pEp {
             // Fields
             // ------
             static std::string _global_root_dir;
-            int _procUnitNr;
             ExecutionMode _exec_mode;
+            int _procUnitNr;
             static int _procUnitsCount; // will be increased in every constructor
+
             // transport
             std::shared_ptr<PityTransport> _transport; //only ever read via transport()
             // TODO move endpoints into PityTransport
-            Endpoints _transport_endpoints;            // only ever access via transportEndpoints()
+            Endpoints _transport_endpoints; // only ever access via transportEndpoints()
 
             // fs-mutex to sync across processes
             std::shared_ptr<fs_mutex> _log_mutex = nullptr;

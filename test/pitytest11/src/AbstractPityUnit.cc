@@ -42,8 +42,8 @@ namespace pEp {
         {
             _procUnitNr = rhs._procUnitNr;
             _exec_mode = rhs._exec_mode;
-            _transport = rhs._transport;
-            _transport_endpoints = rhs._transport_endpoints;
+            _transport = rhs._transport;                     // Will re-initialized in run()
+            _transport_endpoints = rhs._transport_endpoints; // Will re-initialized in run()
             _init();
         }
 
@@ -75,6 +75,10 @@ namespace pEp {
             return AbstractPityUnit::_global_root_dir;
         }
 
+        void AbstractPityUnit::setExecMode(AbstractPityUnit::ExecutionMode execMode)
+        {
+            _exec_mode = execMode;
+        }
 
         // For:
         // RootUnit                         - "<name>"
@@ -412,7 +416,7 @@ namespace pEp {
         std::string AbstractPityUnit::_status_string(const std::string &msg) const
         {
             std::string ret;
-            ret = "[ " + to_string(_exec_mode) + ":" + std::to_string(getpid()) + " ]  [ " +
+            ret = "[ " + to_string(_exec_mode) + ": " + std::to_string(getpid()) + " ]  [ " +
                   getPathShort() + " ]  [ " + msg + " ]";
             return ret;
         }
