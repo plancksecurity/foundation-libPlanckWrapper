@@ -1,34 +1,47 @@
 #include "../src/PityTest.hh"
-
+#include "../../../src/utils.hh"
 using namespace pEp;
 using namespace pEp::Adapter;
 using namespace pEp::PityTest11;
 
-using TextCTX = PityPerspective;
+using TextCTX = PityModel;
 using TestUnit = PityUnit<TextCTX>;
+
+using TextCTXSwarm = PityPerspective;
+using TestUnitSwarm = PityUnit<TextCTXSwarm>;
 
 int test_init(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
 {
-    unit.log("ModelName:" + ctx->model.getName());
-    unit.log("perspective name:" + ctx->own_name);
-    unit.log("perspective partner:" + ctx->cpt_name);
-    unit.log("HOME: " + std::string(getenv("HOME")));
+    unit.log("GlobalRoot:" + unit.getGlobalRootDir());
+    unit.log("Path:" + unit.getPath());
+    unit.log("ProcessDir:" + unit.getProcessDir());
+    unit.log("TransportDir:" + unit.getTransportDir());
+
+    PITYASSERT(
+        unit.getProcessDir() ==
+            unit.getGlobalRootDir() +
+                AbstractPityUnit::_normalizeName(unit.getParentProcessUnit().getPath()) + "/",
+        "ProcessDir");
+    PITYASSERT(std::string(getenv("HOME")) == unit.getProcessDir(), "HOME");
+    PITYASSERT(unit.getTransportDir() == unit.getProcessDir() + "inbox/", "TransportDir");
     return 0;
 }
 
 int test_run(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
 {
-    std::string msg = "Message from: " + unit.getPathShort();
-    int throttle = 10;
-    int cycles = 10;
+    std::string msg = "Message from: " + unit.getPath();
+    int throttle = 1000;
+    int cycles = 3;
     for (int i = 0; i < cycles; i++) {
         Utils::sleep_millis(throttle);
+        unit.log(std::to_string(ctx->peers.size()));
         for (const auto& peer : ctx->peers) {
+            unit.log("sending to" + peer);
             unit.transport()->sendMsg(peer, msg);
         }
 
         while (unit.transport()->hasMsg()) {
-            unit.log("MSG RX:" + unit.transport()->receiveMsg());
+            unit.log(unit.getPath() + " - MSG RX:" + unit.transport()->receiveMsg());
         }
     }
     return 0;
@@ -36,7 +49,7 @@ int test_run(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
 
 int test_finish(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
 {
-    unit.log("DONE");
+    unit.log(unit.getPath() + " - DONE");
     return 0;
 }
 
@@ -44,14 +57,32 @@ int main(int argc, char* argv[])
 {
     int nodesCount = 3;
     PityModel model{ "model_swarm", nodesCount };
-    PitySwarm swarm{ "swarm1", model };
+    TestUnit suite{ "suite_swarm" };
 
-    std::cout << swarm.getSwarmUnit().to_string() << std::endl;
+    PitySwarm swarm1{ "swarm1", model };
     for (int i = 0; i < nodesCount; i++) {
-        swarm.addTestUnit(i, TestUnit("test1", &test_init));
-        swarm.addTestUnit(i, TestUnit("test1", &test_run));
-        swarm.addTestUnit(i, TestUnit("test1", &test_finish));
+        swarm1.addTestUnit(i, TestUnitSwarm("init", &test_init));
+        swarm1.addTestUnit(i, TestUnitSwarm("run", &test_run));
     }
+    std::cout << swarm1.getSwarmUnit().to_string() << std::endl;
 
-    swarm.run();
+    // swarm2 copy of swarm1
+    PitySwarm swarm2{ swarm1, "swarm2" };
+    // modify
+    for (int i = 0; i < nodesCount; i++) {
+        swarm2.addTestUnit(i, TestUnitSwarm("finish", &test_finish));
+    }
+    //    swarm2.getSwarmUnit().getChildRefs().begin()->second.setName("FDAGAFG");
+    //    swarm2.getSwarmUnit().getChildRefs().begin()->second.getChildRefs().begin()->second.setName("fsadAG");
+    std::cout << swarm1.getSwarmUnit().to_string() << std::endl;
+    std::cout << swarm2.getSwarmUnit().to_string() << std::endl;
+
+    suite.addRef(swarm1.getSwarmUnit());
+    //    TODO this is broken, will not be run
+    suite.addRef(swarm2.getSwarmUnit());
+    suite.run();
+
+    //    swarm1.run();
+    //    Utils::readKey();
+    //    swarm2.run();
 }

@@ -14,7 +14,7 @@ namespace pEp {
         bool PitySwarm::debug_log_enabled = false;
 
         PitySwarm::PitySwarm(const std::string& name, PityModel& model) :
-            _model{ model }, _swarmUnit{ name }
+            _model{ model }, _swarmUnit{ name, nullptr, nullptr, PityUnit<>::ExecutionMode::PROCESS_SEQUENTIAL }
         {
             logger_debug.set_instancename(name);
             pEpLogClass("called");
@@ -40,9 +40,12 @@ namespace pEp {
         {
             logger_debug.set_instancename(new_name);
             _swarmUnit = TestUnit(rhs._swarmUnit);
+            // TODO: Hack for some reason ExecMode is getting copied,
+            // Copy of Swarm is _b0rken
+            _swarmUnit.setExecMode(PityUnit<>::ExecutionMode::PROCESS_SEQUENTIAL);
             _swarmUnit.setName(new_name);
             for (auto n : rhs._nodeUnits) {
-                TestUnit* tmp = &_swarmUnit.addCopy(*n.second);
+                TestUnit* tmp = &_swarmUnit.addCopy(TestUnit (*n.second));
                 _nodeUnits.insert(std::pair<int, TestUnit*>(n.first, tmp));
             }
         }
@@ -63,7 +66,8 @@ namespace pEp {
                 if (current->getChildCount() == 0) {
                     ret = current;
                 } else {
-                    current = dynamic_cast<TestUnit*>(&(current->getChildRefs().begin()->second)); // random child
+                    current = dynamic_cast<TestUnit*>(
+                        &(current->getChildRefs().begin()->second)); // random child
                 }
             } while (ret == nullptr);
             return *ret;
@@ -113,9 +117,10 @@ namespace pEp {
 
         int PitySwarm::_init_process(TestUnit& unit, PityPerspective* ctx)
         {
-            std::cout << "Node _initProcUnitNrRecurse, setting $HOME" << std::endl;
-            std::string home = unit.processDir();
-            setenv("HOME", home.c_str(), true);
+            // This should not be needed
+            //            std::cout << "Node _initProcUnitNrRecurse, setting $HOME" << std::endl;
+            //            std::string home = unit.processDir();
+            //            setenv("HOME", home.c_str(), true);
             return 0;
         }
     } // namespace PityTest11
