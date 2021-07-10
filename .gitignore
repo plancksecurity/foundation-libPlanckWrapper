@@ -29,7 +29,7 @@ test_lm_dummy
 test_sqlite3
 test_pEpsqlite
 test_listmanager_dummy
-test_tofu
+test_tofu_react
 test_pEpLog_basic
 /test/pitytest_data
 
@@ -51,3 +51,5 @@ test_pEpLog_basic
 /test/test_sync_init
 /test/test_tofu2
 /test/pitytest11/test/test_assert
+/test/test_tofu
+/test/test_tofu_one2many
