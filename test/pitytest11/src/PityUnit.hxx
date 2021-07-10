@@ -61,6 +61,12 @@ namespace pEp {
         }
 
         template<class TestContext>
+        PityUnit<TestContext> &PityUnit<TestContext>::getSelf()
+        {
+            return *this;
+        }
+
+        template<class TestContext>
         PityUnit<TestContext> *PityUnit<TestContext>::clone()
         {
             return new PityUnit<TestContext>(*this);
@@ -109,6 +115,19 @@ namespace pEp {
             } else {
                 _ctx = nullptr;
             }
+        }
+
+        template<class TestContext>
+        void PityUnit<TestContext>::setContext(TestContext *ctx)
+        {
+            _ctx = ctx;
+        }
+
+        template<class TestContext>
+        void PityUnit<TestContext>::setContext(TestContext ctx)
+        {
+            _owned_ctx = std::shared_ptr<TestContext>(new TestContext(ctx));
+            _ctx = _owned_ctx.get();
         }
     } // namespace PityTest11
 } // namespace pEp

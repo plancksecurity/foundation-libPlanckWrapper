@@ -47,10 +47,12 @@ namespace pEp {
             // copy-assign
             PityUnit<TestContext>& operator=(const PityUnit<TestContext>& rhs);
 
+            PityUnit<TestContext>& getSelf() override;
             // clone
             PityUnit<TestContext>* clone() override;
 
-            // Read-Only
+            void setContext(TestContext* ctx);
+            void setContext(TestContext ctx);
             TestContext* getContext() const;
 
         protected:
@@ -60,7 +62,8 @@ namespace pEp {
             void _copyContext(const PityUnit<TestContext>& rhs);
 
             // Fields
-            TestContext* _ctx;                       // nullptr if inherited
+            // nullptr if inherited
+            TestContext* _ctx;
             std::shared_ptr<TestContext> _owned_ctx; // if you copy
             TestFunction _test_func;
         };
