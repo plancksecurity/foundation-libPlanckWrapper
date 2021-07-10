@@ -36,8 +36,8 @@ int test_run(PityUnit<PityPerspective>& unit, PityPerspective* ctx)
         Utils::sleep_millis(throttle);
         unit.log(std::to_string(ctx->peers.size()));
         for (const auto& peer : ctx->peers) {
-            unit.log("sending to" + peer);
-            unit.transport()->sendMsg(peer, msg);
+            unit.log("sending to" + peer.addr);
+            unit.transport()->sendMsg(peer.addr, msg);
         }
 
         while (unit.transport()->hasMsg()) {
