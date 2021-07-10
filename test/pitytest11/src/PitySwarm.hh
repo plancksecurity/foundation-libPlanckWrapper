@@ -14,7 +14,7 @@
 
 // PitySwarm creates a swarm of independent process nodes.
 // Each node has its own perspective
-// The perspective is a derivate of the model
+// The perspective is a derivative of the model
 // The model is the objective reality
 // The perspective is the subjective reality
 
@@ -26,26 +26,30 @@ namespace pEp {
             // Constructors
             explicit PitySwarm(const std::string& name, PityModel& model);
 
+            PitySwarm(const PitySwarm& rhs, const std::string& new_name);
+
             TestUnit& addTestUnit(int nodeNr, const TestUnit& unit);
-            void run();
 
             TestUnit& getSwarmUnit();
+            PitySwarm::TestUnit& getLeafUnit(int nodeNr);
+            void run();
+
+
 
             //internal logging
             static bool debug_log_enabled;
-            Adapter::pEpLog::pEpLogger logger_debug{ "PityNode", debug_log_enabled };
+            Adapter::pEpLog::pEpLogger logger_debug{ "PitySwarm", debug_log_enabled };
 
         private:
             // methods
-            void _createPerspective(const PityModel& model, PityPerspective* psp, int node_nr);
+            PityPerspective _createPerspective(const PityModel& model, int node_nr);
             int _init_process(TestUnit& unit, PityPerspective* ctx);
 
             // fields
             PityModel& _model;
             TestUnit _swarmUnit;
             // each node has
-            std::vector<std::shared_ptr<PityPerspective>> _perspectives;
-            std::map<int, TestUnit*> _leafunit;
+            std::map<int, TestUnit*> _nodeUnits;
             //internal logging
             Adapter::pEpLog::pEpLogger& m4gic_logger_n4me = logger_debug;
         };

@@ -14,18 +14,10 @@ namespace pEp {
         bool PitySwarm::debug_log_enabled = false;
 
         PitySwarm::PitySwarm(const std::string& name, PityModel& model) :
-            _model{ model }, _swarmUnit(name)
+            _model{ model }, _swarmUnit{ name }
         {
+            logger_debug.set_instancename(name);
             pEpLogClass("called");
-            // Create perspective
-            for (auto n : _model.nodes()) {
-                auto tmp = std::make_shared<PityPerspective>(model);
-                _createPerspective(_model, tmp.get(), n->getNr());
-                _perspectives.push_back(tmp);
-            }
-
-            // Construct swarm
-            _swarmUnit = TestUnit(_model.getName(), nullptr, nullptr);
 
             for (auto n : _model.nodes()) {
                 TestUnit* tmp = &_swarmUnit.addNew<TestUnit>(
@@ -35,9 +27,23 @@ namespace pEp {
                         this,
                         std::placeholders::_1,
                         std::placeholders::_2),
-                    _perspectives.at(n->getNr()).get(),
+                    nullptr,
                     TestUnit::ExecutionMode::PROCESS_PARALLEL);
-                _leafunit.insert(std::pair<int, TestUnit*>(n->getNr(), tmp));
+                // By value copies the context into the TestUnit
+                tmp->setContext(_createPerspective(_model, n->getNr()));
+                _nodeUnits.insert(std::pair<int, TestUnit*>(n->getNr(), tmp));
+            }
+        }
+
+        PitySwarm::PitySwarm(const PitySwarm& rhs, const std::string& new_name) :
+            _model{ rhs._model }, _swarmUnit{ new_name }
+        {
+            logger_debug.set_instancename(new_name);
+            _swarmUnit = TestUnit(rhs._swarmUnit);
+            _swarmUnit.setName(new_name);
+            for (auto n : rhs._nodeUnits) {
+                TestUnit* tmp = &_swarmUnit.addCopy(*n.second);
+                _nodeUnits.insert(std::pair<int, TestUnit*>(n.first, tmp));
             }
         }
 
@@ -46,10 +52,26 @@ namespace pEp {
             return _swarmUnit;
         }
 
+        PitySwarm::TestUnit& PitySwarm::getLeafUnit(int nodeNr)
+        {
+            TestUnit* ret = nullptr;
+            TestUnit* current = _nodeUnits.at(nodeNr);
+            do {
+                if (current == nullptr) {
+                    throw std::runtime_error("bad fatal cast in the ugly hack");
+                }
+                if (current->getChildCount() == 0) {
+                    ret = current;
+                } else {
+                    current = dynamic_cast<TestUnit*>(&(current->getChildRefs().begin()->second)); // random child
+                }
+            } while (ret == nullptr);
+            return *ret;
+        }
+
         PitySwarm::TestUnit& PitySwarm::addTestUnit(int nodeNr, const TestUnit& unit)
         {
-            TestUnit& ret = _leafunit.at(nodeNr)->addCopy(std::move(unit));
-            _leafunit.at(nodeNr) = &ret;
+            TestUnit& ret = getLeafUnit(nodeNr).addCopy(std::move(unit));
             return ret;
         }
 
@@ -58,20 +80,22 @@ namespace pEp {
             _swarmUnit.run();
         }
 
-        // The perspective currently is complete defined by specifying a node, since there is a 1-1 node/ident relationship currently
-        void PitySwarm::_createPerspective(const PityModel& model, PityPerspective* psp, int node_nr)
+        // The perspective currently is completely defined by specifying a node,
+        //  since there is a 1-1 node/ident relationship currently
+        PityPerspective PitySwarm::_createPerspective(const PityModel& model, int node_nr)
         {
-            psp->own_name = model.nodeNr(node_nr)->getName();
+            PityPerspective psp{ model };
+            psp.own_name = model.nodeNr(node_nr)->getName();
 
             // Default partner is next node, its a circle
             int partner_node_index = (node_nr + 1) % model.nodes().size();
-            psp->cpt_name = model.nodes().at(partner_node_index)->getName();
+            psp.cpt_name = model.nodes().at(partner_node_index)->getName();
 
             // Create peers, everyone but me
             auto nodes = model.nodes();
             for (int i = 0; i < nodes.size(); i++) {
                 if (i != node_nr) {
-                    psp->peers.push_back(nodes.at(i)->getName());
+                    psp.peers.push_back(nodes.at(i)->getName());
                 }
             }
 
@@ -79,11 +103,12 @@ namespace pEp {
             int grp_mod_node_nr = 0;
             if (grp_mod_node_nr == node_nr) {
                 Test::Utils::Group grp1 = Test::Utils::Group{};
-                grp1.name = "grp_" + psp->own_name;
-                grp1.moderator = psp->own_name;
-                grp1.members = psp->peers;
-                psp->own_groups.push_back(grp1);
+                grp1.name = "grp_" + psp.own_name;
+                grp1.moderator = psp.own_name;
+                grp1.members = psp.peers;
+                psp.own_groups.push_back(grp1);
             }
+            return psp;
         }
 
         int PitySwarm::_init_process(TestUnit& unit, PityPerspective* ctx)
@@ -93,7 +118,5 @@ namespace pEp {
             setenv("HOME", home.c_str(), true);
             return 0;
         }
-
-
     } // namespace PityTest11
 } // namespace pEp
