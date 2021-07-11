@@ -11,6 +11,7 @@
 #include <thread>
 
 #include <pEp/sync_api.h>
+#include "callback_dispatcher.hh"
 
 namespace pEp {
 
@@ -29,18 +30,9 @@ namespace pEp {
         // public
         enum class SyncModes
         {
-            Off,
             Sync,
             Async
         };
-
-        void sync_initialize(
-            SyncModes mode,
-            ::messageToSend_t messageToSend,
-            ::notifyHandshake_t notifyHandshake,
-            bool adapter_manages_sync_thread);
-
-        void set_sync_mode(SyncModes mode);
 
         int _inject_sync_event(::SYNC_EVENT ev, void *management);
         int _process_sync_event(::SYNC_EVENT ev, void *management);
@@ -51,8 +43,6 @@ namespace pEp {
 
         template<class T = void>
         void startup(
-            messageToSend_t messageToSend,
-            notifyHandshake_t notifyHandshake,
             T *obj = nullptr,
             std::function<void(T *)> _startup = nullptr,
             std::function<void(T *)> _shutdown = nullptr);
@@ -63,18 +53,53 @@ namespace pEp {
         // returns the thread id of the sync thread
         std::thread::id sync_thread_id();
 
-        enum session_action
-        {
-            init,
-            release,
-        };
-
         class Session {
+        public:
+            // TODO: needed because libpEpAdapter provides a static instance
+            // the session needs to be initialized in order to be usable.
+            Session();
+            // Init using CallbackDispatcher
+            // CAUTION: This may result in a partially initialized session.
+            // If there are any problem with register_sync_callbacks(), it will still
+            // succeed. (e.g. due to no own identities yet)
+            // BUT
+            // * Sync will not work
+            // * Group Encryption will not work
+            // TODO: This needs to be resolved in the engine, new func register_callbacks()
+            // that is not sync specific, and move the sync-checks to "start-sync()"
+            void initialize(SyncModes sync_mode = SyncModes::Async, bool adapter_manages_sync_thread = false);
+            // Arbitrary callbacks
+            void initialize(
+                SyncModes sync_mode,
+                bool adapter_manages_sync_thread,
+                ::messageToSend_t messageToSend,
+                ::notifyHandshake_t notifyHandshake);
+
+            // re-creates the session using same values
+            void refresh();
+
+            // Not copyable
+            Session(const Session &) = delete;
+            Session operator=(const Session&) = delete;
+
+            void release();
+            PEP_SESSION operator()();
+
+            SyncModes _sync_mode;
+            ::messageToSend_t _messageToSend;
+            ::notifyHandshake_t _notifyHandshake;
+            bool _adapter_manages_sync_thread;
+            ::inject_sync_event_t _inject_action;
+
+        private:
+            void _init(
+                ::messageToSend_t messageToSend,
+                ::notifyHandshake_t notifyHandshake,
+                SyncModes sync_mode,
+                bool adapter_manages_sync_thread);
+
             using SessionPtr = std::unique_ptr<_pEpSession, std::function<void(PEP_SESSION)>>;
             SessionPtr _session = nullptr;
-
-        public:
-            PEP_SESSION operator()(session_action action = init);
         };
 
         extern thread_local Session session;
