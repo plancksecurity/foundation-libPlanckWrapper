@@ -30,7 +30,7 @@ extern "C" {
 int main(int argc, char **argv)
 {
     Test::setup(argc, argv);
-
+    Adapter::session.initialize();
     const char *str = "23";
     char *bytes = NULL;
     int n = 42;
@@ -96,6 +96,6 @@ int main(int argc, char **argv)
     status = cache.api(api_test2, Adapter::session(), 23, str, bytes, sl);
     assert(status == PEP_STATUS_OK);
 
-    Adapter::session(Adapter::release);
+    Adapter::session.release();
     return 0;
 }

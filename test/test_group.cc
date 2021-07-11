@@ -72,7 +72,6 @@ GroupQueryInterface* gq = nullptr;
 
 void test_create_alice_me()
 {
-    //    Adapter::session(pEp::Adapter::release);
     logH2("test_create_alice_me");
     alice = ::new_identity("alice@peptest.ch", NULL, "23", "Alice");
     assert(alice);
@@ -115,7 +114,7 @@ void test_create_carol_partner()
 void test_setup_and_start_sync()
 {
     logH2("test_setup_and_start_sync");
-    Adapter::sync_initialize(Adapter::SyncModes::Async, &test_messageToSend, &test_notifyHandshake, false);
+    Adapter::start_sync();
 }
 
 void test_group_create()
@@ -220,7 +219,7 @@ int main(int argc, char** argv)
 
     //    gu = &gdr;
     //    gq = &gdr;
-
+    Adapter::session.initialize();
 
     // Setup Test Context
     test_create_alice_me();
@@ -250,6 +249,6 @@ int main(int argc, char** argv)
     test_group_dissolve();
 
 
-    Adapter::shutdown();
+    Adapter::stop_sync();
     return 0;
 }

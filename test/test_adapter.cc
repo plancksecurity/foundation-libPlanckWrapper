@@ -9,6 +9,7 @@
 #include <pEp/sync_api.h>
 #include <pEp/keymanagement.h>
 #include "../src/Adapter.hh"
+#include "../src/utils.hh"
 
 using namespace std;
 using namespace pEp;
@@ -28,7 +29,9 @@ PEP_STATUS notifyHandshake(::pEp_identity *me, ::pEp_identity *partner, ::sync_h
 int main(int argc, char **argv)
 {
     Test::setup(argc, argv);
+    Adapter::pEpLog::set_enabled(true);
 
+    Adapter::session.initialize(Adapter::SyncModes::Async, false, messageToSend, notifyHandshake);
     // Create new identity
     TESTLOG("updating or creating identity for me");
     ::pEp_identity *me = new_identity("alice@peptest.ch", NULL, "23", "Who the F* is Alice");
@@ -45,10 +48,10 @@ int main(int argc, char **argv)
         TESTLOG(i);
         TESTLOG("SYNC START");
         TESTLOG("starting the adapter including sync");
-        Adapter::startup(messageToSend, notifyHandshake);
+        Adapter::startup();
         TESTLOG("SYNC STOP");
         usleep(sleepuSec);
-        Adapter::shutdown();
+        Adapter::stop_sync();
     }
     return 0;
 }

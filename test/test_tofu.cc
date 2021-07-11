@@ -101,7 +101,7 @@ int tofu(PityUnit<PityPerspective> &pity, PityPerspective *ctx, bool init)
     pity.log("partner: " + ctx->getCpt().addr);
     pity.log("HOME   : " + std::string(getenv("HOME")));
     pity.log("PUD    : " + std::string(::per_user_directory()));
-
+    Adapter::session.initialize();
 
     // Create new identity
     pity.log("updating or creating identity for me");

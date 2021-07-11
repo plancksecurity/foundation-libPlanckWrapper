@@ -82,13 +82,11 @@ void tofu_receiveAndReply(TestUnitSwarm &pity, TextContext *ctx)
 
 int test_create_myself(TestUnitSwarm &pity, TextContext *ctx)
 {
+    Adapter::session.initialize();
     // Create new identity
     pity.log("updating or creating identity for me");
     ctx->own_ident = createOwnIdent(ctx->own_name);
     ::PEP_STATUS status = ::myself(Adapter::session(), ctx->own_ident.get());
-    // Create cpt
-    //    PITYASSERT(ctx->cpt != nullptr, "");
-    //    ctx->cpt->ident = createCptIdent(ctx->getCpt().addr);
     pEp::throw_status(status);
     return 0;
 }

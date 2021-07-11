@@ -28,7 +28,7 @@ PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, ::sync_hands
 int main(int argc, char **argv)
 {
     pEp::Test::setup(argc, argv);
-
+    Adapter::session.initialize(Adapter::SyncModes::Async, false);
     // Create new identity
     TESTLOG("updating or creating identity for me");
     ::pEp_identity *me = ::new_identity("alice@peptest.ch", NULL, "23", "Who the F* is Alice");
@@ -44,11 +44,10 @@ int main(int argc, char **argv)
         TESTLOG(i);
         TESTLOG("SYNC START");
         TESTLOG("starting the adapter including sync");
-
-        Adapter::sync_initialize(Adapter::SyncModes::Off, messageToSend, notifyHandshake, false);
+        Adapter::start_sync();
         TESTLOG("SYNC STOP");
         Utils::sleep_millis(500);
-        Adapter::shutdown();
+        Adapter::stop_sync();
     }
     return 0;
 }

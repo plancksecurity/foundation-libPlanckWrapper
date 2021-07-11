@@ -16,7 +16,7 @@ using namespace std;
 int main(int argc, char** argv)
 {
     Test::setup(argc, argv);
-
+    Adapter::session.initialize();
     passphrase_cache.add("erwin");
     passphrase_cache.add("cathy");
     passphrase_cache.add("bob");

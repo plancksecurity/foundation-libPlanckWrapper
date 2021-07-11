@@ -158,6 +158,11 @@ int test_pEp_init(TestUnitSwarm &pity, TextContext *ctx)
     pity.log("HOME   : " + std::string(getenv("HOME")));
     pity.log("PUD    : " + std::string(::per_user_directory()));
     pity.log("PMD    : " + std::string(::per_machine_directory()));
+    pEp::Adapter::session.initialize(
+        pEp::Adapter::SyncModes::Async,
+        false,
+        test_messageToSend,
+        test_notifyHandshake);
     return 0;
 }
 
@@ -167,19 +172,15 @@ int test_create_myself(TestUnitSwarm &pity, TextContext *ctx)
     pity.log("updating or creating identity for me");
     ctx->own_ident = createOwnIdent(ctx->own_name);
     ::PEP_STATUS status = ::myself(Adapter::session(), ctx->own_ident.get());
-    // Create cpt
-    //    PITYASSERT(ctx->cpt != nullptr, "");
-    //    ctx->cpt->ident = createCptIdent(ctx->getCpt().addr);
     pEp::throw_status(status);
     return 0;
 }
 
 int test_start_sync(TestUnitSwarm &pity, TextContext *ctx)
 {
-    Adapter::sync_initialize(SyncModes::Off, test_messageToSend, test_notifyHandshake, false);
+    Adapter::session
+        .initialize(Adapter::SyncModes::Async, false, test_messageToSend, test_notifyHandshake);
     processsAllMessages();
-
-    ::adapter_group_init();
     return 0;
 }
 
@@ -486,15 +487,6 @@ int main(int argc, char *argv[])
         swarm.addTestUnit(i, TestUnitSwarm("test_send_groupmessage", test_send_groupmessage));
         swarm.addTestUnit(i, TestUnitSwarm("test_receive_all", test_receive_all));
     }
-
-    // ------------------------------------------------------------------------------------
-    //    swarm.addTestUnit(2, TestUnitSwarm("test_pEp_init", test_pEp_init));
-    //    swarm.addTestUnit(2, TestUnitSwarm("test_create_myself", test_create_myself));
-    //    swarm.addTestUnit(2, TestUnitSwarm("test_tofu_react", test_tofu_react));
-    //    swarm.addTestUnit(2, TestUnitSwarm("test_start_sync", test_start_sync));
-    //    swarm.addTestUnit(2, TestUnitSwarm("test_group_join", test_group_join));
-    //    swarm.addTestUnit(2, TestUnitSwarm("test_receive_groupmessage", test_receive_groupmessage));
-    // ------------------------------------------------------------------------------------
 
     suite.run();
 }
