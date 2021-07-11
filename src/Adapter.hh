@@ -47,6 +47,8 @@ namespace pEp {
 
         ::PEP_STATUS _ensure_passphrase(::PEP_SESSION session, const char *fpr);
 
+        void start_sync();
+
         template<class T = void>
         void startup(
             messageToSend_t messageToSend,
@@ -84,7 +86,7 @@ namespace pEp {
 
         // injects a NULL event into sync_event_queue to denote sync thread to
         // shutdown, and joins & removes the sync thread
-        void shutdown();
+        void stop_sync();
 
         bool is_sync_running();
         bool in_shutdown();

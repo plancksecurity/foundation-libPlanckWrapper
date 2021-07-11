@@ -5,6 +5,7 @@
 #include "passphrase_cache.hh"
 #include <stdexcept>
 #include <cassert>
+#include "Adapter.hh"
 
 pEp::CallbackDispatcher pEp::callback_dispatcher;
 
@@ -51,7 +52,7 @@ namespace pEp {
         }
 
         if (targets.empty()) {
-            stop_sync();
+            Adapter::stop_sync();
         }
     }
 
@@ -69,39 +70,6 @@ namespace pEp {
         for (auto target : targets) {
             if (target.on_shutdown) {
                 target.on_shutdown();
-            }
-        }
-    }
-
-    void CallbackDispatcher::start_sync()
-    {
-        pEpLog("called");
-        callback_dispatcher.semaphore.go();
-
-        pEp::Adapter::startup<CallbackDispatcher>(
-            CallbackDispatcher::messageToSend,
-            CallbackDispatcher::notifyHandshake,
-            &callback_dispatcher,
-            &CallbackDispatcher::on_startup,
-            &CallbackDispatcher::on_shutdown);
-
-        pEpLog("all targets signal: SYNC_NOTIFY_START");
-        for (auto target : callback_dispatcher.targets) {
-            if (target.notifyHandshake) {
-                target.notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_START);
-            }
-        }
-    }
-
-    void CallbackDispatcher::stop_sync()
-    {
-        callback_dispatcher.semaphore.stop();
-        Adapter::shutdown();
-        callback_dispatcher.semaphore.go();
-
-        for (auto target : callback_dispatcher.targets) {
-            if (target.notifyHandshake) {
-                target.notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_STOP);
             }
         }
     }

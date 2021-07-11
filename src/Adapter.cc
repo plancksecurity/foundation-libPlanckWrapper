@@ -207,14 +207,23 @@ namespace pEp {
             _inject_sync_event(nullptr, nullptr);
         }
 
+        void start_sync()
+        {
+            startup<pEp::CallbackDispatcher>(
+                &callback_dispatcher,
+                &::pEp::CallbackDispatcher::on_startup,
+                &::pEp::CallbackDispatcher::on_shutdown);
+        }
+
         // public
-        void shutdown()
+        void stop_sync()
         {
             pEpLog("called");
             if (_sync_thread.joinable()) {
                 pEpLog("sync_is_running - injecting null event");
                 inject_sync_shutdown();
                 _sync_thread.join();
+                pEp::callback_dispatcher.notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_STOP);
             }
         }
 
