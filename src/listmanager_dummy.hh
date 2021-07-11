@@ -44,19 +44,19 @@ namespace pEp {
 
     class DBException : public std::runtime_error {
     public:
-        DBException(const std::string& string) : runtime_error(string) {}
+        explicit DBException(const std::string& string) : runtime_error(string) {}
     };
     class ListDoesNotExistException : public std::runtime_error {
     public:
-        ListDoesNotExistException(const std::string& string) : runtime_error(string) {}
+        explicit ListDoesNotExistException(const std::string& string) : runtime_error(string) {}
     };
     class MemberDoesNotExistException : public std::runtime_error {
     public:
-        MemberDoesNotExistException(const std::string& string) : runtime_error(string) {}
+        explicit MemberDoesNotExistException(const std::string& string) : runtime_error(string) {}
     };
     class AlreadyExistsException : public std::runtime_error {
     public:
-        AlreadyExistsException(const std::string& string) : runtime_error(string) {}
+        explicit AlreadyExistsException(const std::string& string) : runtime_error(string) {}
     };
 } // namespace pEp
 
