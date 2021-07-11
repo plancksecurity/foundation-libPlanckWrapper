@@ -53,3 +53,5 @@ test_pEpLog_basic
 /test/pitytest11/test/test_assert
 /test/test_tofu
 /test/test_tofu_one2many
+/test/test_swarm_group
+/test/pitytest11/test/pitytest_data/
