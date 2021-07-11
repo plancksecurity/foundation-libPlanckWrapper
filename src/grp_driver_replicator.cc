@@ -175,6 +175,42 @@ namespace pEp {
             return status;
         }
 
+        PEP_STATUS GroupDriverReplicator::adapter_group_join(
+            ::PEP_SESSION session,
+            ::pEp_identity *group_identity,
+            ::pEp_identity *as_member)  noexcept
+        {
+            pEpLogClass("called");
+            if (!has_repl_src_and_dst()) {
+                return PEP_UNKNOWN_ERROR;
+            }
+
+            // Do listmanager
+            PEP_STATUS status = repl_src->adapter_group_join(
+                session,
+                group_identity,
+                as_member);
+            if (status != PEP_STATUS_OK) {
+                return status;
+            }
+
+            // Do engine
+            status = repl_dst->adapter_group_join(session, group_identity, as_member);
+            if (status != PEP_STATUS_OK) {
+                // Rollback
+                // TODO: need group_leave
+//                PEP_STATUS rb_stat = repl_src->adapter_group(
+//                    session,
+//                    group_identity,
+//                    as_member);
+//                if (rb_stat != PEP_STATUS_OK) {
+//                    //FATAL ERROR ON ROLLBACK
+//                    status = (PEP_STATUS)-9999;
+//                }
+            }
+            return status;
+        }
+
         // GroupQueryInterface
         PEP_STATUS GroupDriverReplicator::group_query_groups(
             PEP_SESSION session,

@@ -9,7 +9,8 @@ namespace pEp {
     namespace Adapter {
         bool GroupDriverEngine::log_enabled = false;
 
-        GroupDriverEngine::GroupDriverEngine() {
+        GroupDriverEngine::GroupDriverEngine()
+        {
             pEpLogClass("called");
         }
 
@@ -48,6 +49,15 @@ namespace pEp {
         {
             pEpLogClass("called");
             return ::group_remove_member(session, group_identity, group_member);
+        }
+
+        PEP_STATUS GroupDriverEngine::adapter_group_join(
+            PEP_SESSION session,
+            pEp_identity *group_identity,
+            pEp_identity *as_member) noexcept
+        {
+            pEpLogClass("called");
+            return ::group_join(session, group_identity, as_member);
         }
     } // namespace Adapter
 } // namespace pEp

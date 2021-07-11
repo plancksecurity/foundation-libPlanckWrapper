@@ -1,7 +1,7 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 //#include <pEp/group.h>
-
+// clang-format off
 #include "group_manager_api.h"
 #include "grp_driver_replicator.hh"
 #include "pEpLog.hh"
@@ -23,17 +23,21 @@ DYNAMIC_API PEP_STATUS adapter_group_init()
 {
     PEP_STATUS status;
     try {
-        const string lm_dummy_db_filename = "listman_dummy.db";
+        const string lm_dummy_db_filename = "groups.db";
 #ifdef WIN32
         const string lm_dummy_db_path = string(::per_user_directory()) + "\\" + lm_dummy_db_filename;
 #else
         const string lm_dummy_db_path = string(::per_user_directory()) + "/" + lm_dummy_db_filename;
 #endif
-        grp_drv_dummy = make_shared<Adapter::GroupDriverDummy>(lm_dummy_db_path);
-        grp_drv_engine = make_shared<Adapter::GroupDriverEngine>();
+
+        if(!grp_drv_dummy) {
+            grp_drv_dummy = make_shared<Adapter::GroupDriverDummy>(lm_dummy_db_path);
+        }
+        if(!grp_drv_engine) {
+            grp_drv_engine = make_shared<Adapter::GroupDriverEngine>();
+        }
         adapter_grp_manager.set_replication_source(*grp_drv_dummy.get());
         adapter_grp_manager.set_replication_destination(*grp_drv_engine.get());
-//        adapter_grp_manager.logger.set_enabled(true);
     } catch (const std::exception &e) {
         pEpLog(Utils::nested_exception_to_string(e));
         status = PEP_UNKNOWN_ERROR;
@@ -54,14 +58,19 @@ DYNAMIC_API PEP_STATUS adapter_group_create(
     identity_list *memberlist)
 {
     pEpLog("called");
-    PEP_STATUS status = adapter_grp_manager
-                            .adapter_group_create(session, group_identity, manager, memberlist);
+    PEP_STATUS status = adapter_grp_manager.adapter_group_create(
+        session,
+        group_identity,
+        manager,
+        memberlist);
     return status;
 }
 
 
-DYNAMIC_API PEP_STATUS
-adapter_group_dissolve(PEP_SESSION session, pEp_identity *group_identity, pEp_identity *manager)
+DYNAMIC_API PEP_STATUS adapter_group_dissolve(
+    PEP_SESSION session,
+    pEp_identity *group_identity,
+    pEp_identity *manager)
 {
     pEpLog("called");
     PEP_STATUS status = adapter_grp_manager.adapter_group_dissolve(session, group_identity, manager);
@@ -81,7 +90,7 @@ DYNAMIC_API PEP_STATUS adapter_group_invite_member(
     return status;
 }
 
-PEP_STATUS adapter_group_remove_member(
+DYNAMIC_API PEP_STATUS adapter_group_remove_member(
     PEP_SESSION session,
     pEp_identity *group_identity,
     pEp_identity *group_member)
@@ -91,6 +100,16 @@ PEP_STATUS adapter_group_remove_member(
         session,
         group_identity,
         group_member);
+    return status;
+}
+
+DYNAMIC_API PEP_STATUS adapter_group_join(
+    PEP_SESSION session,
+    pEp_identity *group_identity,
+    pEp_identity *as_member)
+{
+    pEpLog("called");
+    PEP_STATUS status = adapter_grp_manager.adapter_group_join(session, group_identity, as_member);
     return status;
 }
 

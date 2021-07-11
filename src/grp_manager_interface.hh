@@ -31,6 +31,11 @@ namespace pEp {
                 ::pEp_identity *group_identity,
                 ::pEp_identity *group_member) noexcept = 0;
 
+            virtual PEP_STATUS adapter_group_join(
+                ::PEP_SESSION session,
+                ::pEp_identity *group_identity,
+                ::pEp_identity *as_member)  noexcept = 0;
+
         private:
         };
 

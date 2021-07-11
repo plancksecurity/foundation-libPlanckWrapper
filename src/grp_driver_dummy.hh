@@ -13,7 +13,7 @@ namespace pEp {
         class GroupDriverDummy : public GroupManagerInterface {
         public:
             GroupDriverDummy() = delete;
-            GroupDriverDummy(const std::string &db_path);
+            explicit GroupDriverDummy(const std::string &db_path);
 
             // GroupUpdateInterface
             PEP_STATUS adapter_group_create(
@@ -36,6 +36,11 @@ namespace pEp {
                 ::PEP_SESSION session,
                 ::pEp_identity *group_identity,
                 ::pEp_identity *group_member) noexcept override;
+
+            PEP_STATUS adapter_group_join(
+                ::PEP_SESSION session,
+                ::pEp_identity *group_identity,
+                ::pEp_identity *as_member)  noexcept override;
 
             // GroupQueryInterface
             PEP_STATUS group_query_groups(::PEP_SESSION session, ::identity_list **groups) noexcept override;

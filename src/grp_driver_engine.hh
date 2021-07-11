@@ -34,6 +34,11 @@ namespace pEp {
                 ::pEp_identity *group_identity,
                 ::pEp_identity *group_member) noexcept override;
 
+            PEP_STATUS adapter_group_join(
+                ::PEP_SESSION session,
+                ::pEp_identity *group_identity,
+                ::pEp_identity *as_member)  noexcept override;
+
             // Logging
             static bool log_enabled;
             Adapter::pEpLog::pEpLogger logger{ "GroupDriverEngine", log_enabled };
