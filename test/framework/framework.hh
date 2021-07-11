@@ -55,7 +55,7 @@ namespace pEp {
         };
 
         extern Transport transport;
-        extern std::string path;
+        extern std::string per_user_dir;
     }; // namespace Test
 };     // namespace pEp
 

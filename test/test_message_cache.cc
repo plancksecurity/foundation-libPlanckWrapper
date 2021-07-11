@@ -7,7 +7,7 @@
 #include <cassert>
 #include <cstring>
 #include <sys/param.h>
-#include <unistd.h>
+#include <cstring>
 
 #include "../src/message_cache.hh"
 #include "../src/Adapter.hh"
@@ -18,6 +18,7 @@ using namespace pEp;
 int main(int argc, char **argv)
 {
     Test::setup(argc, argv);
+    Adapter::session.initialize();
 
     ::pEp_identity *alice = ::new_identity("alice@mail.com", nullptr, PEP_OWN_USERID, "Alice");
     ::myself(Adapter::session(), alice);
@@ -119,6 +120,6 @@ int main(int argc, char **argv)
     ::free_identity(bob);
     ::free_identity(alice);
 
-    Adapter::session(Adapter::release);
+    Adapter::session.release();
     return 0;
 }

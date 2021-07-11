@@ -5,11 +5,11 @@
 
 #include <iostream>
 #include <vector>
-#include <unistd.h>
 
 #include <pEp/sync_api.h>
 
 #include "../src/callback_dispatcher.hh"
+#include "../src/Adapter.hh"
 #include "../src/passphrase_cache.hh"
 
 using namespace std;
@@ -55,7 +55,7 @@ vector<::sync_handshake_signal> expected_notification = { SYNC_NOTIFY_IN_GROUP,
 int main(int argc, char** argv)
 {
     Test::setup(argc, argv);
-    Adapter::session();
+    Adapter::session.initialize(pEp::Adapter::SyncModes::Async, false);
 
     // set up two own identites for sync
 
@@ -96,7 +96,7 @@ int main(int argc, char** argv)
     // register at callback_dispatcher and start sync
 
     callback_dispatcher.add(test_messageToSend, test_notifyHandshake);
-    CallbackDispatcher::start_sync();
+    Adapter::start_sync();
 
     // leave device group
 
@@ -110,14 +110,14 @@ int main(int argc, char** argv)
 
     // switch off and on again
 
-    CallbackDispatcher::start_sync();
+    Adapter::start_sync();
     sleep(2);
     assert(Adapter::is_sync_running());
-    CallbackDispatcher::stop_sync();
+    Adapter::stop_sync();
     Test::join_sync_thread();
     assert(!Adapter::is_sync_running());
 
-    Adapter::session(Adapter::release);
+    Adapter::session.release();
 
     return 0;
 }

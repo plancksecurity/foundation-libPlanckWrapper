@@ -1,164 +1,269 @@
-// This file is under GNU General Public License 3.0
-// see LICENSE.txt
-
 #include "utils.hh"
 
-#include <iostream>
-
+#include <pEp/pEpEngine.h>
+#include <pEp/message_api.h>
+#include <pEp/keymanagement.h>
 #include <pEp/identity_list.h>
-
-#include "../../src/Adapter.hh"
-#include "../../src/adapter_group.h"
-
-using namespace std;
-using namespace pEp;
+#include <pEp/Adapter.hh>
+#include <pEp/status_to_string.hh>
+#include <pEp/mime.h>
+#include <tuple>
 
 namespace pEp {
     namespace Test {
-        namespace Log {
-            void logH1(string msg)
-            {
-                char decoration{ '=' };
-                cout << endl
-                     << endl
-                     << std::string(30, decoration) << ' ' << msg << ' '
-                     << std::string(30, decoration) << endl;
-            }
-
-            void logH2(string msg)
-            {
-                char decoration{ '-' };
-                cout << endl
-                     << std::string(10, decoration) << ' ' << msg << ' '
-                     << std::string(10, decoration) << endl;
-            }
-        } // namespace Log
-
         namespace Utils {
-            string identity_to_string(::pEp_identity* ident, bool full, int indent)
+
+            //Ident
+            pEpIdent wrap(::pEp_identity *const ident)
             {
-
-                stringstream builder;
-                if (ident != nullptr) {
-                    if (full) {
-                        builder << endl;
-                        builder << std::string(indent, '\t') << "{" << endl;
-                        indent++;
-                        builder << std::string(indent, '\t') << "address: "
-                                << (ident->address != nullptr ? ident->address : "NULL") << endl;
-                        builder << std::string(indent, '\t') << "user_id: "
-                                << (ident->user_id != nullptr ? ident->user_id : "NULL") << endl;
-                        builder << std::string(indent, '\t') << "username: "
-                                << (ident->username != nullptr ? ident->username : "NULL") << endl;
-                        builder << std::string(indent, '\t')
-                                << "fpr: " << (ident->fpr != nullptr ? ident->fpr : "NULL") << endl;
-                        builder << std::string(indent, '\t') << "comm_type: " << ident->comm_type
-                                << endl;
-                        builder << std::string(indent, '\t')
-                                << "lang: " << static_cast<string>(ident->lang) << endl;
-                        builder << std::string(indent, '\t') << "me: " << ident->me << endl;
-                        builder << std::string(indent, '\t') << "major_ver: " << ident->major_ver
-                                << endl;
-                        builder << std::string(indent, '\t') << "minor_ver: " << ident->minor_ver
-                                << endl;
-                        builder << std::string(indent, '\t') << "enc_format: " << ident->enc_format
-                                << endl;
-                        builder << std::string(indent, '\t') << "flags: " << ident->flags << endl;
-                        indent--;
-                        builder << std::string(indent, '\t') << "}";
-                    } else {
-                        builder << "{ " << (ident->address != nullptr ? ident->address : "NULL")
-                                << "/" << (ident->user_id != nullptr ? ident->user_id : "NULL")
-                                << "/" << (ident->username != nullptr ? ident->username : "NULL")
-                                << "/" << (ident->fpr != nullptr ? ident->fpr : "NULL") << " }";
-                    }
-                } else {
-                    builder << "NULL";
-                }
-
-                return builder.str();
+                assert(ident);
+                auto ret = pEpIdent(ident, [](::pEp_identity *) {});
+                return ret;
             }
 
-            std::string identitylist_to_string(::identity_list* idl, bool full, int indent)
+            pEpIdent appropriate(::pEp_identity *const ident)
             {
-                stringstream builder;
-                if (idl != nullptr) {
-                    builder << endl;
-                    builder << std::string(indent, '\t') << "[" << endl;
-                    indent++;
-                    for (::identity_list* curr = idl; curr != nullptr; curr = curr->next) {
-                        builder << identity_to_string(curr->ident, full, indent) << endl;
-                    }
-                    indent--;
-                    builder << std::string(indent, '\t') << "]";
-                } else {
-                    builder << "NULL";
-                }
-
-                return builder.str();
+                assert(ident);
+                auto ret = pEpIdent(ident, ::free_identity);
+                return ret;
             }
 
-            string member_to_string(::pEp_member* member, bool full, int indent)
+            pEpIdent dup(const ::pEp_identity *const ident)
             {
-                stringstream builder;
-                if (member != nullptr) {
-                    builder << std::string(indent, '\t') << "{" << endl;
-                    indent++;
-                    builder << std::string(indent, '\t')
-                            << "ident: " << identity_to_string(member->ident, full, indent) << endl;
-                    builder << std::string(indent, '\t') << "joined: " << member->joined << endl;
-                    indent--;
-                    builder << std::string(indent, '\t') << "}";
-                } else {
-                    builder << "NULL";
-                }
-
-                return builder.str();
+                assert(ident);
+                auto ret = pEpIdent(::identity_dup(ident), ::free_identity);
+                return ret;
             }
 
-            string memberlist_to_string(::member_list* mbl, bool full, int indent)
+            pEpIdent kill(::pEp_identity *const ident)
             {
-                stringstream builder;
-                if (mbl != nullptr) {
-                    builder << endl;
-                    builder << std::string(indent, '\t') << "[" << endl;
-                    indent++;
-                    for (member_list* curr_member = mbl; curr_member != nullptr;
-                         curr_member = curr_member->next) {
-                        builder << member_to_string(curr_member->member, full, indent) << endl;
-                    }
-                    indent--;
-                    builder << std::string(indent, '\t') << "]";
-                } else {
-                    builder << "NULL";
-                }
-
-                return builder.str();
+                assert(ident);
+                auto ret = pEpIdent(::identity_dup(ident), ::free_identity);
+                ::free_identity(ident);
+                return ret;
             }
 
-            string group_to_string(::pEp_group* group, bool full, int indent)
+            //IdentityList
+            pEpIdentList wrap(::identity_list *const ident)
             {
-                stringstream builder;
-                if (group != nullptr) {
-                    builder << endl;
-                    builder << std::string(indent, '\t') << "{" << endl;
-                    indent++;
-                    builder << std::string(indent, '\t') << "group_identity: "
-                            << identity_to_string(group->group_identity, full, indent) << endl;
-                    builder << std::string(indent, '\t')
-                            << "manager: " << identity_to_string(group->manager, full, indent)
-                            << endl;
-                    builder << std::string(indent, '\t') << "active: " << group->active << endl;
-                    builder << std::string(indent, '\t')
-                            << "members: " << memberlist_to_string(group->members, full, indent)
-                            << endl;
-                    indent--;
-                    builder << std::string(indent, '\t') << "]";
-                } else {
-                    builder << "NULL";
-                }
+                assert(ident);
+                auto ret = pEpIdentList(ident, [](::identity_list *) {});
+                return ret;
+            }
 
-                return builder.str();
+            pEpIdentList appropriate(::identity_list *const ident)
+            {
+                assert(ident);
+                auto ret = pEpIdentList(ident, ::free_identity_list);
+                return ret;
+            }
+
+            pEpIdentList dup(const ::identity_list *const ident)
+            {
+                assert(ident);
+                auto ret = pEpIdentList(::identity_list_dup(ident), ::free_identity_list);
+                return ret;
+            }
+
+            pEpIdentList kill(::identity_list *const ident)
+            {
+                assert(ident);
+                auto ret = pEpIdentList(::identity_list_dup(ident), ::free_identity_list);
+                ::free_identity_list(ident);
+                return ret;
+            }
+
+            //Message
+            pEpMessage wrap(::message *const msg)
+            {
+                assert(msg);
+                auto ret = pEpMessage(msg, [](::message *) {});
+                return ret;
+            }
+
+            pEpMessage appropriate(::message *const msg)
+            {
+                assert(msg);
+                auto ret = pEpMessage(msg, ::free_message);
+                return ret;
+            }
+
+            pEpMessage dup(const ::message *const msg)
+            {
+                assert(msg);
+                auto ret = pEpMessage(::message_dup(msg), ::free_message);
+                return ret;
+            }
+
+            pEpMessage kill(::message *const msg)
+            {
+                assert(msg);
+                auto ret = pEpMessage(::message_dup(msg), ::free_message);
+                ::free_message(msg);
+                return ret;
+            }
+
+            // helpers
+            pEpIdent createOwnIdent(const std::string &address)
+            {
+                std::string name;
+                ::pEp_identity *ident = nullptr;
+                ident = ::new_identity(
+                    strdup(address.c_str()),
+                    "",
+                    PEP_OWN_USERID,
+                    ("myself " + address).c_str());
+                ident->me = true;
+
+                return appropriate(ident);
+            }
+
+            pEpIdent createCptIdent(const std::string &address)
+            {
+                std::string name;
+                ::pEp_identity *ident = nullptr;
+                ident = ::new_identity(
+                    strdup(address.c_str()),
+                    "",
+                    "",
+                    ("partner " + address).c_str());
+                ident->me = false;
+
+                return appropriate(ident);
+            }
+
+            pEpIdent createRawIdent(const std::string &address)
+            {
+                std::string name;
+                ::pEp_identity *ident = nullptr;
+                ident = ::new_identity(strdup(address.c_str()), "", "", "");
+                ident->me = false;
+
+                return appropriate(ident);
+            }
+
+            pEpIdentList createIdentityList(const std::vector<std::string> &addresses)
+            {
+                ::identity_list *list;
+                list = ::new_identity_list(nullptr);
+                for (std::string addr : addresses) {
+                    ::identity_list_add(list, ::identity_dup(createCptIdent(addr).get()));
+                }
+                return appropriate(list);
+            }
+
+            pEpMessage createMessage(pEpIdent from, pEpIdent to, const std::string &longmsg)
+            {
+                // create and fill in msg
+                ::message *msg = ::new_message(PEP_dir_outgoing);
+                msg->from = ::identity_dup(from.get());
+                msg->to = ::new_identity_list(::identity_dup(to.get()));
+                msg->longmsg = strdup(longmsg.c_str());
+
+                pEpMessage ret = appropriate(msg);
+                return ret;
+            }
+
+            pEpMessage createMessage(pEpIdent from, const std::string &to_addr, const std::string &longmsg)
+            {
+                pEpIdent to_ident = createCptIdent(to_addr);
+                return createMessage(from, to_ident, longmsg);
+            }
+
+            std::string mimeEncode(const pEpMessage msg)
+            {
+                char *mimetext;
+                PEP_STATUS status = ::mime_encode_message(msg.get(), false, &mimetext, false);
+                throw_status(status);
+                std::string text{ mimetext };
+                free(mimetext);
+                return text;
+            }
+
+            pEpMessage mimeDecode(const std::string &mime_text)
+            {
+                ::message *msg;
+                bool has_possible_pEp_msg;
+                ::PEP_STATUS status = ::mime_decode_message(
+                    mime_text.c_str(),
+                    mime_text.length(),
+                    &msg,
+                    &has_possible_pEp_msg);
+                throw_status(status);
+                return pEpMessage(msg, ::free_message);
+            }
+
+            EncryptResult encryptMessage(const pEpMessage msg)
+            {
+                pEpMessage msg_out;
+                bool could_encrypt = false;
+                ::message *msgenc = nullptr;
+                PEP_STATUS status = ::encrypt_message(
+                    Adapter::session(),
+                    msg.get(),
+                    nullptr,
+                    &msgenc,
+                    PEP_enc_PEP,
+                    0);
+                throw_status(status);
+                ::message *msg_out_p = nullptr;
+                if (msgenc != nullptr) {
+                    could_encrypt = true;
+                    msg_out = appropriate(msgenc);
+                } else {
+                    could_encrypt = false;
+                    msg_out = msg;
+                }
+                return EncryptResult(msg_out, "", could_encrypt);
+            }
+
+
+            DecryptResult decryptMessage(const pEpMessage msg, ::PEP_decrypt_flags_t *flags)
+            {
+                pEpMessage msg_out;
+                bool was_encrypted = false;
+
+                ::message *dec{ nullptr };
+                ::stringlist_t *kl = ::new_stringlist("");
+                ::PEP_rating rating;
+                PEP_STATUS status = ::decrypt_message(
+                    Adapter::session(),
+                    msg.get(),
+                    &dec,
+                    &kl,
+                    &rating,
+                    flags);
+                throw_status(status);
+                if (dec != nullptr) {
+                    was_encrypted = true;
+                    msg_out = appropriate(dec);
+                } else {
+                    was_encrypted = false;
+                    msg_out = msg;
+                }
+                return DecryptResult(msg_out, rating, kl, flags, was_encrypted);
+            }
+
+            DecryptResult decryptMessage(const pEpMessage msg)
+            {
+                ::PEP_decrypt_flags_t dummy{ 0 };
+                return decryptMessage(msg, &dummy);
+            }
+
+            EncryptResult encryptAndEncode(const pEpMessage msg)
+            {
+                EncryptResult ret = encryptMessage(msg);
+                std::string mime_text = mimeEncode(std::get<0>(ret));
+                std::get<1>(ret) = mime_text;
+                return ret;
+            }
+
+            DecryptResult decryptAndDecode(const std::string &mime_data)
+            {
+                DecryptResult ret;
+                pEpMessage rx_msg = mimeDecode(mime_data);
+                ret = decryptMessage(rx_msg);
+                return ret;
             }
         } // namespace Utils
     }     // namespace Test

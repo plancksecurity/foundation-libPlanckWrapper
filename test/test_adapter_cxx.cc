@@ -2,27 +2,27 @@
 // see LICENSE.txt
 
 #include "framework/framework.hh"
+#include "framework/utils.hh"
 #include <iostream>
 #include <assert.h>
-#include <unistd.h>
 
 #include <pEp/keymanagement.h>
 #include <pEp/sync_api.h>
 
 #include "../src/Adapter.hh"
-#include "../src/pEpLog.hh"
 
+namespace Utils = pEp::Utils;
 using namespace pEp;
 
 PEP_STATUS messageToSend(struct _message *msg)
 {
-    pEpLog("called");
+    TESTLOG("called");
     return PEP_STATUS_OK;
 }
 
 PEP_STATUS notifyHandshake(pEp_identity *me, pEp_identity *partner, ::sync_handshake_signal signal)
 {
-    pEpLog("called");
+    TESTLOG("called");
     return PEP_STATUS_OK;
 }
 
@@ -30,21 +30,22 @@ class JNISync {
 public:
     void onSyncStartup()
     {
-        pEpLog("called");
+        TESTLOG("called");
     }
 
     void onSyncShutdown()
     {
-        pEpLog("called");
+        TESTLOG("called");
     }
 } o;
 
-int main(int argc, char **argv)
+int main(int argc, char* argv[])
 {
-    pEp::Test::setup(argc, argv);
-
+    Test::setup(argc,argv);
+    pEp::Adapter::session
+        .initialize(pEp::Adapter::SyncModes::Async, false, messageToSend, notifyHandshake);
     // Create new identity
-    pEpLog("updating or creating identity for me");
+    TESTLOG("updating or creating identity for me");
     ::pEp_identity *me = ::new_identity("alice@peptest.ch", NULL, "23", "Who the F* is Alice");
     assert(me);
     ::PEP_STATUS status = ::myself(Adapter::session(), me);
@@ -52,22 +53,16 @@ int main(int argc, char **argv)
     throw_status(status);
 
     // start and stop sync repeatedly
-    useconds_t sleepuSec = 1000 * 100;
-    unsigned long long int nrIters = 1000 * 1000 * 1000;
+    unsigned long long int nrIters = 3;
     for (int i = 0; i < nrIters; i++) {
-        pEpLog("RUN NR: ");
-        pEpLog(i);
-        pEpLog("SYNC START");
-        pEpLog("starting the adapter including sync");
-        Adapter::startup<JNISync>(
-            messageToSend,
-            notifyHandshake,
-            &o,
-            &JNISync::onSyncStartup,
-            &JNISync::onSyncShutdown);
-        pEpLog("SYNC STOP");
-        usleep(sleepuSec);
-        Adapter::shutdown();
+        TESTLOG("RUN NR: ");
+        TESTLOG(i);
+        TESTLOG("SYNC START");
+        TESTLOG("starting the adapter including sync");
+        Adapter::startup<JNISync>(&o, &JNISync::onSyncStartup, &JNISync::onSyncShutdown);
+        TESTLOG("SYNC STOP");
+        Utils::sleep_millis(500);
+        Adapter::stop_sync();
     }
     return 0;
 }

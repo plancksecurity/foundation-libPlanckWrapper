@@ -8,7 +8,6 @@
 #include <utility>
 #include <exception>
 #include <thread>
-#include <unistd.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,14 +23,14 @@
 #include "../../src/Adapter.hh"
 
 pEp::Test::Transport pEp::Test::transport;
-std::string pEp::Test::path;
-extern std::thread pEp::Adapter::_sync_thread;
 
 using namespace pEp;
 using namespace std;
 
 namespace pEp {
     namespace Test {
+        string per_user_dir;
+
         void setup(vector<string> &args)
         {
 #ifdef WIN32
@@ -67,8 +66,8 @@ namespace pEp {
 #else
             setenv("HOME", _path, 1);
 #endif
-            path = _path;
-            cerr << "test directory: " << path << endl;
+            per_user_dir = _path;
+            cerr << "test directory: " << per_user_dir << endl;
         }
 
         void setup(int argc, char **argv)
@@ -135,7 +134,13 @@ namespace pEp {
             stringlist_t *keylist;
             ::PEP_rating rating;
             ::PEP_decrypt_flags_t flags = 0;
-            ::PEP_STATUS status = ::decrypt_message(Adapter::session(), msg.get(), &_dst, &keylist, &rating, &flags);
+            ::PEP_STATUS status = ::decrypt_message(
+                Adapter::session(),
+                msg.get(),
+                &_dst,
+                &keylist,
+                &rating,
+                &flags);
             throw_status(status);
 
             Message dst;

@@ -3,21 +3,11 @@
 
 #include "framework/framework.hh"
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <unistd.h>
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/param.h>
-
-#include <pEp/message_api.h>
+#include <cassert>
 #include <pEp/keymanagement.h>
 #include <pEp/key_reset.h>
 
 #include "../src/passphrase_cache.hh"
-#include "../src/status_to_string.hh"
 #include "../src/Adapter.hh"
 
 using namespace pEp;
@@ -26,7 +16,7 @@ using namespace std;
 int main(int argc, char** argv)
 {
     Test::setup(argc, argv);
-
+    Adapter::session.initialize();
     passphrase_cache.add("erwin");
     passphrase_cache.add("cathy");
     passphrase_cache.add("bob");
