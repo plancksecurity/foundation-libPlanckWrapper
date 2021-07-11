@@ -106,12 +106,14 @@ namespace pEp {
             //            psp.cpt_name = model.nodes().at(partner_node_index)->getName();
 
             //Default partner is node 0
-            if (node_nr == 0) {
-                psp.setPeerNrAsCpt(0);
-            } else {
-                for (int i = 0; i < psp.peers.size(); i++) {
-                    if (psp.peers.at(i).addr == model.nodeNr(0)->getIdent().addr) {
-                        psp.setPeerNrAsCpt(i);
+            if(model.nodes().size() > 1) {
+                if (node_nr == 0) {
+                    psp.setPeerNrAsCpt(0);
+                } else {
+                    for (int i = 0; i < psp.peers.size(); i++) {
+                        if (psp.peers.at(i).addr == model.nodeNr(0)->getIdent().addr) {
+                            psp.setPeerNrAsCpt(i);
+                        }
                     }
                 }
             }
