@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <cassert>
+#include <cstring>
 #include <sys/param.h>
 #include <unistd.h>
 

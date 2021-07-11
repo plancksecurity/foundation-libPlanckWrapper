@@ -2,6 +2,8 @@ include ../Makefile.conf
 
 LDFLAGS:=-L../src $(LDFLAGS)
 LDLIBS=-lstdc++ -lpEpEngine -lpEpAdapter
+LDFLAGS=-L../src $(ENGINE_LIB)
+LDLIBS=-lstdc++ -lpEpEngine -lpEpAdapter -lpthread
 CXXFLAGS:=-I../src -DENGINE_TEST=$(ENGINE_TEST) $(CXXFLAGS)
 
 # Test
