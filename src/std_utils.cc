@@ -121,7 +121,7 @@ namespace pEp {
         void path_ensure_not_existing(const string &path)
         {
             while (path_exists(path)) {
-                path_delete(path);
+                path_delete_all(path);
             }
         }
 
@@ -143,10 +143,8 @@ namespace pEp {
 
         void dir_recreate(const std::string &path)
         {
-            if (Utils::path_exists(path)) {
-                Utils::path_delete_all(path);
-            }
-            Utils::dir_create(path);
+            Utils::path_ensure_not_existing(path);
+            Utils::dir_ensure(path);
         }
 
         vector<string> dir_list_all(const std::string &path, const bool incl_dot_and_dotdot)
