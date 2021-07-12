@@ -2,7 +2,7 @@ include ../../Makefile.conf
 
 TARGET=src/libPityTest.a
 LDFLAGS:=-L../../src/ $(LDFLAGS) -L../framework/
-LDLIBS=-lstdc++ -lpEpAdapter -lpEpEngine
+LDLIBS=-lstdc++ -lpEpAdapter -lpEpEngine -lpthread -ldl
 CXXFLAGS:=-std=c++11 -g -I./src $(CXXFLAGS)
 TEST_EXTRA_OBJS=../framework/utils.o
 

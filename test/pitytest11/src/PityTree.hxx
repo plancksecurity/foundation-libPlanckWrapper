@@ -7,6 +7,7 @@
 #include "PityTree.hh"
 #include <memory>
 #include <sstream>
+#include <algorithm>
 
 namespace pEp {
     namespace PityTest11 {

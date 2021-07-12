@@ -10,6 +10,7 @@
 #include <memory>
 #include <functional>
 #include <type_traits>
+#include <vector>
 
 namespace pEp {
     namespace PityTest11 {
