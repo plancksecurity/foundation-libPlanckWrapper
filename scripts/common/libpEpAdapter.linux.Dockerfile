@@ -19,5 +19,5 @@ ARG LIBPEPADAPTER_VERSION
 ARG CURRENT_DISTRO
 
 ### Build libpEpAdapter
-RUN sh ./scripts/${CURRENT_DISTRO}/build_libpEpAdapter.sh && \
+RUN sh ./scripts/common/build_libpEpAdapter.sh && \
     rm -rf ${BUILDROOT}/*
