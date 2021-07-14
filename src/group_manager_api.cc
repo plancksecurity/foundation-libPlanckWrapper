@@ -123,8 +123,7 @@ DYNAMIC_API PEP_STATUS adapter_group_query_groups(PEP_SESSION session, identity_
     return status;
 }
 
-DYNAMIC_API PEP_STATUS
-adapter_group_query_manager(PEP_SESSION session, const pEp_identity *const group, pEp_identity **manager)
+DYNAMIC_API PEP_STATUS adapter_group_query_manager(PEP_SESSION session, const pEp_identity *const group, pEp_identity **manager)
 {
     pEpLog("called");
     PEP_STATUS status = adapter_grp_manager.group_query_manager(session, group, manager);

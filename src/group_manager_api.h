@@ -79,8 +79,7 @@ DYNAMIC_API PEP_STATUS adapter_group_create(
  *  @warning        For recipients to accept the dissolution, the sender/manager key used must be a key that they
  *                  have a trust entry for.
  */
-DYNAMIC_API PEP_STATUS
-adapter_group_dissolve(PEP_SESSION session, pEp_identity *group_identity, pEp_identity *manager);
+DYNAMIC_API PEP_STATUS adapter_group_dissolve(PEP_SESSION session, pEp_identity *group_identity, pEp_identity *manager);
 
 /**
  *  <!--       adapter_group_invite_member()       -->
