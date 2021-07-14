@@ -96,7 +96,7 @@ namespace pEp {
         if (!src)
             return nullptr;
 
-        char *dst = ::strdup(src);
+        char *dst = ::_strdup(src);
         assert(dst);
         if (!dst)
             throw std::bad_alloc();
