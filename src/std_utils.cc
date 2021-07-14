@@ -118,6 +118,7 @@ namespace pEp {
             return ss.str();
         }
 
+#ifndef WIN32
         void path_ensure_not_existing(const string &path)
         {
             while (path_exists(path)) {
@@ -125,7 +126,6 @@ namespace pEp {
             }
         }
 
-#ifndef WIN32
         void dir_create(const string &dirname, const mode_t mode)
         {
             if (mkdir(dirname.c_str(), mode) != 0) {
