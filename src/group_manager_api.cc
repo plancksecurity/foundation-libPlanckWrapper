@@ -21,7 +21,7 @@ shared_ptr<Adapter::GroupDriverEngine> grp_drv_engine;
 
 DYNAMIC_API PEP_STATUS adapter_group_init()
 {
-    PEP_STATUS status;
+    PEP_STATUS status = PEP_STATUS_OK;
     try {
         const string lm_dummy_db_filename = "groups.db";
 #ifdef WIN32
