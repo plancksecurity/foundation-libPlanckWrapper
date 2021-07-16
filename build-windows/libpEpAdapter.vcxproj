@@ -92,7 +92,9 @@
     <ClCompile Include="..\..\pEpEngine\src\sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\*.h" />
     <ClInclude Include="..\src\*.hh" />
+    <ClInclude Include="..\src\*.hxx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\pEpEngine\build-windows\pEpEngine.vcxproj">
