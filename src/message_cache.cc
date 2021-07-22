@@ -2,6 +2,7 @@
 // see LICENSE.txt
 
 #include "message_cache.hh"
+#include <pEp/platform.h>
 #include <cassert>
 #include <cstring>
 #include <climits>
@@ -96,7 +97,7 @@ namespace pEp {
         if (!src)
             return nullptr;
 
-        char *dst = ::_strdup(src);
+        char *dst = ::strdup(src);
         assert(dst);
         if (!dst)
             throw std::bad_alloc();
