@@ -11,6 +11,11 @@
 // Win - process.h
 #ifdef WIN32
     #include <process.h>
+    // TODO: once this works, move this to pEpEngine platform_windows.h and file a PR
+    #ifndef getpid
+        #define getpid() _getpid()
+    #endif
+
 #else
     #include <unistd.h>
 #endif
@@ -49,7 +54,7 @@
         do {                                                                                       \
             if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
                 std::stringstream msg_;                                                            \
-                msg_ << "[" << _getpid() << " " << std::this_thread::get_id() << "]";               \
+                msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";               \
                 msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                 \
                 msg_ << " - " << msg;                                                              \
                 pEp::Adapter::pEpLog::log(msg_.str());                                             \
@@ -67,7 +72,7 @@
         do {                                                                                       \
             if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
                 std::stringstream msg_;                                                            \
-                msg_ << "[" << _getpid() << " " << std::this_thread::get_id() << "]";               \
+                msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";               \
                 msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                 \
                 msg_ << " - " << pEp::Adapter::pEpLog::decorateH1(msg);                            \
                 pEp::Adapter::pEpLog::log(msg_.str());                                             \
@@ -85,7 +90,7 @@
         do {                                                                                       \
             if (pEp::Adapter::pEpLog::get_enabled()) {                                             \
                 std::stringstream msg_;                                                            \
-                msg_ << "[" << _getpid() << " " << std::this_thread::get_id() << "]";               \
+                msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";               \
                 msg_ << " - " << __FILE__ << "::" << __FUNCTION__;                                 \
                 msg_ << " - " << pEp::Adapter::pEpLog::decorateH2(msg);                            \
                 pEp::Adapter::pEpLog::log(msg_.str());                                             \
@@ -176,7 +181,7 @@ namespace pEp {
     #define pEpLogClass(msg)                                                                       \
         do {                                                                                       \
             std::stringstream msg_;                                                                \
-            msg_ << "[" << _getpid() << " " << std::this_thread::get_id() << "]";                   \
+            msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";                   \
             msg_ << " - " << this->m4gic_logger_n4me.get_classname();                              \
             msg_ << "[" << this->m4gic_logger_n4me.get_instancename() << "]";                      \
             msg_ << "::" << __FUNCTION__;                                                          \
