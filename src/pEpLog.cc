@@ -78,7 +78,7 @@ namespace pEp {
             string decorate_centered(const string& msg, char decoration)
             {
                 stringstream tmp;
-                int max_len = line_width - 10;
+                size_t max_len = line_width - 10;
                 // truncate msg
                 string msg_truncated = msg;
                 if (msg.length() >= max_len) {
@@ -115,7 +115,7 @@ namespace pEp {
             void pEpLogger::log(const string& msg, Utils::Color col) const
             {
                 std::stringstream msg_;
-                msg_ << "[" << getpid() << " " << std::this_thread::get_id() << "]";
+                msg_ << "[" << _getpid() << " " << std::this_thread::get_id() << "]";
                 msg_ << " - ";
                 msg_ << this->get_classname() << "[" << this->get_instancename() << "]";
                 msg_ << " - " << msg;
