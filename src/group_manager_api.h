@@ -1,6 +1,6 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
-
+// clang-format off
 #ifndef LIBPEPADAPTER_GROUP_MANAGER_API_H
 #define LIBPEPADAPTER_GROUP_MANAGER_API_H
 
@@ -79,7 +79,10 @@ DYNAMIC_API PEP_STATUS adapter_group_create(
  *  @warning        For recipients to accept the dissolution, the sender/manager key used must be a key that they
  *                  have a trust entry for.
  */
-DYNAMIC_API PEP_STATUS adapter_group_dissolve(PEP_SESSION session, pEp_identity *group_identity, pEp_identity *manager);
+DYNAMIC_API PEP_STATUS adapter_group_dissolve(
+    PEP_SESSION session,
+    pEp_identity *group_identity,
+    pEp_identity *manager);
 
 /**
  *  <!--       adapter_group_invite_member()       -->
@@ -134,7 +137,6 @@ DYNAMIC_API PEP_STATUS adapter_group_remove_member(
     pEp_identity *group_member);
 
 
-
 /**
  *  <!--       group_join()       -->
  *
@@ -159,8 +161,7 @@ DYNAMIC_API PEP_STATUS adapter_group_remove_member(
 DYNAMIC_API PEP_STATUS adapter_group_join(
     PEP_SESSION session,
     pEp_identity *group_identity,
-    pEp_identity *as_member
-);
+    pEp_identity *as_member);
 
 /*************************************************************************************************
  * Group query functions
@@ -182,7 +183,9 @@ DYNAMIC_API PEP_STATUS adapter_group_join(
  *
  */
 
-DYNAMIC_API PEP_STATUS adapter_group_query_groups(PEP_SESSION session, identity_list **groups);
+DYNAMIC_API PEP_STATUS adapter_group_query_groups(
+    PEP_SESSION session,
+    identity_list **groups);
 
 /**
  *  <!--       adapter_group_query_manager()       -->
@@ -200,7 +203,10 @@ DYNAMIC_API PEP_STATUS adapter_group_query_groups(PEP_SESSION session, identity_
  *
  */
 
-DYNAMIC_API PEP_STATUS adapter_group_query_manager(PEP_SESSION session, const pEp_identity *const group, pEp_identity **manager);
+DYNAMIC_API PEP_STATUS adapter_group_query_manager(
+    PEP_SESSION session,
+    const pEp_identity *const group,
+    pEp_identity **manager);
 
 /**
  *  <!--       adapter_group_query_members()       -->
@@ -218,7 +224,10 @@ DYNAMIC_API PEP_STATUS adapter_group_query_manager(PEP_SESSION session, const pE
  *
  */
 
-DYNAMIC_API PEP_STATUS adapter_group_query_members(PEP_SESSION session, const pEp_identity *const group, identity_list **members);
+DYNAMIC_API PEP_STATUS adapter_group_query_members(
+    PEP_SESSION session,
+    const pEp_identity *const group,
+    identity_list **members);
 
 
 #ifdef __cplusplus
