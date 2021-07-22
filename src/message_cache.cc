@@ -2,6 +2,7 @@
 // see LICENSE.txt
 
 #include "message_cache.hh"
+#include <pEp/platform.h>
 #include <cassert>
 #include <cstring>
 #include <climits>
