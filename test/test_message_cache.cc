@@ -7,6 +7,7 @@
 #include <cstring>
 #include <sys/param.h>
 #include <unistd.h>
+#include <pEp/platform.h>
 #include <message_cache.hh>
 #include <Adapter.hh>
 
