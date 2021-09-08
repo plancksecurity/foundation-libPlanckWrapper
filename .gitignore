@@ -57,3 +57,5 @@ test_pEpLog_basic
 /test/pitytest11/test/pitytest_data/
 /test/test_pEpSQLite
 /test/test_swarm_tofu
+/test/test_file_rw_bin
+/test/test_rw.bin

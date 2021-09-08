@@ -118,6 +118,32 @@ namespace pEp {
             return ss.str();
         }
 
+        std::vector<char> file_read_bin(const std::string &filename)
+        {
+            std::vector<char> ret{};
+            if (pEp::Utils::path_exists(filename)) {
+                std::ifstream ifs(filename, std::ios_base::binary);
+                ifs.unsetf(std::ios_base::skipws);
+
+                if (ifs.bad()) {
+                    throw std::runtime_error("failed to read file: '" + filename + "'");
+                }
+                ret = { std::istream_iterator<char>(ifs), std::istream_iterator<char>() };
+            } else {
+                throw std::runtime_error("File does not exist: '" + filename + "'");
+            }
+            return ret;
+        }
+
+        void file_write_bin(const std::string &filename, std::vector<char> &data)
+        {
+            std::fstream f(filename, std::ios_base::out | std::ios_base::binary | std::ios_base::trunc);
+            f.write(data.data(), static_cast<std::streamsize>(data.size()));
+            if (f.bad()) {
+                throw std::runtime_error("failed to write file: '" + filename + "'");
+            }
+        }
+
 #ifndef WIN32
         void path_ensure_not_existing(const string &path)
         {
