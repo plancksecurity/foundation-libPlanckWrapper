@@ -1,4 +1,4 @@
-#include "utils.hh"
+#include "test_utils.hh"
 
 #include <pEp/pEpEngine.h>
 #include <pEp/message_api.h>

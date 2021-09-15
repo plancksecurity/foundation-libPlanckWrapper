@@ -1,7 +1,7 @@
 #include "pitytest11/src/PityTest.hh"
 #include "../src/utils.hh"
 #include "framework/framework.hh"
-#include "framework/utils.hh"
+#include "framework/test_utils.hh"
 
 #include <pEp/pEpEngine.h>
 #include <pEp/message_api.h>

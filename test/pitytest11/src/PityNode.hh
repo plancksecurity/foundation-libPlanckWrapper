@@ -5,7 +5,7 @@
 #define PITYTEST_PITYNODE_HH
 
 #include "../../../src/pEpLog.hh"
-#include "../../framework/utils.hh"
+#include "../../framework/test_utils.hh"
 
 namespace pEp {
     namespace PityTest11 {

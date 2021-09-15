@@ -5,7 +5,7 @@
 #define PITYTEST_PITYPERSPECTIVE_HH
 
 #include "../../../src/pEpLog.hh"
-#include "../../framework/utils.hh"
+#include "../../framework/test_utils.hh"
 #include "PityModel.hh"
 #include <map>
 

@@ -4,7 +4,7 @@ TARGET=src/libPityTest.a
 LDFLAGS:=-L../../src/ $(LDFLAGS) -L../framework/
 LDLIBS=-lstdc++ -lpEpAdapter -lpEpEngine -lpthread -ldl
 CXXFLAGS:=-std=c++11 -g -I./src $(CXXFLAGS)
-TEST_EXTRA_OBJS=../framework/utils.o
+TEST_EXTRA_OBJS=../framework/test_utils.o
 
 # Src
 SRC=$(wildcard src/*.cc)
