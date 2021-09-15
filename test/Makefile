@@ -1,7 +1,7 @@
 include ../Makefile.conf
 
-LDFLAGS:=-L../src $(LDFLAGS) -L./pitytest11/src
-LDLIBS=-lstdc++ -lpEpEngine -lpEpAdapter -lPityTest -lpthread -ldl
+LDFLAGS:=-L../src $(LDFLAGS)
+LDLIBS=-lstdc++ -lpEpEngine -lpEpAdapter -lPityTest11 -lpthread -ldl
 CXXFLAGS:=-I../src -DENGINE_TEST=$(ENGINE_TEST) $(CXXFLAGS)
 
 # Test
@@ -22,15 +22,12 @@ OBJ_FRAMEWORK=$(subst .cc,.o,$(SRC_FRAMEWORK))
 #    -include $(DEPENDS)
 #endif
 
-.PHONY: all clean rmtestdata pitytest pitytest-clean
+.PHONY: all clean rmtestdata
 .DEFAULT_GOAL := all
 
-all: pitytest $(BIN_TEST)
+all: $(BIN_TEST)
 
 $(BIN_TEST): $(OBJ_FRAMEWORK)
-
-pitytest:
-	$(MAKE) -C pitytest11
 
 clean:
 	rm -f $(BIN_TEST)
@@ -39,9 +36,6 @@ clean:
 	rm -f *.d
 	rm -f *.o
 	rm -Rf /tmp/test_pEp.*
-
-pitytest-clean:
-	$(MAKE) -C pitytest11 clean
 
 rmtestdata:
 	rm -Rf /tmp/test_pEp.*

@@ -2,7 +2,7 @@
 #include "../src/pEpSQLite.hh"
 #include "../src/utils.hh"
 #include "../src/std_utils.hh"
-#include "framework/test_utils.hh"
+#include <pEp/pitytest11/test_utils.hh>
 
 #include <fstream>
 #include <cassert>

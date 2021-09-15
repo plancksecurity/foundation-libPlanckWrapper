@@ -2,9 +2,9 @@
 // see LICENSE.txt
 
 #include "framework/framework.hh"
-#include "framework/test_utils.hh"
+#include <pEp/pitytest11/test_utils.hh>
 #include <iostream>
-#include <assert.h>
+#include <cassert>
 
 #include <pEp/sync_api.h>
 #include <pEp/keymanagement.h>
