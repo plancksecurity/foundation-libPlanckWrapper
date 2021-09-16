@@ -3,6 +3,7 @@
 
 #include "std_utils.hh"
 #include <iostream>
+#include <iterator>
 #include <fstream>
 #include <cstdio>
 #include <cerrno>
