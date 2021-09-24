@@ -25,10 +25,9 @@ namespace pEp {
         message *src,
         message **dst,
         stringlist_t **keylist,
-        PEP_rating *rating,
         PEP_decrypt_flags_t *flags)
     {
-        return message_cache.decrypt_message(session, src, dst, keylist, rating, flags);
+        return message_cache.decrypt_message(session, src, dst, keylist, flags);
     }
 
     PEP_STATUS MessageCache::cache_mime_encode_message(
@@ -315,7 +314,6 @@ namespace pEp {
         message *src,
         message **dst,
         stringlist_t **keylist,
-        PEP_rating *rating,
         PEP_decrypt_flags_t *flags)
     {
         if (!src || cacheID(src) == "")
@@ -333,7 +331,7 @@ namespace pEp {
         correctAttachmentsOrder(src->attachments);
 
         ::message *_dst = nullptr;
-        PEP_STATUS status = ::decrypt_message(session, src, &_dst, keylist, rating, flags);
+        PEP_STATUS status = ::decrypt_message(session, src, &_dst, keylist, flags);
         *dst = empty_message_copy(_dst, _id, true);
 
         {
