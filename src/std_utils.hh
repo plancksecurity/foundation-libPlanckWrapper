@@ -29,12 +29,13 @@ namespace pEp {
         // path (file & dir)
         bool path_exists(const std::string &filename);
         void path_delete(const std::string &filename);
-        bool path_is_dir(const std::string &path);
 
 #ifndef WIN32
+        bool path_is_dir(const std::string &path);
         void path_delete_all(const std::string &path);
+        std::string path_dirname(std::string const& f);
+        std::string path_get_abs(const std::string& path);
 #endif
-
         void path_ensure_not_existing(const std::string &path);
 
         // file

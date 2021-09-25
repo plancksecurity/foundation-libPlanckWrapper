@@ -15,6 +15,7 @@
 #ifndef WIN32
     #include <dirent.h>
     #include <sys/stat.h>
+    #include <unistd.h>
 #endif
 
 using namespace std;
@@ -99,6 +100,44 @@ namespace pEp {
                 throw_with_nested(e);
             }
         }
+
+        std::string path_dirname(std::string const& f)
+        {
+            if (f.empty())
+                return f;
+            if (f == "/")
+                return "";
+
+            auto len = f.size();
+            // if the last character is / or \ ignore it
+            if (f[len - 1] == '/' || f[len - 1] == '\\')
+                --len;
+            while (len > 0) {
+                --len;
+                if (f[len] == '/' || f[len] == '\\')
+                    break;
+            }
+
+            if (f[len] == '/' || f[len] == '\\')
+                ++len;
+            return std::string(f.c_str(), len);
+        }
+
+        std::string path_get_abs(const std::string& path)
+        {
+            std::string ret{ path };
+            if (path[0] != '/') {
+                char cwd[2048];
+                char const* res = getcwd(cwd, sizeof(cwd));
+                if (res == nullptr) {
+                    throw std::runtime_error(
+                        "failed to get current working directory: " + std::string(strerror(errno)));
+                }
+                ret = std::string(cwd) + "/" + path;
+            }
+            return ret;
+        }
+
 #endif
 
         ofstream file_create(const string &filename)
@@ -152,6 +191,7 @@ namespace pEp {
                 path_delete_all(path);
             }
         }
+
 
         void dir_create(const string &dirname, const mode_t mode)
         {
