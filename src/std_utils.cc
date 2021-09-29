@@ -285,6 +285,15 @@ namespace pEp {
             return ret;
         }
 
+        std::string to_lower(const std::string &data)
+        {
+            std::string ret{ data };
+            std::transform(ret.begin(), ret.end(), ret.begin(), [](unsigned char c) {
+                return std::tolower(c);
+            });
+            return ret;
+        }
+
         string to_termcol(const Color &col)
         {
             switch (col) {
