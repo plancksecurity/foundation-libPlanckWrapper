@@ -94,6 +94,9 @@ namespace pEp {
         unsigned char random_char(unsigned char min, unsigned char max);
         std::string random_string(unsigned char min, unsigned char max, int len);
 
+        // conversion
+        std::vector<unsigned char> hex2bin(const std::string &hex_str);
+        std::string bin2hex(const std::vector<unsigned char>& bin);
     } // namespace Utils
 } // namespace pEp
 
