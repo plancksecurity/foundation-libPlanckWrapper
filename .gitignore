@@ -59,3 +59,4 @@ test_pEpLog_basic
 /test/test_swarm_tofu
 /test/test_file_rw_bin
 /test/test_rw.bin
+/test/test_hexbin
