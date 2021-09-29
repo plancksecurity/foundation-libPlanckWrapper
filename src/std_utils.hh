@@ -41,8 +41,12 @@ namespace pEp {
         // file
         std::ofstream file_create(const std::string &filename);
         std::string file_read(const std::string &filename);
-        std::vector<char> file_read_bin(const std::string& filename);
-        void file_write_bin(const std::string& filename, std::vector<char>& data);
+
+        template<typename T = char>
+        std::vector<T> file_read_bin(const std::string& filename);
+
+        template<typename T = char>
+        void file_write_bin(const std::string& filename, std::vector<T>& data);
 
         // dir
 #ifndef WIN32
