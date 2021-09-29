@@ -65,7 +65,7 @@ namespace pEp {
         std::vector<std::string> dir_list_files(const std::string &dirname);
 #endif
 
-        //String formatting
+        //String tools
         std::string padTo(const std::string &str, const size_t num, const char paddingChar);
         std::string clip(const std::string &str, const size_t len);
         std::string tldr(const std::string &str, const size_t len);

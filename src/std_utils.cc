@@ -101,7 +101,7 @@ namespace pEp {
             }
         }
 
-        std::string path_dirname(std::string const& f)
+        std::string path_dirname(std::string const &f)
         {
             if (f.empty())
                 return f;
@@ -123,12 +123,12 @@ namespace pEp {
             return std::string(f.c_str(), len);
         }
 
-        std::string path_get_abs(const std::string& path)
+        std::string path_get_abs(const std::string &path)
         {
             std::string ret{ path };
             if (path[0] != '/') {
                 char cwd[2048];
-                char const* res = getcwd(cwd, sizeof(cwd));
+                char const *res = getcwd(cwd, sizeof(cwd));
                 if (res == nullptr) {
                     throw std::runtime_error(
                         "failed to get current working directory: " + std::string(strerror(errno)));
