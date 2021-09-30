@@ -374,6 +374,14 @@ namespace pEp {
                 ret.push_back((unsigned char)val_int);
             }
             return ret;
+
+            //             alternative way
+            //            std::string extract;
+            //            for (std::string::const_iterator pos = hex_str.begin(); pos < hex_str.end(); pos += 2) {
+            //                extract.assign(pos, pos + 2);
+            //                ret.push_back(std::stoi(extract, nullptr, 16));
+            //            }
+            //            return ret;
         }
 
 
