@@ -12,6 +12,7 @@
 #include <thread>
 #include <random>
 #include <cstring>
+#include <iomanip>
 #ifndef WIN32
     #include <dirent.h>
     #include <sys/stat.h>
