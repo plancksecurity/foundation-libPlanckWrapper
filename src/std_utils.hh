@@ -31,6 +31,8 @@ namespace pEp {
         void path_delete(const std::string &filename);
 
 #ifndef WIN32
+        std::string dir_get_cwd();
+        void dir_set_cwd(const std::string& dir);
         bool path_is_dir(const std::string &path);
         void path_delete_all(const std::string &path);
         std::string path_dirname(std::string const& f);

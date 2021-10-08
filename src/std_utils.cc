@@ -52,7 +52,7 @@ namespace pEp {
         bool path_exists(const string &filename)
         {
             ifstream ifile(filename.c_str());
-            return (bool)ifile;
+            return static_cast<bool>(ifile);
         }
 
         void path_delete(const string &filename)
@@ -65,6 +65,27 @@ namespace pEp {
         }
 
 #ifndef WIN32
+        std::string dir_get_cwd()
+        {
+            std::string ret;
+            char cwd[2048];
+            char const *res = getcwd(cwd, sizeof(cwd));
+            if (res == nullptr) {
+                throw std::runtime_error(
+                    "failed to get current working directory: " + std::string(strerror(errno)));
+            }
+            ret = std::string(res);
+            return ret;
+        }
+
+        void dir_set_cwd(const std::string &dir)
+        {
+            int err = chdir(dir.c_str());
+            if (err != 0) {
+                throw std::runtime_error("dir_set_cwd(" + dir + ")" + std::string(strerror(errno)));
+            }
+        }
+
         bool path_is_dir(const string &path)
         {
             bool ret = false;
@@ -128,13 +149,7 @@ namespace pEp {
         {
             std::string ret{ path };
             if (path[0] != '/') {
-                char cwd[2048];
-                char const *res = getcwd(cwd, sizeof(cwd));
-                if (res == nullptr) {
-                    throw std::runtime_error(
-                        "failed to get current working directory: " + std::string(strerror(errno)));
-                }
-                ret = std::string(cwd) + "/" + path;
+                ret = dir_get_cwd() + "/" + path;
             }
             return ret;
         }
