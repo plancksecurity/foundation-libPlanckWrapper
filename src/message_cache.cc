@@ -269,6 +269,8 @@ namespace pEp {
             dst->opt_fields->next = dup(src->opt_fields);
         }
 
+        dst->rating = src->rating;
+
         return dst;
     }
 
