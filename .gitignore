@@ -60,3 +60,4 @@ test_pEpLog_basic
 /test/test_file_rw_bin
 /test/test_rw.bin
 /test/test_hexbin
+/test/test_rand
