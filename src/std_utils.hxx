@@ -48,6 +48,49 @@ namespace pEp {
             }
         }
 
+        template<class T>
+        std::string bin2hex(const T &bin)
+        {
+            std::string ret{};
+            std::stringstream ss{};
+            for (const auto &i : bin) {
+                ss << std::hex << std::setfill('0') << std::setw(2) << (int)i;
+            }
+            ret = ss.str();
+            return ret;
+        }
+
+        template<class T>
+        T hex2bin(const std::string &hex_str)
+        {
+            T ret{};
+            if ((hex_str.size() % 2) != 0) {
+                throw std::runtime_error("hex2bin: Invalid hex string: must be even length");
+            }
+            for (int i = 0; i < hex_str.size(); i += 2) {
+                std::ostringstream val_hex{};
+                val_hex << hex_str.at(i);
+                val_hex << hex_str.at(i + 1);
+
+                int val_int;
+                std::istringstream conv_ss{ val_hex.str() };
+                conv_ss >> std::hex >> val_int;
+                if (conv_ss.fail()) {
+                    throw std::runtime_error("hex2bin: invalid hex string" + hex_str);
+                }
+                ret.push_back(static_cast<typename T::value_type>(val_int));
+            }
+            return ret;
+
+            //             alternative way
+            //            std::string extract;
+            //            for (std::string::const_iterator pos = hex_str.begin(); pos < hex_str.end(); pos += 2) {
+            //                extract.assign(pos, pos + 2);
+            //                ret.push_back(std::stoi(extract, nullptr, 16));
+            //            }
+            //            return ret;
+        }
+
     } // namespace Utils
 } // namespace pEp
 #endif // LIBPEPADAPTER_STD_UTILS_HXX

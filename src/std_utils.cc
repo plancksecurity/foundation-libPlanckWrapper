@@ -342,64 +342,39 @@ namespace pEp {
             std::this_thread::sleep_for(timespan);
         }
 
+        int fastrand(int max)
+        {
+            static int g_seed = static_cast<int>(
+                std::chrono::system_clock::now().time_since_epoch().count());
+            g_seed = (214013 * g_seed + 2531011);
+            return ((g_seed >> 16) & 0x7FFF) % max + 1;
+        }
+
         unsigned char random_char(unsigned char min, unsigned char max)
         {
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            std::uniform_int_distribution<short> dis(static_cast<short>(min), static_cast<short>(max));
-            return static_cast<unsigned char>(dis(gen));
+            static unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
+            static std::mt19937 gen{ seed1 };
+            static std::uniform_int_distribution<unsigned char> dis(min, max);
+            return dis(gen);
         }
 
         std::string random_string(unsigned char min, unsigned char max, int len)
         {
             std::stringstream ret;
             for (int i = 0; i < len; i++) {
-                ret << random_char(97, 122);
+                ret << random_char(min, max);
             }
             return ret.str();
         }
 
-        std::string bin2hex(const std::vector<unsigned char> &bin)
+        std::string random_string_fast(unsigned char min, unsigned char max, int len)
         {
-            std::string ret{};
-            std::stringstream ss{};
-            for (const auto &i : bin) {
-                ss << std::hex << std::setfill('0') << std::setw(2) << (int)i;
+            int range = std::max(max - min, 1);
+            std::stringstream ret;
+            for (int i = 0; i < len; i++) {
+                ret << (fastrand(range) + min);
             }
-            ret = ss.str();
-            return ret;
+            return ret.str();
         }
-
-        std::vector<unsigned char> hex2bin(const std::string &hex_str)
-        {
-            std::vector<unsigned char> ret{};
-            if ((hex_str.size() % 2) != 0) {
-                throw std::runtime_error("hex2bin: Invalid hex string: must be even length");
-            }
-            for (int i = 0; i < hex_str.size(); i += 2) {
-                std::ostringstream val_hex{};
-                val_hex << hex_str.at(i);
-                val_hex << hex_str.at(i + 1);
-
-                int val_int;
-                std::istringstream conv_ss{ val_hex.str() };
-                conv_ss >> std::hex >> val_int;
-                if (conv_ss.fail()) {
-                    throw std::runtime_error("hex2bin: invalid hex string" + hex_str);
-                }
-                ret.push_back((unsigned char)val_int);
-            }
-            return ret;
-
-            //             alternative way
-            //            std::string extract;
-            //            for (std::string::const_iterator pos = hex_str.begin(); pos < hex_str.end(); pos += 2) {
-            //                extract.assign(pos, pos + 2);
-            //                ret.push_back(std::stoi(extract, nullptr, 16));
-            //            }
-            //            return ret;
-        }
-
-
     } // namespace Utils
 } // namespace pEp
