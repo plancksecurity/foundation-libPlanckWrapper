@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <fstream>
+#include <iomanip>
 #include <iterator>
 
 namespace pEp {
