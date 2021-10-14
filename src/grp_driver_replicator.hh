@@ -3,6 +3,7 @@
 #ifndef LIBPEPADAPTER_GRP_DRIVER_REPLICATOR_HH
 #define LIBPEPADAPTER_GRP_DRIVER_REPLICATOR_HH
 
+#include <memory>
 #include "grp_manager_interface.hh"
 #include "grp_driver_engine.hh"
 #include "grp_driver_dummy.hh"
