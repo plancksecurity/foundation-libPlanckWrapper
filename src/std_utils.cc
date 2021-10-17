@@ -13,6 +13,8 @@
 #include <random>
 #include <cstring>
 #include <iomanip>
+#include <pEp/pEpLog.hh>
+
 #ifndef WIN32
     #include <dirent.h>
     #include <sys/stat.h>
@@ -342,19 +344,32 @@ namespace pEp {
             std::this_thread::sleep_for(timespan);
         }
 
-        int fastrand(int max)
+        // Random --------------------------------------------------------------------------------
+        unsigned g_seed = gen_seed();
+        std::mt19937 gen{ g_seed };
+
+        uint gen_seed()
         {
-            static int g_seed = static_cast<int>(
-                std::chrono::system_clock::now().time_since_epoch().count());
+            uint ret{};
+            if (std::random_device{}.entropy() > 0) {
+                ret = std::random_device{}();
+            } else {
+                pEpLog("gen_seed(): No real random device present, falling back to epoch-time");
+                ret = std::chrono::system_clock::now().time_since_epoch().count();
+            }
+            assert(ret != 0);
+            return ret;
+        }
+
+        unsigned int random_fast(int max)
+        {
             g_seed = (214013 * g_seed + 2531011);
             return ((g_seed >> 16) & 0x7FFF) % max + 1;
         }
 
         unsigned char random_char(unsigned char min, unsigned char max)
         {
-            static unsigned seed1 = std::chrono::system_clock::now().time_since_epoch().count();
-            static std::mt19937 gen{ seed1 };
-            static std::uniform_int_distribution<unsigned char> dis(min, max);
+            std::uniform_int_distribution<unsigned char> dis(min, max);
             return dis(gen);
         }
 
@@ -369,10 +384,10 @@ namespace pEp {
 
         std::string random_string_fast(unsigned char min, unsigned char max, int len)
         {
-            int range = std::max(max - min, 1);
+            int range = std::max(max - min, 0);
             std::stringstream ret;
             for (int i = 0; i < len; i++) {
-                ret << (fastrand(range) + min);
+                ret << static_cast<unsigned char>(random_fast(range) + min);
             }
             return ret.str();
         }

@@ -61,10 +61,10 @@ namespace pEp {
             return ret;
         }
 
-        template<class T>
-        T hex2bin(const std::string &hex_str)
+        template<class T = unsigned char>
+        std::vector<T> hex2bin(const std::string &hex_str)
         {
-            T ret{};
+            std::vector<T> ret{};
             if ((hex_str.size() % 2) != 0) {
                 throw std::runtime_error("hex2bin: Invalid hex string: must be even length");
             }
@@ -79,7 +79,7 @@ namespace pEp {
                 if (conv_ss.fail()) {
                     throw std::runtime_error("hex2bin: invalid hex string" + hex_str);
                 }
-                ret.push_back(static_cast<typename T::value_type>(val_int));
+                ret.push_back(static_cast<T>(val_int));
             }
             return ret;
 

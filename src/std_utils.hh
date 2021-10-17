@@ -93,7 +93,10 @@ namespace pEp {
         void sleep_millis(int milis);
 
         // Random
-        int fastrand(int max);
+        // Attention: calling gen_seed() often will exhaust your entropy pool.
+        // If no random devices present, will return epoch-time.
+        unsigned int gen_seed();
+        unsigned int random_fast(int max);
         unsigned char random_char(unsigned char min, unsigned char max);
         std::string random_string(unsigned char min, unsigned char max, int len);
         std::string random_string_fast(unsigned char min, unsigned char max, int len);
