@@ -6,9 +6,26 @@
 
 using namespace pEp;
 
+
+int test_random_string_fast()
+{
+    pEpLog("Test test_random_string_fast() correct length, min & max");
+    for (int i = 0; i < 1000; i++) {
+        uint len = Utils::random_fast(5000);
+        std::string res = Utils::random_string_fast(0, 255, len);
+        PITYASSERT(
+            res.length() == len,
+            "random_string_fast: wrong length: " +
+                std::to_string(res.length()) + " is not " + std::to_string(len));
+    }
+    return 0;
+}
+
 int main()
 {
     pEp::Adapter::pEpLog::set_enabled(true);
+
+    test_random_string_fast();
 
     pEpLog("Random functions benchmark");
     int nr_mb = 10;
@@ -33,7 +50,7 @@ int main()
         pEpLog("Utils::Fastrand()");
         auto time_start = std::chrono::steady_clock::now();
         for (int i = 0; i < nr_bytes; i++) {
-            Utils::fastrand(255);
+            Utils::random_fast(255);
         }
         auto time_end = std::chrono::steady_clock::now();
         double duration_ms = (double)std::chrono::duration_cast<std::chrono::microseconds>(
