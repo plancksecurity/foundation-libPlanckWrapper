@@ -53,7 +53,6 @@ namespace pEp {
             message *src,
             message **dst,
             stringlist_t **keylist,
-            PEP_rating *rating,
             PEP_decrypt_flags_t *flags);
 
         static PEP_STATUS cache_encrypt_message(
@@ -98,7 +97,6 @@ namespace pEp {
             message *src,
             message **dst,
             stringlist_t **keylist,
-            PEP_rating *rating,
             PEP_decrypt_flags_t *flags);
 
         PEP_STATUS encrypt_message(
