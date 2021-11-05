@@ -11,9 +11,10 @@
 #include <algorithm>
 #include <thread>
 #include <random>
+#include <cassert>
 #include <cstring>
 #include <iomanip>
-#include <pEp/pEpLog.hh>
+#include "pEpLog.hh"
 
 #ifndef WIN32
     #include <dirent.h>
