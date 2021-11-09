@@ -105,7 +105,7 @@ namespace pEp {
         template<class T>
         std::string bin2hex(const T &bin);
         template<class T>
-        T hex2bin(const std::string &hex_str);
+        std::vector<T> hex2bin(const std::string &hex_str);
     } // namespace Utils
 } // namespace pEp
 
