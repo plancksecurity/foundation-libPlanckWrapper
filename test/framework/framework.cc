@@ -132,8 +132,15 @@ namespace pEp {
 
             ::message *_dst;
             stringlist_t *keylist;
+            ::PEP_rating rating;
             ::PEP_decrypt_flags_t flags = 0;
-            ::PEP_STATUS status = ::decrypt_message(Adapter::session(), msg.get(), &_dst, &keylist, &flags);
+            ::PEP_STATUS status = ::decrypt_message(
+                Adapter::session(),
+                msg.get(),
+                &_dst,
+                &keylist,
+                &rating,
+                &flags);
             throw_status(status);
 
             Message dst;
@@ -141,7 +148,6 @@ namespace pEp {
                 dst = make_message(_dst);
             else
                 dst = msg;
-            ::PEP_rating rating = dst.get()->rating;
 
             if (dst.get()->attachments) {
                 for (auto a = dst.get()->attachments; a && a->value; a = a->next) {
