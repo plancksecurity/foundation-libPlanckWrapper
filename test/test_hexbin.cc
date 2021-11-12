@@ -13,7 +13,7 @@ int main()
     {
         // Valid hex string
         std::string str_in{ "FFABCD00EF123200" };
-        std::vector<unsigned char> bin = Utils::hex2bin(str_in);
+        std::vector<unsigned char> bin = Utils::hex2bin<unsigned char>(str_in);
         PITYASSERT(str_in.length() == bin.size() * 2, "Size error");
 
         std::string str_out = pEp::Utils::bin2hex(bin);
@@ -26,13 +26,13 @@ int main()
     {
         // Uneven string throws
         std::string str_in{ "FFA" };
-        PITYASSERT_THROWS(Utils::hex2bin(str_in), "Uneven string should throw");
+        PITYASSERT_THROWS(Utils::hex2bin<char>(str_in), "Uneven string should throw");
     }
 
     {
         // Non-hex chars
         std::string str_in{ "pEp!" };
-        PITYASSERT_THROWS(Utils::hex2bin(str_in), "Invalid hex chars should throw");
+        PITYASSERT_THROWS(Utils::hex2bin<char>(str_in), "Invalid hex chars should throw");
     }
 
     pEpLog("All tests passsed");
