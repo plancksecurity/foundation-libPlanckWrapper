@@ -24,6 +24,7 @@ test_leave_device_group
 test_library
 test_message_cache
 test_passphrase_cache
+test_counting_semaphore
 test_semaphore
 test_lm_dummy
 test_sqlite3
