@@ -19,6 +19,7 @@ namespace pEp {
     public:
         CountingSemaphore(unsigned count = 0) : _count(count) {}
 
+        // Change the stored count.
         CountingSemaphore& operator=(unsigned count)
         {
             std::unique_lock<std::mutex> lock(mtx);
@@ -28,29 +29,35 @@ namespace pEp {
             return *this;
         }
 
+        // Return the current stored count.
         unsigned load()
         {
             return _count.load ();
         }
 
+        // Atomically decrement the stored count, blocking in case the count
+        // is currently zero.  When the method terminates the counter is
+        // guaranteed to have been decremented by one unit.
+        //
+        // This is Dijkstra's P operation, used to atomically acquire a resource.
         void p()
         {
             std::unique_lock<std::mutex> lock(mtx);
             // FIXME: is the loop even needed?  Any received notification will
             // wake up ony one thread, which will see the count as non-zero...
-            while (_count.load() == 0) {
-                //std::cout << "p: waiting...\n";
+            while (_count.load() == 0)
                 cv.wait(lock);
-            }
             _count --;
-            //std::cout << "after p: " << _count.load () << "\n";
         }
 
+        // Atomically increment the stored count.  This may wake up one thread
+        // which is currently executing the p method.
+        //
+        // This is Dijkstra's V operation, used to atomically release a resource.
         void v()
         {
             std::unique_lock<std::mutex> lock(mtx);
             _count ++;
-            //std::cout << "after v: " << _count.load () << "\n";
             cv.notify_one();
         }
     };
