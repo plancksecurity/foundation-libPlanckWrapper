@@ -44,7 +44,10 @@ namespace pEp {
         {
             std::unique_lock<std::mutex> lock(mtx);
             // FIXME: is the loop even needed?  Any received notification will
-            // wake up ony one thread, which will see the count as non-zero...
+            // wake up only one thread, which will see the count as non-zero...
+            // I guess an if conditional would work just as well as a while
+            // loop, but I will follow the canonical pattern just in case some
+            // new bizarre operation other than V is added later.
             while (_count.load() == 0)
                 cv.wait(lock);
             _count --;
