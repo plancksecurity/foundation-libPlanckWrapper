@@ -68,7 +68,7 @@ namespace pEp {
             if ((hex_str.size() % 2) != 0) {
                 throw std::runtime_error("hex2bin: Invalid hex string: must be even length");
             }
-            for (int i = 0; i < hex_str.size(); i += 2) {
+            for (size_t i = 0; i < hex_str.size(); i += 2) {
                 std::ostringstream val_hex{};
                 val_hex << hex_str.at(i);
                 val_hex << hex_str.at(i + 1);
