@@ -1,23 +1,32 @@
-# How to build
+# libpEpAdapter
 
-To customize your build, you may change several variables that are consumed by make.
 
-These variables, along with some explanations can be found in Makefile.conf.
+## Build Configuration
 
-You can edit that file, or create a file `local.conf` in the root of the repository, which will also be parsed by make.
+The build configuration file is called `local.conf`.
+Use the file `local.conf.example` as a template.
 
-A sample `local.conf` looks like this:
+```bash
+cp local.conf.example local.conf
+```
 
-~~~
-PREFIX=$(HOME)/code/libad/build
+Then, tweak it to your needs.
 
-ENGINE_LIB=-L$(HOME)/code/engine/build/lib
-ENGINE_INC=-I$(HOME)/code/engine/build/include
-~~~
+## Make Targets
+The default make target is `src`.
 
-Now, run:
+### Build
+`make src` - Builds the complete library
 
-~~~
-make all
-make install
-~~~
+### Test
+`make test` - Builds all tests
+
+### Install
+`make install` - Installs the library into your $PREFIX   
+`make uninstall` - Uninstalls the library from your $PREFIX
+
+### Clean
+`make clean`
+
+
+
