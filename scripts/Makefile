@@ -19,7 +19,7 @@ endif
 all: build
 
 build:
-	-docker pull $(IMAGE_NAME):latest
+	-docker pull --quiet $(IMAGE_NAME):latest
 	cd ../ && docker build --build-arg CURRENT_DISTRO=$(CURRENT_DISTRO) \
 		  --build-arg DOCKER_REGISTRY_HOST=${DOCKER_REGISTRY_HOST} \
 		  --build-arg LIBPEPADAPTER_VERSION=$(LIBPEPADAPTER_VERSION) \
@@ -27,11 +27,11 @@ build:
 		  --tag=$(IMAGE_NAME):$(LIBPEPADAPTER_VERSION) \
 		  --tag=$(IMAGE_NAME):latest \
 		  -f scripts/common/$(DOCKERFILE) .
-	docker push $(IMAGE_NAME):${LIBPEPADAPTER_VERSION}
-	docker push $(IMAGE_NAME):latest
+	docker push --quiet $(IMAGE_NAME):${LIBPEPADAPTER_VERSION}
+	docker push --quiet $(IMAGE_NAME):latest
 
 rpm:
-	-docker pull $(PKG_BUILD_IMAGE)-libpepadapter:latest
+	-docker pull --quiet $(PKG_BUILD_IMAGE)-libpepadapter:latest
 	@docker build --build-arg CURRENT_DISTRO=$(CURRENT_DISTRO) \
 		--build-arg LIBPEPADAPTER_VERSION=$(LIBPEPADAPTER_VERSION) \
 		--build-arg DOCKER_REGISTRY_HOST=${DOCKER_REGISTRY_HOST} \
@@ -40,8 +40,8 @@ rpm:
 		--tag=$(PKG_BUILD_IMAGE)-libpepadapter:$(LIBPEPADAPTER_VERSION) \
 		--tag=$(PKG_BUILD_IMAGE)-libpepadapter:latest \
 		centos8/packages/rpm
-	@docker push $(PKG_BUILD_IMAGE)-libpepadapter:$(LIBPEPADAPTER_VERSION)
-	@docker push $(PKG_BUILD_IMAGE)-libpepadapter:latest
+	@docker push --quiet $(PKG_BUILD_IMAGE)-libpepadapter:$(LIBPEPADAPTER_VERSION)
+	@docker push --quiet $(PKG_BUILD_IMAGE)-libpepadapter:latest
 	@docker run -e LIBPEPADAPTER_VERSION=$(LIBPEPADAPTER_VERSION) \
 		-e PEP_MACHINE_DIR=$(PEP_MACHINE_DIR) \
 		-e PKG_VERSION=$(LIBPEPADAPTER_VERSION) \
