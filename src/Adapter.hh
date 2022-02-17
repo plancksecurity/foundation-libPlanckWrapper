@@ -58,6 +58,10 @@ namespace pEp {
         // CAVEAT: there is a default constructor Sesssion(),
         // BUT
         // the session object needs to be initialized in order to be usable.
+
+        // TODO: remove initialize() and do that in the ctor's
+        // remove release() and do that in the destructor
+
         class Session {
         public:
             Session();
