@@ -58,12 +58,12 @@ namespace pEp {
 
             void logH2(const string& msg, Utils::Color col)
             {
-                log( "\n" +decorate_centered(msg, '='), col);
+                log("\n" + decorate_centered(msg, '='), col);
             }
 
             void logH3(const string& msg, Utils::Color col)
             {
-                log(  decorate_centered(msg, '-'), col);
+                log(decorate_centered(msg, '-'), col);
             }
 
             string decorate_three_lines(const string& msg, char decoration)
