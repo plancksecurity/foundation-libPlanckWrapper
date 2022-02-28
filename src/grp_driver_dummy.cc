@@ -1,7 +1,7 @@
 #include "grp_driver_dummy.hh"
-#include "pEpLog.hh"
+#include <pEp/pEpLog.hh>
 #include "utils.hh"
-#include "std_utils.hh"
+#include <pEp/std_utils.hh>
 #include <pEp/message_api.h>
 #include "listmanager_dummy.hh"
 

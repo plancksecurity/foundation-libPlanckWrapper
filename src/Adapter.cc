@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <assert.h>
 #include "status_to_string.hh"
-#include "pEpLog.hh"
+#include <pEp/pEpLog.hh>
 #include "passphrase_cache.hh"
 #include "callback_dispatcher.hh"
 #include "group_manager_api.h"

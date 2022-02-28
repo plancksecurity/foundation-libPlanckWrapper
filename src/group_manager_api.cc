@@ -4,7 +4,7 @@
 // clang-format off
 #include "group_manager_api.h"
 #include "grp_driver_replicator.hh"
-#include "pEpLog.hh"
+#include <pEp/pEpLog.hh>
 #include "grp_driver_dummy.hh"
 #include "grp_driver_engine.hh"
 

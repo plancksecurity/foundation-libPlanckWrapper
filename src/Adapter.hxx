@@ -5,9 +5,9 @@
 #define LIBPEPADAPTER_ADAPTER_HXX
 
 #include <thread>
-#include "locked_queue.hh"
+#include <pEp/locked_queue.hh>
 #include <cassert>
-#include "pEpLog.hh"
+#include <pEp/pEpLog.hh>
 #include <atomic>
 
 namespace pEp {

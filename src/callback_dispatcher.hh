@@ -8,7 +8,7 @@
 #include <functional>
 #include <mutex>
 
-#include "Semaphore.hh"
+#include <pEp/Semaphore.hh>
 #include "passphrase_cache.hh"
 #include <pEp/sync_api.h>
 namespace pEp {

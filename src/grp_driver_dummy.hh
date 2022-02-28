@@ -4,7 +4,7 @@
 #define LIBPEPADAPTER_GRP_DRIVER_DUMMY_HH
 
 #include "grp_manager_interface.hh"
-#include "pEpLog.hh"
+#include <pEp/pEpLog.hh>
 #include "listmanager_dummy.hh"
 #include <pEp/message_api.h>
 

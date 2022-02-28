@@ -5,7 +5,7 @@
 #define LIBPEPADAPTER_LISTMANAGER_DUMMY_HH
 
 #include "pEpSQLite.hh"
-#include "pEpLog.hh"
+#include <pEp/pEpLog.hh>
 #include <vector>
 #include <string>
 

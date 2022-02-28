@@ -1,5 +1,5 @@
 #include "grp_driver_engine.hh"
-#include "pEpLog.hh"
+#include <pEp/pEpLog.hh>
 #include <pEp/message_api.h>
 #include <pEp/group.h>
 

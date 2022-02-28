@@ -1,5 +1,5 @@
 #include "pEpSQLite.hh"
-#include "pEpLog.hh"
+#include <pEp/pEpLog.hh>
 #include <iostream>
 #include <cstdio>
 #include <stdexcept>

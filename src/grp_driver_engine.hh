@@ -4,7 +4,7 @@
 #define LIBPEPADAPTER_GRP_DRIVER_ENGINE_HH
 
 #include "grp_manager_interface.hh"
-#include "pEpLog.hh"
+#include <pEp/pEpLog.hh>
 #include <pEp/message_api.h>
 
 namespace pEp {

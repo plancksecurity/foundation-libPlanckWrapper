@@ -7,7 +7,7 @@
 #include "grp_manager_interface.hh"
 #include "grp_driver_engine.hh"
 #include "grp_driver_dummy.hh"
-#include "pEpLog.hh"
+#include <pEp/pEpLog.hh>
 #include <pEp/message_api.h>
 
 namespace pEp {

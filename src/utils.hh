@@ -4,7 +4,7 @@
 #ifndef LIBPEPADAPTER_UTILS_HH
 #define LIBPEPADAPTER_UTILS_HH
 
-#include "pEpLog.hh"
+#include <pEp/pEpLog.hh>
 #include <pEp/message.h>
 #include <pEp/identity_list.h>
 #include <pEp/group.h>
