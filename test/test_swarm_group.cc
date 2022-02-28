@@ -6,7 +6,7 @@
 // libpEpAdapter
 #include "../src/Adapter.hh"
 #include "../src/group_manager_api.h"
-#include "../src/pEpLog.hh"
+#include <pEp/pEpLog.hh>
 #include "../src/status_to_string.hh"
 #include "../src/grp_driver_replicator.hh"
 

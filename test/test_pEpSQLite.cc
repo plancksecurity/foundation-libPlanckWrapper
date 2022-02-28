@@ -1,7 +1,7 @@
 #include "test_pEpSQLite.hh"
 #include "../src/pEpSQLite.hh"
 #include "../src/utils.hh"
-#include "../src/std_utils.hh"
+#include <pEp/std_utils.hh>
 #include <pEp/pitytest11/test_utils.hh>
 
 #include <fstream>
