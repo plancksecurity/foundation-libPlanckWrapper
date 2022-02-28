@@ -47,7 +47,7 @@ using MinMsgRx = std::tuple<std::string, std::string>;
 
 ::PEP_STATUS test_messageToSend(::message *_msg)
 {
-    local_pity->log("MESSAGE TO SEND:" + Utils::to_string(_msg, false));
+    local_pity->log("MESSAGE TO SEND:" + Utils::to_string(*_msg, false));
     std::string mime_text = mimeEncode(wrap(_msg));
     local_pity->transport()->sendMsg(_msg->to->ident->address, mime_text);
     return PEP_STATUS_OK;
@@ -56,8 +56,8 @@ using MinMsgRx = std::tuple<std::string, std::string>;
 ::PEP_STATUS test_notifyHandshake(::pEp_identity *me, ::pEp_identity *partner, sync_handshake_signal signal)
 {
     local_pity->log("NOTFY_HANDSHAKE: signal: " + std::string(std::to_string(signal)));
-    local_pity->log("NOTFY_HANDSHAKE: me:" + Utils::to_string(me, false));
-    local_pity->log("NOTFY_HANDSHAKE: partner: " + Utils::to_string(partner, false));
+    local_pity->log("NOTFY_HANDSHAKE: me:" + Utils::to_string(*me, false));
+    local_pity->log("NOTFY_HANDSHAKE: partner: " + Utils::to_string(*partner, false));
     if (signal == ::SYNC_NOTIFY_GROUP_INVITATION) {
         signal_received = true;
         group_ident = dup(me);
@@ -83,14 +83,14 @@ void processMessage()
 
     // Decode
     pEpMessage rx_msg = mimeDecode(mime_data_rx);
-    //        local_pity->log("decode: " + Utils::to_string(rx_msg.get(), false));
+    //        local_pity->log("decode: " + Utils::to_string(*rx_msg.get(), false));
 
     // Decrypt
     ::PEP_decrypt_flags_t flags = ::PEP_decrypt_flag_dont_trigger_sync;
     //        ::PEP_decrypt_flags_t flags = 0;
     DecryptResult decres = decryptMessage(rx_msg, &flags);
     pEpMessage msg_decrypt = std::get<0>(decres);
-    //        local_pity->log("Decrypt: " + Utils::to_string(msg_decrypt.get(), false));
+    //        local_pity->log("Decrypt: " + Utils::to_string(*msg_decrypt.get(), false));
     local_pity->log("message processed...");
 }
 
@@ -124,8 +124,8 @@ MinMsgRx tofu_receive(TestUnitSwarm &pity, TextContext *ctx)
     pity.log(
         "Received Encrypted[" + std::to_string(std::get<4>(msg_rx)) +
         "] from: " + std::string(msg_rx_dec->from->address));
-    //    pity.log("IN:\n " + Utils::to_string(mimeDecode(mime_data_rx).get(), false));
-    pity.log("DECRYPTED:\n " + Utils::to_string(msg_rx_dec.get(), false));
+    //    pity.log("IN:\n " + Utils::to_string(*mimeDecode(mime_data_rx).get(), false));
+    pity.log("DECRYPTED:\n " + Utils::to_string(*msg_rx_dec.get(), false));
     std::get<0>(ret) = std::string(msg_rx_dec->from->address);
     std::get<1>(ret) = std::string(msg_rx_dec->longmsg);
     return ret;
@@ -226,12 +226,12 @@ int test_group_invite_members(TestUnitSwarm &pity, TextContext *ctx)
         status = ::update_identity(Adapter::session(), grp_ident.get());
         throw_status(status);
 
-        pity.log(Utils::to_string(grp_ident.get(), false));
+        pity.log(Utils::to_string(*grp_ident.get(), false));
         for (TestIdent mb : my_grp.members) {
             auto mb_ident = createRawIdent(mb.addr);
             status = ::update_identity(Adapter::session(), mb_ident.get());
             throw_status(status);
-            pity.log(Utils::to_string(mb_ident.get(), false));
+            pity.log(Utils::to_string(*mb_ident.get(), false));
 
             status = ::adapter_group_invite_member(Adapter::session(), grp_ident.get(), mb_ident.get());
             throw_status(status);
@@ -295,8 +295,8 @@ int test_receive(TestUnitSwarm &pity, TextContext *ctx)
     pity.log(
         "Received Encrypted[" + std::to_string(std::get<4>(msg_rx)) +
         "] from: " + std::string(msg_rx_dec->from->address));
-    //    pity.log("IN:\n " + Utils::to_string(mimeDecode(mime_data_rx).get(), false));
-    //    pity.log("DECRYPTED:\n " + Utils::to_string(msg_rx_dec.get(), false));
+    //    pity.log("IN:\n " + Utils::to_string(*mimeDecode(mime_data_rx).get(), false));
+    //    pity.log("DECRYPTED:\n " + Utils::to_string(*msg_rx_dec.get(), false));
     std::get<0>(ret) = std::string(msg_rx_dec->from->address);
     std::get<1>(ret) = std::string(msg_rx_dec->longmsg);
     return 0;
@@ -318,7 +318,7 @@ int test_group_remove_member_one_by_one(TestUnitSwarm &pity, TextContext *ctx)
         ::identity_list *idl = nullptr;
         ::PEP_STATUS status = ::adapter_group_query_members(Adapter::session(), group_ident.get(), &idl);
         throw_status(status);
-        pity.log(Utils::to_string(idl, false));
+        pity.log(Utils::to_string(*idl, false));
         if (idl->ident != nullptr) {
             status = ::adapter_group_remove_member(Adapter::session(), group_ident.get(), idl->ident);
             throw_status(status);
@@ -336,7 +336,7 @@ int test_group_query1(TestUnitSwarm &pity, TextContext *ctx)
         ::identity_list *idl = nullptr;
         ::PEP_STATUS status = ::adapter_group_query_groups(Adapter::session(), &idl);
         throw_status(status);
-        pity.log(Utils::to_string(idl, false));
+        pity.log(Utils::to_string(*idl, false));
         PITYASSERT(idl->ident == nullptr, "adapter_group_query_groups");
     }
     return 0;
@@ -348,7 +348,7 @@ int test_group_query2(TestUnitSwarm &pity, TextContext *ctx)
         ::identity_list *idl = nullptr;
         ::PEP_STATUS status = ::adapter_group_query_groups(Adapter::session(), &idl);
         throw_status(status);
-        //        pity.log(Utils::to_string(idl, false));
+        //        pity.log(Utils::to_string(*idl, false));
         PITYASSERT(idl->ident->address == ctx->groups.begin()->addr, "adapter_group_query_groups");
     }
     {
@@ -359,8 +359,8 @@ int test_group_query2(TestUnitSwarm &pity, TextContext *ctx)
             group_ident.get(),
             &mgr_ptr);
         throw_status(status);
-        //        pity.log(Utils::to_string(mgr_ptr, false));
-        //        pity.log(Utils::to_string(ctx->own_ident.get(), false));
+        //        pity.log(Utils::to_string(*mgr_ptr, false));
+        //        pity.log(Utils::to_string(*ctx->own_ident.get(), false));
         PITYASSERT(
             *mgr_ptr->address == *ctx->own_ident->address,
             "adapter_group_query_manager - wrong manager");
@@ -369,7 +369,7 @@ int test_group_query2(TestUnitSwarm &pity, TextContext *ctx)
         ::identity_list *idl = nullptr;
         ::PEP_STATUS status = ::adapter_group_query_members(Adapter::session(), group_ident.get(), &idl);
         throw_status(status);
-        //        pity.log(Utils::to_string(idl, false));
+        //        pity.log(Utils::to_string(*idl, false));
         PITYASSERT(idl->ident == nullptr, "adapter_group_query_members");
     }
     return 0;
@@ -382,7 +382,7 @@ int test_group_query3(TestUnitSwarm &pity, TextContext *ctx)
         ::identity_list *idl = nullptr;
         ::PEP_STATUS status = ::adapter_group_query_groups(Adapter::session(), &idl);
         throw_status(status);
-        //        pity.log(Utils::to_string(idl, false));
+        //        pity.log(Utils::to_string(*idl, false));
         PITYASSERT(idl->ident->address == ctx->groups.begin()->addr, "adapter_group_query_groups");
     }
     {
@@ -393,8 +393,8 @@ int test_group_query3(TestUnitSwarm &pity, TextContext *ctx)
             group_ident.get(),
             &mgr_ptr);
         throw_status(status);
-        //        pity.log(Utils::to_string(mgr_ptr, false));
-        //        pity.log(Utils::to_string(ctx->own_ident.get(), false));
+        //        pity.log(Utils::to_string(*mgr_ptr, false));
+        //        pity.log(Utils::to_string(*ctx->own_ident.get(), false));
         PITYASSERT(
             *mgr_ptr->address == *ctx->own_ident->address,
             "adapter_group_query_manager - wrong manager");
@@ -403,7 +403,7 @@ int test_group_query3(TestUnitSwarm &pity, TextContext *ctx)
         ::identity_list *idl = nullptr;
         ::PEP_STATUS status = ::adapter_group_query_members(Adapter::session(), group_ident.get(), &idl);
         throw_status(status);
-        pity.log(Utils::to_string(idl, false));
+        pity.log(Utils::to_string(*idl, false));
         //        PITYASSERT(idl->ident->address == ctx->getCpt().addr, "adapter_group_query_members");
     }
     return 0;
@@ -415,7 +415,7 @@ int test_group_query4(TestUnitSwarm &pity, TextContext *ctx)
         ::identity_list *idl = nullptr;
         ::PEP_STATUS status = ::adapter_group_query_groups(Adapter::session(), &idl);
         throw_status(status);
-        //        pity.log(Utils::to_string(idl, false));
+        //        pity.log(Utils::to_string(*idl, false));
         PITYASSERT(idl->ident->address == ctx->groups.begin()->addr, "adapter_group_query_groups");
     }
     {
@@ -426,8 +426,8 @@ int test_group_query4(TestUnitSwarm &pity, TextContext *ctx)
             group_ident.get(),
             &mgr_ptr);
         throw_status(status);
-        //        pity.log(Utils::to_string(mgr_ptr, false));
-        //        pity.log(Utils::to_string(ctx->own_ident.get(), false));
+        //        pity.log(Utils::to_string(*mgr_ptr, false));
+        //        pity.log(Utils::to_string(*ctx->own_ident.get(), false));
         PITYASSERT(
             *mgr_ptr->address == *ctx->own_ident->address,
             "adapter_group_query_manager - wrong manager");
@@ -436,7 +436,7 @@ int test_group_query4(TestUnitSwarm &pity, TextContext *ctx)
         ::identity_list *idl = nullptr;
         ::PEP_STATUS status = ::adapter_group_query_members(Adapter::session(), group_ident.get(), &idl);
         throw_status(status);
-        //        pity.log(Utils::to_string(idl, false));
+        //        pity.log(Utils::to_string(*idl, false));
         //        PITYASSERT(idl->ident->address == ctx->getCpt().addr, "adapter_group_query_members");
     }
     return 0;

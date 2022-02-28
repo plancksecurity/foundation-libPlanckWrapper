@@ -56,8 +56,8 @@ MinMsgRx tofu_receive(TestUnitSwarm &pity, TextContext *ctx)
     pity.log(
         "Received Encrypted[" + std::to_string(std::get<4>(msg_rx)) +
         "] from: " + std::string(msg_rx_dec->from->address));
-    //    pity.log("IN:\n " + Utils::to_string(mimeDecode(mime_data_rx).get(), false));
-    pity.log("DECRYPTED:\n " + Utils::to_string(msg_rx_dec.get(), false));
+    //    pity.log("IN:\n " + Utils::to_string(*mimeDecode(mime_data_rx).get(), false));
+    pity.log("DECRYPTED:\n " + Utils::to_string(*msg_rx_dec.get(), false));
     std::get<0>(ret) = std::string(msg_rx_dec->from->address);
     std::get<1>(ret) = std::string(msg_rx_dec->longmsg);
     return ret;
