@@ -107,7 +107,7 @@ namespace pEp {
         // ---------------------------------------------------------------------------------------
         Session::Session() :
             _messageToSend{ nullptr }, _notifyHandshake{ nullptr }, _sync_mode{ SyncModes::Async },
-            _adapter_manages_sync_thread{ false }
+            _adapter_manages_sync_thread{ false }, _inject_action{ nullptr }
         {
         }
 
@@ -168,9 +168,8 @@ namespace pEp {
             }
 
             // create
-            ::PEP_SESSION session_;
-            ::PEP_STATUS status;
-            status = ::init(&session_, _messageToSend, _inject_action, _ensure_passphrase);
+            ::PEP_SESSION session_{ nullptr };
+            ::PEP_STATUS status = ::init(&session_, _messageToSend, _inject_action, _ensure_passphrase);
             throw_status(status);
             status = ::register_sync_callbacks(
                 session_,
@@ -244,7 +243,7 @@ namespace pEp {
         // Works even if adapter is managing sync thread, BUT must be using this queue
         bool in_shutdown()
         {
-            SYNC_EVENT ev;
+            SYNC_EVENT ev{ nullptr };
             try {
                 ev = sync_evt_q.back();
             } catch (std::underflow_error &) {
