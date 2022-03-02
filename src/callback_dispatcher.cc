@@ -35,7 +35,7 @@ namespace pEp {
             throw std::invalid_argument("messageToSend must be set");
         }
 
-        targets.push_back({messageToSend, notifyHandshake, on_startup, shutdown});
+        targets.push_back({messageToSend, notifyHandshake, std::move(on_startup), std::move(shutdown)});
     }
 
     void CallbackDispatcher::remove(::messageToSend_t messageToSend)
