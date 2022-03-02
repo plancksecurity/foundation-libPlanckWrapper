@@ -225,7 +225,7 @@ namespace pEp {
                 pEpLog("sync_is_running - injecting null event");
                 inject_sync_shutdown();
                 _sync_thread.join();
-                pEp::callback_dispatcher.notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_STOP);
+                pEp::CallbackDispatcher::notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_STOP);
             }
         }
 
