@@ -124,13 +124,14 @@ namespace pEp {
             ::inject_sync_event_t _inject_action;
 
         private:
+            using SessionPtr = std::unique_ptr<_pEpSession, std::function<void(PEP_SESSION)>>;
+
             void _init(
                 ::messageToSend_t messageToSend,
                 ::notifyHandshake_t notifyHandshake,
                 SyncModes sync_mode,
                 bool adapter_manages_sync_thread);
 
-            using SessionPtr = std::unique_ptr<_pEpSession, std::function<void(PEP_SESSION)>>;
             SessionPtr _session = nullptr;
         };
 

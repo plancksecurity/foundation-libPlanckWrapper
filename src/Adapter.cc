@@ -201,7 +201,8 @@ namespace pEp {
         }
 
         // public
-        void inject_sync_shutdown() {
+        void inject_sync_shutdown()
+        {
             pEpLog("called");
             _inject_sync_event(nullptr, nullptr);
         }
@@ -231,9 +232,8 @@ namespace pEp {
         {
             if (!session._adapter_manages_sync_thread) {
                 return _sync_thread.joinable();
-            } else {
-                return false;
             }
+            return false;
         }
 
         // public
