@@ -29,13 +29,13 @@ void send(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
     // Create Message
     pity.log("Initiating TOFU...");
     pEpMessage msg = createMessage(ctx->own_ident, ctx->getCpt().addr, "INIT TOFU");
-    pity.log("BEFORE encrypt: \n" + Utils::to_string(*msg.get()));
+    pity.log("BEFORE encrypt: \n" + Utils::to_string(msg.get()));
 
     //Encrypt
     EncryptResult msg_encrypted = encryptMessage(msg);
     did_tx_encrypted = std::get<2>(msg_encrypted);
     pity.log("TX COULD ENCRYPT: " + std::to_string(did_tx_encrypted));
-    pity.log("AFTER encrypt: \n" + Utils::to_string(*std::get<0>(msg_encrypted).get()));
+    pity.log("AFTER encrypt: \n" + Utils::to_string(std::get<0>(msg_encrypted).get()));
 
     // Encode
     std::string mime_text = mimeEncode(std::get<0>(msg_encrypted));
@@ -52,14 +52,14 @@ MinMsgRx tofu_receive(PityUnit<PityPerspective> &pity, PityPerspective *ctx)
 
     // Decode
     pEpMessage mime_decoded = mimeDecode(mime_data_rx);
-    pity.log("RX message - BEFORE decrypt: \n" + Utils::to_string(*mime_decoded.get()));
+    pity.log("RX message - BEFORE decrypt: \n" + Utils::to_string(mime_decoded.get()));
 
     // Decrypt
     DecryptResult msg_decrypted = decryptMessage(mime_decoded);
     pEpMessage msg_rx_dec = std::get<0>(msg_decrypted);
     did_rx_encrypted = std::get<4>(msg_decrypted);
     pity.log("RX WAS ENCRYPTED: " + std::to_string(did_rx_encrypted));
-    pity.log("RX message - AFTER decrypt: \n" + Utils::to_string(*msg_rx_dec.get()));
+    pity.log("RX message - AFTER decrypt: \n" + Utils::to_string(msg_rx_dec.get()));
 
     // Return result
     std::get<0>(ret) = std::string(msg_rx_dec->from->address);
@@ -79,13 +79,13 @@ void receiveAndReply(PityUnit<PityPerspective> &pity, PityPerspective *ctx, MinM
         "REPLY[ " + std::string(addr_orig) + " ] " + longmsg_orig);
 
     // Encrypt
-    pity.log("TX message - BEFORE encrypt: \n" + Utils::to_string(*msg.get()));
+    pity.log("TX message - BEFORE encrypt: \n" + Utils::to_string(msg.get()));
 
     EncryptResult eres = encryptMessage(msg);
     pEpMessage msg_encrypted = std::get<0>(eres);
     did_tx_encrypted = std::get<2>(eres);
     pity.log("TX COULD ENCRYPT: " + std::to_string(did_tx_encrypted));
-    pity.log("TX message - AFTER encrypt: \n" + Utils::to_string(*msg_encrypted.get()));
+    pity.log("TX message - AFTER encrypt: \n" + Utils::to_string(msg_encrypted.get()));
 
     // Encode
     std::string mime_data_tx = mimeEncode(msg_encrypted);
