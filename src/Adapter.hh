@@ -65,7 +65,11 @@ namespace pEp {
         class Session {
         public:
             Session();
-
+            Session(const Session &) = delete;
+            Session(const Session &&) = delete;
+            Session operator=(const Session &) = delete;
+            Session operator=(const Session &&) = delete;
+            ~Session() = default;
             // Initialize()
             // Initializes the session and registers the CallbackDispatcher as callbacks
             //
@@ -109,10 +113,6 @@ namespace pEp {
 
             // re-creates the session using same values
             void refresh();
-
-            // Not copyable
-            Session(const Session &) = delete;
-            Session operator=(const Session &) = delete;
 
             void release();
             PEP_SESSION operator()();
