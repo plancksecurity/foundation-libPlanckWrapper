@@ -58,8 +58,8 @@ GroupQueryInterface* gq = nullptr;
 ::PEP_STATUS test_notifyHandshake(::pEp_identity* _me, ::pEp_identity* _partner, sync_handshake_signal signal)
 {
     log("called");
-    log("me: " + pEp::Utils::to_string(*_me, false));
-    log("partner: " + pEp::Utils::to_string(*_partner, false));
+    log("me: " + pEp::Utils::to_string(_me, false));
+    log("partner: " + pEp::Utils::to_string(_partner, false));
     log("Signal: " + to_string(signal));
     //    log("Signal: " + string{ ::sync_handshake_signal_to_string(signal) });
 
@@ -80,7 +80,7 @@ void test_create_alice_me()
     status = ::myself(Adapter::session(), alice);
     log("STATUS: " + status_to_string(status));
     assert(!status);
-    log("Alice:" + pEp::Utils::to_string(*alice, debug_info_full));
+    log("Alice:" + pEp::Utils::to_string(alice, debug_info_full));
 }
 
 void test_create_bob_partner()
@@ -88,13 +88,13 @@ void test_create_bob_partner()
     logH2("test_create_bob_partner");
     bob = ::new_identity("bob@peptest.ch", NULL, PEP_OWN_USERID, "Bob");
     assert(bob);
-//    bob->lang[0] = 'c';
-//    bob->lang[1] = 'r';
-//    status = ::myself(Adapter::session(), bob);
+    //    bob->lang[0] = 'c';
+    //    bob->lang[1] = 'r';
+    //    status = ::myself(Adapter::session(), bob);
     status = ::update_identity(Adapter::session(), bob);
     log("STATUS: " + status_to_string(status));
     assert(!status);
-    log("Bob:" + pEp::Utils::to_string(*bob, debug_info_full));
+    log("Bob:" + pEp::Utils::to_string(bob, debug_info_full));
 }
 
 void test_create_carol_partner()
@@ -105,10 +105,10 @@ void test_create_carol_partner()
     carol->lang[0] = 'f';
     carol->lang[1] = 'n';
     status = ::update_identity(Adapter::session(), carol);
-//    status = ::myself(Adapter::session(), carol);
+    //    status = ::myself(Adapter::session(), carol);
     log("STATUS: " + status_to_string(status));
     assert(!status);
-    log("Carol:" + pEp::Utils::to_string(*carol, debug_info_full));
+    log("Carol:" + pEp::Utils::to_string(carol, debug_info_full));
 }
 
 void test_setup_and_start_sync()
@@ -127,12 +127,12 @@ void test_group_create()
     log("create group identity");
     grp_ident = ::new_identity("group1@peptest.ch", NULL, "432", "group1");
     assert(grp_ident);
-    log("grp_ident:" + pEp::Utils::to_string(*grp_ident, debug_info_full));
+    log("grp_ident:" + pEp::Utils::to_string(grp_ident, debug_info_full));
 
-//    PEP_STATUS stat = ::myself(Adapter::session(), grp_ident);
-//    log("STATUS: " + status_to_string(status));
-//    assert(stat == PEP_STATUS_OK);
-//    log("grp_ident:" + pEp::Utils::to_string(grp_ident, debug_info_full));
+    //    PEP_STATUS stat = ::myself(Adapter::session(), grp_ident);
+    //    log("STATUS: " + status_to_string(status));
+    //    assert(stat == PEP_STATUS_OK);
+    //    log("grp_ident:" + pEp::Utils::to_string(grp_ident, debug_info_full));
 
     log("adapter_group_create()");
     status = gu->adapter_group_create(Adapter::session(), grp_ident, alice, nullptr);
@@ -243,7 +243,7 @@ int main(int argc, char** argv)
         ::pEp_identity* manager = nullptr;
         PEP_STATUS stat = gq->group_query_manager(Adapter::session(), grp_ident, &manager);
         log(status_to_string(stat));
-        log(::Utils::to_string(*manager));
+        log(::Utils::to_string(manager));
     }
     logH1("6. Dissolve");
     test_group_dissolve();
