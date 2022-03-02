@@ -57,10 +57,8 @@ namespace pEp {
         {
             if (ev != nullptr) {
                 ::do_sync_protocol_step(session(), nullptr, ev);
-                return 0;
-            } else {
-                return 0;
             }
+            return 0;
         }
 
         // public (json adapter needs it, but should use Session mgmt from libpEpAdapter eventually)
@@ -198,9 +196,8 @@ namespace pEp {
             if (!_session.get()) {
                 throw std::runtime_error(
                     "libpEpAdapter: No session! Before use, call session.initialize() for each thread");
-            } else {
-                return _session.get();
             }
+            return _session.get();
         }
 
         // public
@@ -249,11 +246,7 @@ namespace pEp {
             } catch (std::underflow_error &) {
                 return false;
             }
-            if (ev) {
-                return false;
-            } else {
-                return true;
-            }
+            return !ev;
         }
     } // namespace Adapter
 } // namespace pEp
