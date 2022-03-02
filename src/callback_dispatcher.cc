@@ -59,7 +59,7 @@ namespace pEp {
 
     void CallbackDispatcher::on_startup()
     {
-        for (auto target : targets) {
+        for (const auto& target : targets) {
             if (target.on_startup) {
                 target.on_startup();
             }
@@ -68,7 +68,7 @@ namespace pEp {
 
     void CallbackDispatcher::on_shutdown()
     {
-        for (auto target : targets) {
+        for (const auto& target : targets) {
             if (target.on_shutdown) {
                 target.on_shutdown();
             }
@@ -100,7 +100,7 @@ namespace pEp {
             PassphraseCache::config_next_passphrase(true);
         }
 
-        for (auto target : targets) {
+        for (const auto& target : targets) {
             ::message *_msg = nullptr;
             if (msg) {
                 _msg = ::message_dup(msg);
@@ -120,8 +120,8 @@ namespace pEp {
         ::pEp_identity *partner,
         ::sync_handshake_signal signal)
     {
-        for (auto target : targets) {
-            if (target.notifyHandshake) {
+        for (const auto& target : targets) {
+            if (target.notifyHandshake != nullptr) {
                 ::pEp_identity *_me = nullptr;
                 if (me) {
                     _me = ::identity_dup(me);
