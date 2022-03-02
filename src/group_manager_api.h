@@ -205,7 +205,7 @@ DYNAMIC_API PEP_STATUS adapter_group_query_groups(
 
 DYNAMIC_API PEP_STATUS adapter_group_query_manager(
     PEP_SESSION session,
-    const pEp_identity *const group,
+    const pEp_identity *group,
     pEp_identity **manager);
 
 /**
@@ -226,7 +226,7 @@ DYNAMIC_API PEP_STATUS adapter_group_query_manager(
 
 DYNAMIC_API PEP_STATUS adapter_group_query_members(
     PEP_SESSION session,
-    const pEp_identity *const group,
+    const pEp_identity *group,
     identity_list **members);
 
 
