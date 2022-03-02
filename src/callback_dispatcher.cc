@@ -5,6 +5,7 @@
 #include "passphrase_cache.hh"
 #include <stdexcept>
 #include <cassert>
+#include <utility>
 #include "Adapter.hh"
 
 pEp::CallbackDispatcher pEp::callback_dispatcher;
