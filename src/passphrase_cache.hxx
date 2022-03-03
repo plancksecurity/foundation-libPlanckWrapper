@@ -14,8 +14,9 @@ namespace pEp {
 
         for_each_passphrase([&](std::string passphrase) {
             status = ::config_passphrase(session, passphrase.c_str());
-            if (status)
+            if (status) {
                 return true;
+            }
 
             status = f(session, a...);
             return status != PEP_PASSPHRASE_REQUIRED && status != PEP_WRONG_PASSPHRASE;
@@ -23,6 +24,6 @@ namespace pEp {
 
         return status;
     }
-}; // namespace pEp
+} // namespace pEp
 
 #endif // LIBPEPADAPTER_PASSPHRASE_CACHE_HXX
