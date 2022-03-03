@@ -74,11 +74,11 @@ namespace pEp {
             PEP_encrypt_flags_t flags);
 
 
-        static PEP_STATUS cache_release(std::string id);
+        static PEP_STATUS cache_release(const std::string& id);
         static void removeCacheID(::message *msg);
 
     protected:
-        void release(std::string id);
+        void release(const std::string& id);
 
         PEP_STATUS mime_decode_message(
             const char *mimetext,

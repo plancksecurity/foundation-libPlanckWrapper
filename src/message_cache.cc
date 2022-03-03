@@ -75,13 +75,13 @@ namespace pEp {
             .encrypt_message_for_self(session, target_id, src, extra, dst, enc_format, flags);
     }
 
-    PEP_STATUS MessageCache::cache_release(std::string id)
+    PEP_STATUS MessageCache::cache_release(const std::string &id)
     {
         message_cache.release(id);
         return PEP_STATUS_OK;
     }
 
-    void MessageCache::release(std::string id)
+    void MessageCache::release(const std::string &id)
     {
         try {
             std::lock_guard<std::mutex> l(message_cache._mtx);
@@ -197,7 +197,7 @@ namespace pEp {
         return false;
     }
 
-    static ::message *empty_message_copy(const ::message *src, std::string _id = "", bool get_longmsg = false)
+    static ::message *empty_message_copy(const ::message *src, const std::string& _id = "", bool get_longmsg = false)
     {
         if (!src)
             return nullptr;
