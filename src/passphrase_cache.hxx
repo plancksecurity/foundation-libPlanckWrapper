@@ -10,7 +10,7 @@ namespace pEp {
     template<typename... A>
     PEP_STATUS PassphraseCache::api(PEP_STATUS f(PEP_SESSION, A...), PEP_SESSION session, A... a)
     {
-        PEP_STATUS status;
+        PEP_STATUS status{ PEP_STATUS_OK };
 
         for_each_passphrase([&](std::string passphrase) {
             status = ::config_passphrase(session, passphrase.c_str());
