@@ -9,19 +9,19 @@
 pEp::PassphraseCache pEp::passphrase_cache;
 
 namespace pEp {
-    PassphraseCache::cache_entry::cache_entry(const std::string& p, time_point t)
-        : passphrase{p, 0, PassphraseCache::cache_entry::max_len}, tp{t}
+    PassphraseCache::cache_entry::cache_entry(const std::string& p, time_point t) :
+        passphrase{ p, 0, PassphraseCache::cache_entry::max_len }, tp{ t }
     {
     }
 
-    PassphraseCache::PassphraseCache(size_t max_size, duration timeout)
-        : _max_size{max_size}, _timeout{timeout}, _which(_cache.end()), first_time(true)
+    PassphraseCache::PassphraseCache(size_t max_size, duration timeout) :
+        _max_size{ max_size }, _timeout{ timeout }, _which(_cache.end()), first_time(true)
     {
     }
 
-    PassphraseCache::PassphraseCache(const PassphraseCache& second)
-        : _cache{second._cache}, _max_size{second._max_size}, _timeout{second._timeout},
-          _stored{second._stored}, _which(_cache.end()), first_time(true)
+    PassphraseCache::PassphraseCache(const PassphraseCache& second) :
+        _cache{ second._cache }, _max_size{ second._max_size }, _timeout{ second._timeout },
+        _stored{ second._stored }, _which(_cache.end()), first_time(true)
     {
         cleanup();
     }
@@ -43,10 +43,11 @@ namespace pEp {
             {
                 std::lock_guard<std::mutex> lock(_mtx);
 
-                while (_cache.size() >= _max_size)
+                while (_cache.size() >= _max_size) {
                     _cache.pop_front();
+                }
 
-                _cache.push_back({passphrase, clock::now()});
+                _cache.push_back({ passphrase, clock::now() });
                 auto back = _cache.end();
                 assert(!_cache.empty());
                 result = (--back)->passphrase.c_str();
@@ -68,13 +69,15 @@ namespace pEp {
 
     bool PassphraseCache::for_each_passphrase(const passphrase_callee& callee)
     {
-        if (callee(std::string()))
+        if (callee(std::string())) {
             return true;
+        }
 
         {
             std::lock_guard<std::mutex> lock(_stored_mtx);
-            if (!_stored.empty() && callee(_stored))
+            if (!_stored.empty() && callee(_stored)) {
                 return true;
+            }
         }
 
         {
@@ -94,8 +97,9 @@ namespace pEp {
 
     void PassphraseCache::cleanup()
     {
-        while (!_cache.empty() && _cache.front().tp < clock::now() - _timeout)
+        while (!_cache.empty() && _cache.front().tp < clock::now() - _timeout) {
             _cache.pop_front();
+        }
     }
 
     void PassphraseCache::refresh(cache::iterator entry)
@@ -110,8 +114,9 @@ namespace pEp {
             c.cleanup();
             c._which = c._cache.end();
             c.first_time = false;
-            if (!c._stored.empty())
+            if (!c._stored.empty()) {
                 return c._stored.c_str();
+            }
         }
 
         if (c._cache.empty()) {
@@ -144,7 +149,9 @@ namespace pEp {
         }
 
         try {
-            ::config_passphrase(session ? session : Adapter::session(), latest_passphrase(_copy));
+            ::config_passphrase(
+                session != nullptr ? session : Adapter::session(),
+                latest_passphrase(_copy));
             return PEP_STATUS_OK;
         } catch (pEp::PassphraseCache::Empty&) {
             new_copy = true;
@@ -157,13 +164,13 @@ namespace pEp {
 
     PEP_STATUS PassphraseCache::ensure_passphrase(PEP_SESSION session, std::string fpr)
     {
-        PEP_STATUS status;
+        PEP_STATUS status{ PEP_STATUS_OK };
 
-        for_each_passphrase([&](std::string passphrase) {
+        for_each_passphrase([&](const std::string& passphrase) {
             status = ::config_passphrase(session, passphrase.c_str());
-            if (status)
+            if (status != 0) {
                 return true;
-
+            }
             status = ::probe_encrypt(session, fpr.c_str());
             return status == PEP_STATUS_OK;
         });
