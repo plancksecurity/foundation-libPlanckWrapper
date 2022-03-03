@@ -32,4 +32,5 @@ Checks: >
   portability-*,
   readability-*,
   -readability-function-cognitive-complexity,
+  -readability-implicit-bool-conversion,
   -zircon-*,
