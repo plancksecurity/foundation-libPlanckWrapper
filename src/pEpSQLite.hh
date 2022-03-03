@@ -20,10 +20,11 @@ namespace pEp {
         explicit pEpSQLite(const std::string& db_path);
 
         pEpSQLite() = delete;
-        pEpSQLite(const pEpSQLite&) = delete;
-        pEpSQLite(const pEpSQLite&&) = delete;
-        pEpSQLite& operator=(const pEpSQLite&) = delete;
-        pEpSQLite& operator=(const pEpSQLite&&) = delete;
+//        TODO:
+//        pEpSQLite(const pEpSQLite&) = delete;
+//        pEpSQLite(const pEpSQLite&&) = delete;
+//        pEpSQLite& operator=(const pEpSQLite&) = delete;
+//        pEpSQLite& operator=(const pEpSQLite&&) = delete;
 
         std::string get_db_path() const;
 
