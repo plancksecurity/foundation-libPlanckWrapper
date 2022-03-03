@@ -47,12 +47,12 @@ namespace pEp {
 
             virtual PEP_STATUS group_query_manager(
                 ::PEP_SESSION session,
-                const ::pEp_identity *const group,
+                const ::pEp_identity *group,
                 ::pEp_identity **manager) noexcept = 0;
 
             virtual PEP_STATUS group_query_members(
                 ::PEP_SESSION session,
-                const ::pEp_identity *const group,
+                const ::pEp_identity *group,
                 ::identity_list **members) noexcept = 0;
 
         private:

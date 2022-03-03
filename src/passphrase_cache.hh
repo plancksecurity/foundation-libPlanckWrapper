@@ -19,7 +19,7 @@ namespace pEp {
         using duration = clock::duration;
 
         struct cache_entry {
-            static const size_t max_len = 250 * 4;
+            static const size_t max_len = static_cast<const size_t>(250 * 4);
             cache_entry(const std::string& p, time_point t);
 
             std::string passphrase;
@@ -46,7 +46,7 @@ namespace pEp {
         };
 
         PassphraseCache(size_t max_size = 20, duration timeout = std::chrono::minutes(10));
-        ~PassphraseCache() {}
+        ~PassphraseCache() = default;
         PassphraseCache(const PassphraseCache& second);
         PassphraseCache& operator=(const PassphraseCache& second);
 
@@ -62,7 +62,7 @@ namespace pEp {
         // other until the cache is exhausted
         // call with reset = true to reset the iterator
 
-        static PEP_STATUS config_next_passphrase(bool reset = false, PEP_SESSION session = NULL);
+        static PEP_STATUS config_next_passphrase(bool reset = false, PEP_SESSION session = nullptr);
 
         // convenience functions
         // i.e.
@@ -85,7 +85,7 @@ namespace pEp {
     };
 
     extern PassphraseCache passphrase_cache;
-}; // namespace pEp
+} // namespace pEp
 
 #include "passphrase_cache.hxx"
 
