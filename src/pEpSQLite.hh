@@ -16,10 +16,15 @@ using RSRecord = std::map<std::string, std::string>;
 namespace pEp {
     class pEpSQLite {
     public:
-        pEpSQLite() = delete;
-
         // The database file as a constant for the obj lifetime
         explicit pEpSQLite(const std::string& db_path);
+
+        pEpSQLite() = delete;
+        pEpSQLite(const pEpSQLite&) = delete;
+        pEpSQLite(const pEpSQLite&&) = delete;
+        pEpSQLite& operator=(const pEpSQLite&) = delete;
+        pEpSQLite& operator=(const pEpSQLite&&) = delete;
+
         std::string get_db_path() const;
 
         // Creates the database file not existsing
