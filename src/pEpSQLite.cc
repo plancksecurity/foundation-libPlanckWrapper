@@ -47,11 +47,7 @@ namespace pEp {
 
     bool pEpSQLite::is_open() const
     {
-        if (db == nullptr) {
-            return false;
-        } else {
-            return true;
-        }
+        return db;
     }
 
 
@@ -85,28 +81,28 @@ namespace pEp {
         if (!is_open()) {
             DBNotOpenException e{ "pEpSQLite: execute() failed - db is not open:" };
             throw(e);
-        } else {
-            pEpLogClass("called");
-            this->resultset.clear();
-            char *zErrMsg = nullptr;
-            int rc = ::sqlite3_exec(
-                db,
-                stmt.c_str(),
-                (int (*)(void *, int, char **, char **)) & callback,
-                this,
-                &zErrMsg);
-            if (rc != SQLITE_OK) {
-                if (rc == SQLITE_CONSTRAINT) {
-                    ConstraintException e{ "pEpSQLite: execute() failed with sqlite error: " +
-                                           std::to_string(rc) + " - " + string(zErrMsg) };
-                    ::sqlite3_free(zErrMsg);
-                    throw(e);
-                }
-                runtime_error e{ "pEpSQLite: execute() failed with sqlite error: " +
-                                 std::to_string(rc) + " - " + string(zErrMsg) };
+        }
+
+        pEpLogClass("called");
+        this->resultset.clear();
+        char *zErrMsg = nullptr;
+        int rc = ::sqlite3_exec(
+            db,
+            stmt.c_str(),
+            (int(*)(void *, int, char **, char **)) & callback,
+            this,
+            &zErrMsg);
+        if (rc != SQLITE_OK) {
+            if (rc == SQLITE_CONSTRAINT) {
+                ConstraintException e{ "pEpSQLite: execute() failed with sqlite error: " +
+                                       std::to_string(rc) + " - " + string(zErrMsg) };
                 ::sqlite3_free(zErrMsg);
                 throw(e);
             }
+            runtime_error e{ "pEpSQLite: execute() failed with sqlite error: " + std::to_string(rc) +
+                             " - " + string(zErrMsg) };
+            ::sqlite3_free(zErrMsg);
+            throw(e);
         }
         return resultset;
     }
