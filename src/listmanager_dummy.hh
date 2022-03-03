@@ -14,6 +14,11 @@ namespace pEp {
     public:
         ListManagerDummy() = delete;
         explicit ListManagerDummy(const std::string& db_path);
+        //TODO
+        //        ListManagerDummy(const ListManagerDummy&) = delete;
+        //        ListManagerDummy(const ListManagerDummy&&) = delete;
+        //        ListManagerDummy operator=(const ListManagerDummy&) = delete;
+        //        ListManagerDummy operator=(const ListManagerDummy&&) = delete;
         // Update
         void list_add(const std::string& addr_list, const std::string& addr_mgr);
         void list_delete(const std::string& addr_list);
