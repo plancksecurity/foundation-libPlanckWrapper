@@ -478,7 +478,7 @@ namespace pEp {
         PEP_enc_format enc_format,
         PEP_encrypt_flags_t flags)
     {
-        ::message *_msg;
+        ::message *_msg{ nullptr };
         std::string _id = cacheID(src);
         {
             std::lock_guard<std::mutex> l(_mtx);
@@ -509,7 +509,7 @@ namespace pEp {
         PEP_enc_format enc_format,
         PEP_encrypt_flags_t flags)
     {
-        ::message *_msg;
+        ::message *_msg{ nullptr };
         std::string _id = cacheID(src);
         {
             std::lock_guard<std::mutex> l(_mtx);
