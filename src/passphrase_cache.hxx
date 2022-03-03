@@ -12,7 +12,7 @@ namespace pEp {
     {
         PEP_STATUS status{ PEP_STATUS_OK };
 
-        for_each_passphrase([&](std::string passphrase) {
+        for_each_passphrase([&](const std::string& passphrase) {
             status = ::config_passphrase(session, passphrase.c_str());
             if (status) {
                 return true;
