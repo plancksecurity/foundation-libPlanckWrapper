@@ -94,86 +94,100 @@ namespace pEp {
 
     static char *dup(const char *src)
     {
-        if (!src)
+        if (!src) {
             return nullptr;
+        }
 
         char *dst = ::strdup(src);
         assert(dst);
-        if (!dst)
+        if (!dst) {
             throw std::bad_alloc();
+        }
 
         return dst;
     }
 
     static timestamp *dup(const ::timestamp *src)
     {
-        if (!src)
+        if (!src) {
             return nullptr;
+        }
 
         ::timestamp *dst = ::timestamp_dup(src);
-        if (!dst)
+        if (!dst) {
             throw std::bad_alloc();
+        }
 
         return dst;
     }
 
     static ::pEp_identity *dup(const ::pEp_identity *src)
     {
-        if (!src)
+        if (!src) {
             return nullptr;
+        }
 
         ::pEp_identity *dst = ::identity_dup(src);
-        if (!dst)
+        if (!dst) {
             throw std::bad_alloc();
+        }
 
         return dst;
     }
 
     static identity_list *dup(const ::identity_list *src)
     {
-        if (!src)
+        if (!src) {
             return nullptr;
+        }
 
         ::identity_list *dst = ::identity_list_dup(src);
-        if (!dst)
+        if (!dst) {
             throw std::bad_alloc();
+        }
 
         return dst;
     }
 
     static stringlist_t *dup(const ::stringlist_t *src)
     {
-        if (!src)
+        if (!src) {
             return nullptr;
+        }
 
         ::stringlist_t *dst = ::stringlist_dup(src);
-        if (!dst)
+        if (!dst) {
             throw std::bad_alloc();
+        }
 
         return dst;
     }
 
     static stringpair_list_t *dup(const ::stringpair_list_t *src)
     {
-        if (!src)
+        if (!src) {
             return nullptr;
+        }
 
         ::stringpair_list_t *dst = ::stringpair_list_dup(src);
-        if (!dst)
+        if (!dst) {
             throw std::bad_alloc();
+        }
 
         return dst;
     }
 
     static ::message_ref_list *dup(const ::message_ref_list *src)
     {
-        if (!src)
+        if (!src) {
             return nullptr;
+        }
 
         ::message_ref_list *dst = (::message_ref_list *)::calloc(1, sizeof(::message_ref_list));
         assert(dst);
-        if (!dst)
+        if (!dst) {
             throw std::bad_alloc();
+        }
 
         ::message_ref_list *d = dst;
         for (const message_ref_list *s = src; s; s = s->next) {
@@ -181,8 +195,9 @@ namespace pEp {
             if (s->next) {
                 d->next = (::message_ref_list *)::calloc(1, sizeof(::message_ref_list));
                 assert(d);
-                if (!d)
+                if (!d) {
                     throw std::bad_alloc();
+                }
                 d = d->next;
             }
         }
@@ -192,19 +207,22 @@ namespace pEp {
 
     static bool emptystr(const char *str)
     {
-        if (!(str && str[0]))
+        if (!(str && str[0])) {
             return true;
+        }
         return false;
     }
 
     static ::message *empty_message_copy(const ::message *src, const std::string& _id = "", bool get_longmsg = false)
     {
-        if (!src)
+        if (!src) {
             return nullptr;
+        }
 
         ::message *dst = ::new_message(src->dir);
-        if (!dst)
+        if (!dst) {
             throw std::bad_alloc();
+        }
 
         dst->id = dup(src->id);
 
@@ -265,8 +283,9 @@ namespace pEp {
         } else {
             dst->opt_fields = ::new_stringpair_list(
                 ::new_stringpair("X-pEp-Adapter-Cache-ID", _id.c_str()));
-            if (!dst->opt_fields)
+            if (!dst->opt_fields) {
                 throw std::bad_alloc();
+            }
             dst->opt_fields->next = dup(src->opt_fields);
         }
 
@@ -320,10 +339,11 @@ namespace pEp {
         PEP_rating *rating,
         PEP_decrypt_flags_t *flags)
     {
-        if (!src || cacheID(src) == "")
+        if (!src || cacheID(src) == "") {
             return PEP_ILLEGAL_VALUE;
+        }
 
-        ::message *_msg;
+        ::message *_msg{ nullptr };
         std::string _id = cacheID(src);
         {
             std::lock_guard<std::mutex> l(_mtx);
@@ -354,11 +374,13 @@ namespace pEp {
         char **mimetext,
         bool has_pEp_msg_attachment)
     {
-        if (!msg || cacheID(msg) == "")
+        if (!msg || cacheID(msg) == "") {
             return PEP_ILLEGAL_VALUE;
+        }
 
-        if (one != msg_src && one != msg_dst)
+        if (one != msg_src && one != msg_dst) {
             return PEP_ILLEGAL_VALUE;
+        }
 
         ::message *_msg = empty_message_copy(msg);
 
@@ -392,8 +414,9 @@ namespace pEp {
             free_stringpair_list(msg->opt_fields);
             msg->opt_fields = ::new_stringpair_list(
                 ::new_stringpair("X-pEp-Adapter-Cache-ID", cid.c_str()));
-            if (!msg->opt_fields)
+            if (!msg->opt_fields) {
                 throw std::bad_alloc();
+            }
         } else {
             // add the cache ID as first field to an existing list
             auto spl = msg->opt_fields;
@@ -413,9 +436,9 @@ namespace pEp {
             assert(spl->value->key);
             if (spl->value->key && std::string(spl->value->key) == "X-pEp-Adapter-Cache-ID") {
                 assert(spl->value->value);
-                if (spl->value->value)
+                if (spl->value->value) {
                     return spl->value->value;
-                else
+                } else
                     return "";
             }
         }
@@ -456,8 +479,9 @@ namespace pEp {
     {
         ::message *_msg = nullptr;
         PEP_STATUS status = ::mime_decode_message(mimetext, size, &_msg, has_possible_pEp_msg);
-        if (status)
+        if (status) {
             return status;
+        }
 
         generateCacheID(_msg);
         *msg = empty_message_copy(_msg);
