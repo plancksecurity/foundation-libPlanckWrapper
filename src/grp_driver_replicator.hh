@@ -44,19 +44,19 @@ namespace pEp {
             PEP_STATUS adapter_group_join(
                 ::PEP_SESSION session,
                 ::pEp_identity *group_identity,
-                ::pEp_identity *as_member)  noexcept override;
+                ::pEp_identity *as_member) noexcept override;
 
             // GroupQueryInterface
             PEP_STATUS group_query_groups(::PEP_SESSION session, ::identity_list **groups) noexcept override;
 
             PEP_STATUS group_query_manager(
                 ::PEP_SESSION session,
-                const ::pEp_identity *const group,
+                const ::pEp_identity *group,
                 ::pEp_identity **manager) noexcept override;
 
             PEP_STATUS group_query_members(
                 ::PEP_SESSION session,
-                const ::pEp_identity *const group,
+                const ::pEp_identity *group,
                 ::identity_list **members) noexcept override;
 
             // Logging
