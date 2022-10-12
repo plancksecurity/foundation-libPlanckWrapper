@@ -12,7 +12,6 @@ OBJ_CXX=$(subst .cc,.o,$(SRC_CXX))
 OBJ_C=$(subst .c,.o,$(SRC_C))
 OBJECTS=$(OBJ_CXX) $(OBJ_C)
 DEPENDS=$(subst .cc,.d,$(SRC_CXX))
-CFLAGS=-fPIC
 CXXFLAGS+= -MMD -MP
 
 ifneq ($(MAKECMDGOALS),clean)
