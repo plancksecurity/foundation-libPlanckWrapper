@@ -3,7 +3,10 @@
 #ifndef LIBPEPADAPTER_PEPSQLITE_HH
 #define LIBPEPADAPTER_PEPSQLITE_HH
 
-#include "internal/sqlite3.h"
+// Include guard for "some" sqlite.h which use _SQLITE3_H_ as include guard (e.g. System SDK sqlite3.h on macOS)
+#ifndef _SQLITE3_H_
+    #include "internal/sqlite3.h"
+#endif
 #include <pEp/pEpLog.hh>
 #include <iostream>
 #include <vector>
