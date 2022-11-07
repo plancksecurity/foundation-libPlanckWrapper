@@ -104,7 +104,7 @@ namespace pEp {
 
         // ---------------------------------------------------------------------------------------
         Session::Session() :
-            _messageToSend{ nullptr }, _notifyHandshake{ nullptr }, _sync_mode{ SyncModes::Async },
+            _sync_mode{ SyncModes::Async }, _messageToSend{ nullptr }, _notifyHandshake{ nullptr },
             _adapter_manages_sync_thread{ false }, _inject_action{ nullptr }
         {
         }
