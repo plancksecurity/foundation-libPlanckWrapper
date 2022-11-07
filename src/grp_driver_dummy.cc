@@ -57,7 +57,6 @@ namespace pEp {
                         for (pEp_identity *const member : cxx_memberlist) {
                             status = this->adapter_group_invite_member(session, group_identity, member);
                             if (status != PEP_STATUS_OK) {
-                                status = status;
                                 break;
                             }
                         }
