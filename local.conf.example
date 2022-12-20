@@ -11,6 +11,3 @@
 
 ############# DIRS #############
 # PREFIX=$(HOME)/local
-# ENGINE_LIB_PATH=$(PREFIX)/lib
-# ENGINE_INC_PATH=$(PREFIX)/include
-# ENGINE_TEST=

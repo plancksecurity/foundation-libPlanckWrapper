@@ -2,7 +2,7 @@ include ../Makefile.conf
 
 LDFLAGS:=-L../src $(LDFLAGS)
 LDLIBS=-lstdc++ -lpEpEngine -lpEpAdapter -lpEpCxx11 -lPityTest11 -lpthread -ldl -lm
-CXXFLAGS:=-I../src -DENGINE_TEST=$(ENGINE_TEST) $(CXXFLAGS)
+CXXFLAGS:=-I../src $(CXXFLAGS)
 
 # Test
 SRC_TEST=$(wildcard test_*.cc)
