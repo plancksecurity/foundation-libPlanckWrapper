@@ -18,7 +18,9 @@ namespace pEp {
         // call this in main() for auto set up
         void setup(int argc = 1, char **argv = nullptr);
 
-        void import_key_from_file(std::string filename);
+        std::string get_resource_abs(const std::string &name);
+
+        void import_key_from_file(const std::string& filename);
 
         using Message = std::shared_ptr<::message>;
         using Identity = std::shared_ptr<::pEp_identity>;

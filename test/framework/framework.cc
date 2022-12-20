@@ -8,12 +8,12 @@
 #include <utility>
 #include <exception>
 #include <thread>
-#include <assert.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cassert>
+#include <cstdlib>
+#include <cstring>
 #include <sys/param.h>
 #include <sys/stat.h>
-
+#include <pEp/pEpLog.hh>
 #include <pEp/keymanagement.h>
 #include <pEp/mime.h>
 #include <pEp/message_api.h>
@@ -25,54 +25,60 @@
 pEp::Test::Transport pEp::Test::transport;
 
 using namespace pEp;
-using namespace std;
 
 namespace pEp {
     namespace Test {
-        string per_user_dir;
+        std::string per_user_dir{};
+        std::string resource_dir{};
 
-        void setup(vector<string> &args)
+        void setup(std::vector<std::string> &args)
         {
+            std::string dir{};
+            resource_dir = Utils::path_get_abs("resource/");
 #ifdef WIN32
-            string dir = getenv("TEMP");
+            dir = getenv("TEMP");
             dir += "\\test_pEp.XXXXXXXXXXXX";
-#else
-            string dir = "/tmp/test_pEp.XXXXXXXXXXXX";
 #endif
 
             if (args.size() > 1) {
                 if (args[1] == "--help") {
 #ifdef WIN32
-                    cout << "usage: " << args[0] << " [--dir LOCALAPPDATA]" << endl;
+                    std::cout << "usage: " << args[0] << " [--dir LOCALAPPDATA]" << std::endl;
 #else
-                    cout << "usage: " << args[0] << " [--dir HOME]" << endl;
+                    std::cout << "usage: " << args[0] << " [--dir HOME]" << std::endl;
 #endif
                     exit(0);
                 } else if (args[1] == "--dir" && args.size() == 3) {
                     dir = args[2];
                 } else {
-                    cerr << "illegal parameter" << endl;
+                    std::cerr << "illegal parameter" << std::endl;
                     exit(1);
                 }
             }
 
+#ifdef WIN32
             char _path[MAXPATHLEN + 1];
             const char *templ = dir.c_str();
             strcpy(_path, templ);
             mkdtemp(_path);
             chdir(_path);
-#ifdef WIN32
             setenv("LOCALAPPDATA", _path, 1);
-#else
-            setenv("HOME", _path, 1);
-#endif
             per_user_dir = _path;
-            cerr << "test directory: " << per_user_dir << endl;
+#else
+            dir = Utils::path_get_abs("testdata");
+            Utils::dir_recreate(dir);
+            setenv("HOME", dir.c_str(), 1);
+            Utils::dir_set_cwd(dir);
+            pEpLog("$HOME set to:" + dir);
+            per_user_dir = dir;
+#endif
+
+            std::cerr << "test directory: " << per_user_dir << std::endl;
         }
 
         void setup(int argc, char **argv)
         {
-            vector<string> args{ (size_t)argc };
+            std::vector<std::string> args{ (size_t)argc };
             for (int i = 0; i < argc; ++i) {
                 args[i] = argv[i];
             }
@@ -80,13 +86,19 @@ namespace pEp {
             setup(args);
         }
 
-        void import_key_from_file(string filename)
+        std::string get_resource_abs(const std::string &name)
         {
-            ifstream f(filename, ifstream::in);
-            string key{ istreambuf_iterator<char>(f), istreambuf_iterator<char>() };
-            ::identity_list *il = NULL;
-            cout << key.c_str() << endl;
-            cout << key.length() << endl;
+            return Utils::path_get_abs(resource_dir + name);
+        }
+
+        void import_key_from_file(const std::string &filename)
+        {
+            std::string key = Utils::file_read(filename);
+            //            ifstream f(filename, ifstream::in);
+            //            string key{ istreambuf_iterator<char>(f), istreambuf_iterator<char>() };
+            ::identity_list *il = nullptr;
+            std::cout << key.c_str() << std::endl;
+            std::cout << key.length() << std::endl;
             ::PEP_STATUS status = ::import_key(Adapter::session(), key.c_str(), key.length(), &il);
             throw_status(status);
             assert(status == PEP_KEY_IMPORTED);
@@ -95,18 +107,18 @@ namespace pEp {
 
         Message make_message(::message *msg)
         {
-            return shared_ptr<::message>(msg, ::free_message);
+            return std::shared_ptr<::message>(msg, ::free_message);
         }
 
         Identity make_identity(::pEp_identity *ident)
         {
-            return shared_ptr<::pEp_identity>(ident, ::free_identity);
+            return std::shared_ptr<::pEp_identity>(ident, ::free_identity);
         }
 
-        Message mime_parse(string text)
+        Message mime_parse(std::string text)
         {
-            ::message *msg;
-            bool has_possible_pEp_msg;
+            ::message *msg = nullptr;
+            bool has_possible_pEp_msg = false;
             ::PEP_STATUS status = ::mime_decode_message(
                 text.c_str(),
                 text.length(),
@@ -116,23 +128,23 @@ namespace pEp {
             return make_message(msg);
         }
 
-        string mime_compose(Message msg)
+        std::string mime_compose(Message msg)
         {
-            char *mimetext;
+            char *mimetext = nullptr;
             PEP_STATUS status = ::mime_encode_message(msg.get(), false, &mimetext, false);
             throw_status(status);
-            string text = mimetext;
+            std::string text = mimetext;
             free(mimetext);
             return text;
         }
 
-        string make_pEp_msg(Message msg)
+        std::string make_pEp_msg(Message msg)
         {
-            string text;
+            std::string text;
 
-            ::message *_dst;
-            stringlist_t *keylist;
-            ::PEP_rating rating;
+            ::message *_dst = nullptr;
+            stringlist_t *keylist = nullptr;
+            ::PEP_rating rating{};
             ::PEP_decrypt_flags_t flags = 0;
             ::PEP_STATUS status = ::decrypt_message(
                 Adapter::session(),
@@ -144,21 +156,22 @@ namespace pEp {
             throw_status(status);
 
             Message dst;
-            if (_dst)
+            if (_dst) {
                 dst = make_message(_dst);
-            else
+            } else {
                 dst = msg;
+            }
 
             if (dst.get()->attachments) {
                 for (auto a = dst.get()->attachments; a && a->value; a = a->next) {
-                    if (string("application/pEp.sync") == a->mime_type) {
+                    if (std::string("application/pEp.sync") == a->mime_type) {
                         char *_text;
                         status = ::PER_to_XER_Sync_msg(a->value, a->size, &_text);
                         throw_status(status);
                         text += _text;
                         ::pEp_free(_text);
                         return text;
-                    } else if (string("application/pEp.distribution") == a->mime_type) {
+                    } else if (std::string("application/pEp.distribution") == a->mime_type) {
                         char *_text;
                         status = ::PER_to_XER_Distribution_msg(a->value, a->size, &_text);
                         throw_status(status);
