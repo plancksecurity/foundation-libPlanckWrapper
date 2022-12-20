@@ -46,15 +46,23 @@ namespace pEp {
                 _startup(obj);
             }
 
-            pEpLog("creating session for the sync thread");
             // 2. Create session for the sync thread
-            // 3. register_sync_callbacks() (in session.initialize())
+            pEpLog("creating session for the sync thread");
+            session.initialize(
+                rhs->_sync_mode,
+                rhs->_adapter_manages_sync_thread,
+                rhs->_messageToSend,
+                rhs->_notifyHandshake);
+
             try {
-                session.initialize(
-                    rhs->_sync_mode,
-                    rhs->_adapter_manages_sync_thread,
-                    rhs->_messageToSend,
-                    rhs->_notifyHandshake);
+                // 3. register_sync_callbacks()
+                ::PEP_STATUS status = ::register_sync_callbacks(
+                    session(),
+                    nullptr,
+                    session._notifyHandshake,
+                    _retrieve_next_sync_event);
+                throw_status(status);
+
                 register_done.store(true);
             } catch (...) {
                 _ex = std::current_exception();

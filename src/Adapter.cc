@@ -150,7 +150,6 @@ namespace pEp {
         void Session::refresh()
         {
             std::lock_guard<mutex> lock(mut);
-            release();
 
             // Switch to mode "Sync" ensures the sync thread to be shutdown
             if (_sync_mode == SyncModes::Sync) {
@@ -172,17 +171,9 @@ namespace pEp {
             ::PEP_SESSION session_{ nullptr };
             ::PEP_STATUS status = ::init(&session_, _messageToSend, _inject_action, _ensure_passphrase);
             throw_status(status);
-            status = ::register_sync_callbacks(
-                session_,
-                nullptr,
-                _notifyHandshake,
-                _retrieve_next_sync_event);
-            if (status != PEP_STATUS_OK) {
-                pEpLog("libpEpAdapter: WARNING - session is initialized but without sync/callbacks. "
-                       "This is normal if there are no own identities yet. Call session.init() again to "
-                       "re-initialize the session after creating an own identity.");
-            }
-            // store
+
+            // replace "atomically"
+            release();
             _session = SessionPtr{ session_, ::release };
         }
 
