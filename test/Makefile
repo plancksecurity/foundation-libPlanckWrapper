@@ -12,17 +12,7 @@ BIN_TEST=$(subst .cc,,$(SRC_TEST))
 SRC_FRAMEWORK=$(wildcard framework/*.cc)
 OBJ_FRAMEWORK=$(subst .cc,.o,$(SRC_FRAMEWORK))
 
-# Depends
-#DEP_TEST=$(subst .cc,.d,$(SRC_TEST))
-#DEP_FRAMEWORK=$(subst .cc,.d,$(SRC_FRAMEWORK))
-#DEPENDS+=$(DEP_TEST)$(DEP_FRAMEWORK)
-#CXXFLAGS+= -MMD -MP
-#
-#ifneq ($(MAKECMDGOALS),clean)
-#    -include $(DEPENDS)
-#endif
-
-.PHONY: all clean rmtestdata
+.PHONY: all clean
 .DEFAULT_GOAL := all
 
 all: $(BIN_TEST)
@@ -35,7 +25,6 @@ clean:
 	rm -Rf *.dSYM
 	rm -f *.d
 	rm -f *.o
-	rm -Rf /tmp/test_pEp.*
+	rm -rf pitytest_data/
 
-rmtestdata:
-	rm -Rf /tmp/test_pEp.*
+
