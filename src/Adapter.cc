@@ -19,6 +19,9 @@ namespace pEp {
         if (status == ::PEP_STATUS_OK) {
             return;
         }
+        if (status == ::PEP_KEY_IMPORTED) {
+            return;
+        }
         if (status >= 0x400 && status <= 0x4ff) {
             return;
         }
