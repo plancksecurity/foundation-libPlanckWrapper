@@ -14,36 +14,6 @@ using namespace std;
 thread_local pEp::Adapter::Session pEp::Adapter::session{};
 
 namespace pEp {
-    void throw_status(::PEP_STATUS status)
-    {
-        if (status == ::PEP_STATUS_OK) {
-            return;
-        }
-        if (status == ::PEP_KEY_IMPORTED) {
-            return;
-        }
-        if (status >= 0x400 && status <= 0x4ff) {
-            return;
-        }
-        if (status == ::PEP_STATEMACHINE_CANNOT_SEND) {
-            return;
-        }
-        if (status == ::PEP_OUT_OF_MEMORY) {
-            throw bad_alloc();
-        }
-        if (status == ::PEP_ILLEGAL_VALUE) {
-            throw invalid_argument("illegal value");
-        }
-
-        string _status = status_to_string(status);
-        throw RuntimeError(_status, status);
-    }
-
-    RuntimeError::RuntimeError(const std::string &_text, ::PEP_STATUS _status) :
-        std::runtime_error(_text.c_str()), text(_text), status(_status)
-    {
-    }
-
     namespace Adapter {
         std::thread _sync_thread;
         ::utility::locked_queue<SYNC_EVENT, ::free_Sync_event> sync_evt_q;
@@ -243,4 +213,34 @@ namespace pEp {
             return !ev;
         }
     } // namespace Adapter
+
+    void throw_status(::PEP_STATUS status)
+    {
+        if (status == ::PEP_STATUS_OK) {
+            return;
+        }
+        if (status == ::PEP_KEY_IMPORTED) {
+            return;
+        }
+        if (status >= 0x400 && status <= 0x4ff) {
+            return;
+        }
+        if (status == ::PEP_STATEMACHINE_CANNOT_SEND) {
+            return;
+        }
+        if (status == ::PEP_OUT_OF_MEMORY) {
+            throw bad_alloc();
+        }
+        if (status == ::PEP_ILLEGAL_VALUE) {
+            throw invalid_argument("illegal value");
+        }
+
+        string _status = status_to_string(status);
+        throw RuntimeError(_status, status);
+    }
+
+    RuntimeError::RuntimeError(const std::string &_text, ::PEP_STATUS _status) :
+        std::runtime_error(_text.c_str()), text(_text), status(_status)
+    {
+    }
 } // namespace pEp

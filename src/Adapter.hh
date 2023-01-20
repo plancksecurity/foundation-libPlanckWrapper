@@ -14,18 +14,6 @@
 #include "callback_dispatcher.hh"
 
 namespace pEp {
-
-    // throws std::bad_alloc if status==PEP_OUT_OF_MEMORY,
-    // throws std::invalid_argument if status==PEP_ILLEGAL_VALUE,
-    // throws RuntimeError when 'status' represents another exceptional value.
-    void throw_status(::PEP_STATUS status);
-
-    struct RuntimeError : std::runtime_error {
-        RuntimeError(const std::string &_text, ::PEP_STATUS _status);
-        std::string text;
-        ::PEP_STATUS status;
-    };
-
     namespace Adapter {
         // public
         enum class SyncModes
@@ -149,6 +137,17 @@ namespace pEp {
         bool is_sync_running();
         bool in_shutdown();
     } // namespace Adapter
+
+    // throws std::bad_alloc if status==PEP_OUT_OF_MEMORY,
+    // throws std::invalid_argument if status==PEP_ILLEGAL_VALUE,
+    // throws RuntimeError when 'status' represents another exceptional value.
+    void throw_status(::PEP_STATUS status);
+
+    struct RuntimeError : std::runtime_error {
+        RuntimeError(const std::string &_text, ::PEP_STATUS _status);
+        std::string text;
+        ::PEP_STATUS status;
+    };
 } // namespace pEp
 
 #include "Adapter.hxx"
