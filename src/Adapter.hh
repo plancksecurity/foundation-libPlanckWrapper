@@ -20,26 +20,6 @@ namespace pEp {
             Async
         };
 
-        int _inject_sync_event(::SYNC_EVENT ev, void *management);
-        int _process_sync_event(::SYNC_EVENT ev, void *management);
-
-        ::PEP_STATUS _ensure_passphrase(::PEP_SESSION session, const char *fpr);
-
-        void start_sync();
-
-        template<class T = void>
-        void startup(
-            T *obj = nullptr,
-            std::function<void(T *)> _startup = nullptr,
-            std::function<void(T *)> _shutdown = nullptr);
-
-        // returns 'true' when called from the "sync" thread, 'false' otherwise.
-        bool on_sync_thread();
-
-        // returns the thread id of the sync thread
-        std::thread::id sync_thread_id();
-
-
         // The thread-local pEp-session
         // CAVEAT: there is a default constructor Sesssion(),
         // BUT
@@ -129,6 +109,26 @@ namespace pEp {
 
         extern thread_local Session session;
 
+        // ---------------------------------------------------------------------------------------
+        // SYNC
+        // ---------------------------------------------------------------------------------------
+        int _cb_enqueue_sync_event(::SYNC_EVENT ev, void *management);
+        int _cb_pass_sync_event_to_engine(::SYNC_EVENT ev, void *management);
+
+        void start_sync();
+
+        template<class T = void>
+        void startup(
+            T *obj = nullptr,
+            std::function<void(T *)> _startup = nullptr,
+            std::function<void(T *)> _shutdown = nullptr);
+
+        // returns 'true' when called from the "sync" thread, 'false' otherwise.
+        bool on_sync_thread();
+
+        // returns the thread id of the sync thread
+        std::thread::id sync_thread_id();
+
         // only injects a NULL event into sync_event_queue
         // Use this if adapter_manages_sync_thread
         // Inject first, then join your thread.
@@ -140,6 +140,8 @@ namespace pEp {
 
         bool is_sync_running();
         bool in_shutdown();
+
+        ::PEP_STATUS _ensure_passphrase(::PEP_SESSION session, const char *fpr);
     } // namespace Adapter
 
     // throws std::bad_alloc if status==PEP_OUT_OF_MEMORY,
