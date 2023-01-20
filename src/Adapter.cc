@@ -11,7 +11,7 @@
 
 using namespace std;
 
-thread_local pEp::Adapter::Session pEp::Adapter::session;
+thread_local pEp::Adapter::Session pEp::Adapter::session{};
 
 namespace pEp {
     void throw_status(::PEP_STATUS status)
