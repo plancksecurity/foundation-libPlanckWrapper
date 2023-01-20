@@ -15,9 +15,7 @@
 
 namespace pEp {
     namespace Adapter {
-        // public
-        enum class SyncModes
-        {
+        enum class SyncModes {
             Sync,
             Async
         };
@@ -46,6 +44,9 @@ namespace pEp {
         // CAVEAT: there is a default constructor Sesssion(),
         // BUT
         // the session object needs to be initialized in order to be usable.
+        // The initialization defines the session configuration for all sessions that
+        // are being created in the lifetime of a process
+        // A Session object is not copyable/assignable
 
         // TODO: remove initialize() and do that in the ctor's
         // remove release() and do that in the destructor
@@ -58,8 +59,9 @@ namespace pEp {
             Session operator=(const Session &) = delete;
             Session operator=(const Session &&) = delete;
             ~Session() = default;
+
             // Initialize()
-            // Initializes the session and registers the CallbackDispatcher as callbacks
+            // Initializes the session and registers the CallbackDispatcher's functions for callbacks
             //
             // SyncModes sync_mode:
             // * Sync:
@@ -103,6 +105,8 @@ namespace pEp {
             void refresh();
 
             void release();
+
+            // returns the PEP_SESSION handle
             PEP_SESSION operator()();
 
             SyncModes _sync_mode;

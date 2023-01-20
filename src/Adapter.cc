@@ -82,6 +82,7 @@ namespace pEp {
         {
         }
 
+        // Public/Static
         void Session::initialize(SyncModes sync_mode, bool adapter_manages_sync_thread)
         {
             pEpLog("Initializing session with CallbackDispatcher...");
@@ -92,6 +93,7 @@ namespace pEp {
                 adapter_manages_sync_thread);
         }
 
+        // Public/Static
         void Session::initialize(
             SyncModes sync_mode,
             bool adapter_manages_sync_thread,
@@ -102,6 +104,7 @@ namespace pEp {
             _init(messageToSend, notifyHandshake, sync_mode, adapter_manages_sync_thread);
         }
 
+        // Private/Static
         void Session::_init(
             ::messageToSend_t messageToSend,
             ::notifyHandshake_t notifyHandshake,
@@ -201,7 +204,6 @@ namespace pEp {
         }
 
         // public
-        // Works even if adapter is managing sync thread, BUT must be using this queue
         bool in_shutdown()
         {
             SYNC_EVENT ev{ nullptr };

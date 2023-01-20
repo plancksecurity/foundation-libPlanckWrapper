@@ -15,7 +15,6 @@ namespace pEp {
         using std::function;
 
         extern std::thread _sync_thread;
-
         extern ::utility::locked_queue<::SYNC_EVENT, ::free_Sync_event> sync_evt_q;
         extern std::mutex mut;
 
@@ -28,11 +27,10 @@ namespace pEp {
          * Sync Thread
          * 1. Execute registered startup function
          * 2. Create session for the sync thread (registers: messageToSend, inject_sync_event, ensure_passphrase)
-         * 3. register_sync_callbacks() (registers: _notifyHandshake, _retrieve_next_sync_event)
-         * 4. Enter Sync Event Dispatching Loop (do_sync_protocol())
-         * 5. unregister_sync_callbacks()
-         * 6. Release the session
-         * 7. Execute registered shutdown function
+         * 3. Enter Sync Event Processing Loop (do_sync_protocol())
+         * 4. unregister_sync_callbacks()
+         * 5. Release the session
+         * 6. Execute registered shutdown function
          */
         // private
         template<class T>
@@ -71,29 +69,22 @@ namespace pEp {
             }
 
             pEpLog("sync protocol loop started");
-            // 4. Enter Sync Event Dispatching Loop (do_sync_protocol())
             ::do_sync_protocol(session(), (void *)obj);
             pEpLog("sync protocol loop ended");
 
-            // 5. unregister_sync_callbacks()
+            // 4. unregister_sync_callbacks()
             unregister_sync_callbacks(session());
 
-            // 6. Release the session
+            // 5. Release the session
             session.release();
 
-            // 7. Execute registered shutdown function
+            // 6. Execute registered shutdown function
             if (obj && _shutdown) {
                 _shutdown(obj);
             }
         }
 
-        /*
-         * Sync Thread Startup
-         * 1. throw if main thread session is not initialized
-         * 2. Start the sync thread
-         * 3. Defer execution until sync thread register_sync_callbacks() has returned
-         * 4. Throw pending exception from the sync thread
-         */
+        // Sync Thread Startup
         // private
         template<class T>
         void startup(T *obj, std::function<void(T *)> _startup, std::function<void(T *)> _shutdown)
