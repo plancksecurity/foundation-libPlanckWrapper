@@ -109,9 +109,13 @@ namespace pEp {
         // public
         ::PEP_SESSION Session::operator()()
         {
-            if (!_session.get()) {
+            if(!_is_initialized) {
                 throw std::runtime_error(
-                    "libpEpAdapter: No session! Before use, call session.initialize() for each thread");
+                    "libpEpAdapter: No session! Before first use, call session::initialize()");
+            } else {
+                if (!_session.get()) {
+                    _new();
+                }
             }
             return _session.get();
         }
