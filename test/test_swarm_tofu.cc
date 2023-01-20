@@ -36,11 +36,11 @@ using MinMsgRx = std::tuple<std::string, std::string>;
 
 void tofu_send(TestUnitSwarm &pity, TestContext *ctx, const std::string &addr, const std::string longmessage)
 {
-    pEpMessage msg {createMessage(ctx->own_ident, addr, longmessage)};
-    EncryptResult msg_enc {encryptAndEncode(msg)};
+    pEpMessage msg{ createMessage(ctx->own_ident, addr, longmessage) };
+    EncryptResult msg_enc{ encryptAndEncode(msg) };
 
-    std::string mime_text {std::get<1>(msg_enc)};
-    ctx->getPeer(addr)->did_tx_encrypted {std::get<2>(msg_enc)};
+    std::string mime_text{ std::get<1>(msg_enc) };
+    ctx->getPeer(addr)->did_tx_encrypted{ std::get<2>(msg_enc) };
     pity.log("Sending Encrypted[" + std::to_string(std::get<2>(msg_enc)) + "] to: " + addr);
     pity.transport()->sendMsg(addr, mime_text);
 }
@@ -48,10 +48,10 @@ void tofu_send(TestUnitSwarm &pity, TestContext *ctx, const std::string &addr, c
 MinMsgRx tofu_receive(TestUnitSwarm &pity, TestContext *ctx)
 {
     MinMsgRx ret;
-    const std::string mime_data_rx {pity.transport()->receiveMsg()};
+    const std::string mime_data_rx{ pity.transport()->receiveMsg() };
 
-    DecryptResult msg_rx {decryptAndDecode(mime_data_rx)};
-    pEpMessage msg_rx_dec {std::get<0>(msg_rx)};
+    DecryptResult msg_rx{ decryptAndDecode(mime_data_rx) };
+    pEpMessage msg_rx_dec{ std::get<0>(msg_rx) };
     ctx->getPeer(msg_rx_dec->from->address)->did_rx_encrypted = std::get<4>(msg_rx);
     pity.log(
         "Received Encrypted[" + std::to_string(std::get<4>(msg_rx)) +
@@ -65,14 +65,13 @@ MinMsgRx tofu_receive(TestUnitSwarm &pity, TestContext *ctx)
 
 void tofu_receiveAndReply(TestUnitSwarm &pity, TestContext *ctx)
 {
-    MinMsgRx rx_msg = tofu_receive(pity, ctx);
+    MinMsgRx rx_msg{ tofu_receive(pity, ctx) };
 
-    std::string addr {std::get<0>(rx_msg)};
-    std::string longmsg_orig {std::get<1>(rx_msg)};
-    pEpMessage msg = createMessage(
-        ctx->own_ident,
-        addr,
-        "REPLY_FROM:'" + std::string(addr) + "' - " + longmsg_orig);
+    std::string addr{ std::get<0>(rx_msg) };
+    std::string longmsg_orig{ std::get<1>(rx_msg) };
+    pEpMessage msg{
+        createMessage(ctx->own_ident, addr, "REPLY_FROM:'" + std::string(addr) + "' - " + longmsg_orig)
+    };
 
     tofu_send(pity, ctx, addr, "REPLY_FROM:'" + std::string(addr) + "' - " + longmsg_orig);
 }
@@ -86,7 +85,7 @@ int test_create_myself(TestUnitSwarm &pity, TestContext *ctx)
     // Create new identity
     pity.log("updating or creating identity for me");
     ctx->own_ident = createOwnIdent(ctx->own_name);
-    ::PEP_STATUS status = ::myself(Adapter::session(), ctx->own_ident.get());
+    ::PEP_STATUS status {::myself(Adapter::session(), ctx->own_ident.get())};
     pEp::throw_status(status);
     return 0;
 }
@@ -113,23 +112,23 @@ int test_tofu_react(TestUnitSwarm &pity, TestContext *ctx)
 int main(int argc, char *argv[])
 {
     //    Adapter::pEpLog::set_enabled(true);
-    //    Adapter::GroupDriverReplicator::log_enabled = true;
-    //    Adapter::GroupDriverEngine::log_enabled = true;
-    //    Adapter::GroupDriverDummy::log_enabled = true;
-    //    TestUnit::debug_log_enabled = false;
-    //    PityTransport::debug_log_enabled = true;
-    int nodesCount = 23;
+    //    Adapter::GroupDriverReplicator::log_enabled {true};
+    //    Adapter::GroupDriverEngine::log_enabled {true};
+    //    Adapter::GroupDriverDummy::log_enabled {true};
+    //    TestUnit::debug_log_enabled {false};
+    //    PityTransport::debug_log_enabled {true};
+    int nodesCount{ 23 };
     PityModel model{ "model_tofu2", nodesCount };
-    TestUnitSwarm suite = TestUnitSwarm{"suite_tofu2"};
+    TestUnitSwarm suite{ TestUnitSwarm{ "suite_tofu2" } };
     PitySwarm swarm{ "swarm_tofu2", model };
     suite.addRef(swarm.getSwarmUnit());
     // ------------------------------------------------------------------------------------
-    swarm.addTestUnit(0, TestUnitSwarm{"test_create_myself", test_create_myself});
-    swarm.addTestUnit(0, TestUnitSwarm{"test_tofu_init_all_peers", test_tofu_init_all_peers});
+    swarm.addTestUnit(0, TestUnitSwarm{ "test_create_myself", test_create_myself });
+    swarm.addTestUnit(0, TestUnitSwarm{ "test_tofu_init_all_peers", test_tofu_init_all_peers });
 
-    for (int i = 1; i < nodesCount; i++) {
-        swarm.addTestUnit(i, TestUnitSwarm{"test_create_myself", test_create_myself});
-        swarm.addTestUnit(i, TestUnitSwarm{"test_tofu_react", test_tofu_react});
+    for (int i{ 1 }; i < nodesCount; i++) {
+        swarm.addTestUnit(i, TestUnitSwarm{ "test_create_myself", test_create_myself });
+        swarm.addTestUnit(i, TestUnitSwarm{ "test_tofu_react", test_tofu_react });
     }
     suite.run();
 }
