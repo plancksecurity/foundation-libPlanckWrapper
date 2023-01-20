@@ -23,18 +23,18 @@ using namespace pEp::Test::Utils;
 using namespace pEp::PityTest11;
 using namespace pEp::Adapter::pEpLog;
 
-using TextContext = PityPerspective;
-using TestUnitSwarm = PityUnit<TextContext>;
+using TestContext = PityPerspective;
+using TestUnitSwarm = PityUnit<TestContext>;
 
-TextContext *local_ctx;
-PityUnit<TextContext> *local_pity;
+TestContext *local_ctx;
+PityUnit<TestContext> *local_pity;
 
 // The most minimal received msg contains of:
 // * from address
 // * content
 using MinMsgRx = std::tuple<std::string, std::string>;
 
-void tofu_send(TestUnitSwarm &pity, TextContext *ctx, const std::string &addr, const std::string longmessage)
+void tofu_send(TestUnitSwarm &pity, TestContext *ctx, const std::string &addr, const std::string longmessage)
 {
     pEpMessage msg = createMessage(ctx->own_ident, addr, longmessage);
     EncryptResult msg_enc = encryptAndEncode(msg);
@@ -45,7 +45,7 @@ void tofu_send(TestUnitSwarm &pity, TextContext *ctx, const std::string &addr, c
     pity.transport()->sendMsg(addr, mime_text);
 }
 
-MinMsgRx tofu_receive(TestUnitSwarm &pity, TextContext *ctx)
+MinMsgRx tofu_receive(TestUnitSwarm &pity, TestContext *ctx)
 {
     MinMsgRx ret;
     const std::string mime_data_rx = pity.transport()->receiveMsg();
@@ -63,7 +63,7 @@ MinMsgRx tofu_receive(TestUnitSwarm &pity, TextContext *ctx)
     return ret;
 }
 
-void tofu_receiveAndReply(TestUnitSwarm &pity, TextContext *ctx)
+void tofu_receiveAndReply(TestUnitSwarm &pity, TestContext *ctx)
 {
     MinMsgRx rx_msg = tofu_receive(pity, ctx);
 
@@ -80,7 +80,7 @@ void tofu_receiveAndReply(TestUnitSwarm &pity, TextContext *ctx)
 // TESTUNITS
 // ------------------------------------------------------------------------------------------------
 
-int test_create_myself(TestUnitSwarm &pity, TextContext *ctx)
+int test_create_myself(TestUnitSwarm &pity, TestContext *ctx)
 {
     Adapter::session.initialize();
     // Create new identity
@@ -91,7 +91,7 @@ int test_create_myself(TestUnitSwarm &pity, TextContext *ctx)
     return 0;
 }
 
-int test_tofu_init_all_peers(TestUnitSwarm &pity, TextContext *ctx)
+int test_tofu_init_all_peers(TestUnitSwarm &pity, TestContext *ctx)
 {
     for (auto &peer : ctx->peers) {
         tofu_send(pity, ctx, peer.addr, "INIT TOFU");
@@ -101,7 +101,7 @@ int test_tofu_init_all_peers(TestUnitSwarm &pity, TextContext *ctx)
     return 0;
 }
 
-int test_tofu_react(TestUnitSwarm &pity, TextContext *ctx)
+int test_tofu_react(TestUnitSwarm &pity, TestContext *ctx)
 {
     tofu_receiveAndReply(pity, ctx);
     tofu_receive(pity, ctx);
