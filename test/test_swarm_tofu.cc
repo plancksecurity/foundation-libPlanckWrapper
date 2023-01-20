@@ -36,11 +36,11 @@ using MinMsgRx = std::tuple<std::string, std::string>;
 
 void tofu_send(TestUnitSwarm &pity, TestContext *ctx, const std::string &addr, const std::string longmessage)
 {
-    pEpMessage msg = createMessage(ctx->own_ident, addr, longmessage);
-    EncryptResult msg_enc = encryptAndEncode(msg);
+    pEpMessage msg {createMessage(ctx->own_ident, addr, longmessage)};
+    EncryptResult msg_enc {encryptAndEncode(msg)};
 
-    std::string mime_text = std::get<1>(msg_enc);
-    ctx->getPeer(addr)->did_tx_encrypted = std::get<2>(msg_enc);
+    std::string mime_text {std::get<1>(msg_enc)};
+    ctx->getPeer(addr)->did_tx_encrypted {std::get<2>(msg_enc)};
     pity.log("Sending Encrypted[" + std::to_string(std::get<2>(msg_enc)) + "] to: " + addr);
     pity.transport()->sendMsg(addr, mime_text);
 }
@@ -48,10 +48,10 @@ void tofu_send(TestUnitSwarm &pity, TestContext *ctx, const std::string &addr, c
 MinMsgRx tofu_receive(TestUnitSwarm &pity, TestContext *ctx)
 {
     MinMsgRx ret;
-    const std::string mime_data_rx = pity.transport()->receiveMsg();
+    const std::string mime_data_rx {pity.transport()->receiveMsg()};
 
-    DecryptResult msg_rx = decryptAndDecode(mime_data_rx);
-    pEpMessage msg_rx_dec = std::get<0>(msg_rx);
+    DecryptResult msg_rx {decryptAndDecode(mime_data_rx)};
+    pEpMessage msg_rx_dec {std::get<0>(msg_rx)};
     ctx->getPeer(msg_rx_dec->from->address)->did_rx_encrypted = std::get<4>(msg_rx);
     pity.log(
         "Received Encrypted[" + std::to_string(std::get<4>(msg_rx)) +
@@ -67,8 +67,8 @@ void tofu_receiveAndReply(TestUnitSwarm &pity, TestContext *ctx)
 {
     MinMsgRx rx_msg = tofu_receive(pity, ctx);
 
-    std::string addr = std::get<0>(rx_msg);
-    std::string longmsg_orig = std::get<1>(rx_msg);
+    std::string addr {std::get<0>(rx_msg)};
+    std::string longmsg_orig {std::get<1>(rx_msg)};
     pEpMessage msg = createMessage(
         ctx->own_ident,
         addr,
@@ -120,16 +120,16 @@ int main(int argc, char *argv[])
     //    PityTransport::debug_log_enabled = true;
     int nodesCount = 23;
     PityModel model{ "model_tofu2", nodesCount };
-    TestUnitSwarm suite = TestUnitSwarm("suite_tofu2");
+    TestUnitSwarm suite = TestUnitSwarm{"suite_tofu2"};
     PitySwarm swarm{ "swarm_tofu2", model };
     suite.addRef(swarm.getSwarmUnit());
     // ------------------------------------------------------------------------------------
-    swarm.addTestUnit(0, TestUnitSwarm("test_create_myself", test_create_myself));
-    swarm.addTestUnit(0, TestUnitSwarm("test_tofu_init_all_peers", test_tofu_init_all_peers));
+    swarm.addTestUnit(0, TestUnitSwarm{"test_create_myself", test_create_myself});
+    swarm.addTestUnit(0, TestUnitSwarm{"test_tofu_init_all_peers", test_tofu_init_all_peers});
 
     for (int i = 1; i < nodesCount; i++) {
-        swarm.addTestUnit(i, TestUnitSwarm("test_create_myself", test_create_myself));
-        swarm.addTestUnit(i, TestUnitSwarm("test_tofu_react", test_tofu_react));
+        swarm.addTestUnit(i, TestUnitSwarm{"test_create_myself", test_create_myself});
+        swarm.addTestUnit(i, TestUnitSwarm{"test_tofu_react", test_tofu_react});
     }
     suite.run();
 }
