@@ -65,7 +65,7 @@ namespace pEp {
             ::adapter_group_init();
         }
 
-        void Session::refresh()
+        void Session::_new()
         {
             std::lock_guard<mutex> lock(mut);
 
