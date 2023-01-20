@@ -4,7 +4,8 @@
 #include "framework/framework.hh"
 #include <pEp/pitytest11/test_utils.hh>
 #include <iostream>
-#include <assert.h>
+#include <cassert>
+#include <pEp/utils.hh>
 
 #include <pEp/keymanagement.h>
 #include <pEp/sync_api.h>
@@ -39,9 +40,9 @@ public:
     }
 } o;
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
-    Test::setup(argc,argv);
+    Test::setup(argc, argv);
     pEp::Adapter::session
         .initialize(pEp::Adapter::SyncModes::Async, false, messageToSend, notifyHandshake);
     // Create new identity
@@ -60,9 +61,10 @@ int main(int argc, char* argv[])
         TESTLOG("SYNC START");
         TESTLOG("starting the adapter including sync");
         Adapter::startup<JNISync>(&o, &JNISync::onSyncStartup, &JNISync::onSyncShutdown);
+        Utils::sleep_millis(2000);
         TESTLOG("SYNC STOP");
-        Utils::sleep_millis(500);
         Adapter::stop_sync();
+        Utils::sleep_millis(2000);
     }
     return 0;
 }
