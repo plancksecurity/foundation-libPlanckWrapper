@@ -57,8 +57,8 @@ namespace pEp {
             bool adapter_manages_sync_thread)
         {
             // cache the values for sync-thread session creation
-            _messageToSend = messageToSend;
-            _notifyHandshake = notifyHandshake;
+            _cb_messageToSend = messageToSend;
+            _cb_notifyHandshake = notifyHandshake;
             _sync_mode = sync_mode;
             _adapter_manages_sync_thread = adapter_manages_sync_thread;
             refresh();
@@ -172,7 +172,7 @@ namespace pEp {
         void inject_sync_shutdown()
         {
             pEpLog("called");
-            _inject_sync_event(nullptr, nullptr);
+            _cb_enqueue_sync_event(nullptr, nullptr);
         }
 
         void start_sync()
@@ -198,7 +198,7 @@ namespace pEp {
         // public
         bool is_sync_running()
         {
-            if (!session._adapter_manages_sync_thread) {
+            if (!session.adapter_manages_sync_thread()) {
                 return _sync_thread.joinable();
             }
             return false;
