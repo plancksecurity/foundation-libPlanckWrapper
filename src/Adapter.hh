@@ -55,56 +55,50 @@ namespace pEp {
             // bool adapter_manages_sync_thread:
             // * true: libpEpAdapter will not manage the sync thread, the adapter impl will have to implement it.
             // * false: libpEpAdapter will manage the sync thread
-            //
-            // TODO:
-            // CAUTION: This call may result in a partially initialized session,
-            // If there are any problems with register_sync_callbacks()
-            // (e.g. due to no own identities yet)
-            // it will still succeed.
-            // BUT
-            // * Sync will not work
-            // * Group Encryption will not work
-            // TODO: This needs to be resolved in the engine, by creating a
-            //  new func register_callbacks() that is not sync specific,
-            //  and move the sync-checks to "start-sync()".
-            // Current workaround: a warning is printed out in this case
-            void initialize(
+            static void initialize(
                 SyncModes sync_mode = SyncModes::Async,
                 bool adapter_manages_sync_thread = false);
 
             // initialize()
             // Same as the initialize() method above, but you can specify arbitrary callbacks
             // to be registered.
-            void initialize(
+            static void initialize(
                 SyncModes sync_mode,
                 bool adapter_manages_sync_thread,
                 ::messageToSend_t messageToSend,
                 ::notifyHandshake_t notifyHandshake);
-
-            // re-creates the session using same values
-            void refresh();
 
             void release();
 
             // returns the PEP_SESSION handle
             PEP_SESSION operator()();
 
-            SyncModes _sync_mode;
-            ::messageToSend_t _messageToSend;
-            ::notifyHandshake_t _notifyHandshake;
-            bool _adapter_manages_sync_thread;
-            ::inject_sync_event_t _inject_action;
+            bool adapter_manages_sync_thread()
+            {
+                return _adapter_manages_sync_thread;
+            }
 
         private:
             using SessionPtr = std::unique_ptr<_pEpSession, std::function<void(PEP_SESSION)>>;
 
-            void _init(
+            static void _init(
                 ::messageToSend_t messageToSend,
                 ::notifyHandshake_t notifyHandshake,
                 SyncModes sync_mode,
                 bool adapter_manages_sync_thread);
 
+            // creates the session
+            void _new();
+
             SessionPtr _session = nullptr;
+
+            static SyncModes _sync_mode;
+            static bool _adapter_manages_sync_thread;
+            static ::messageToSend_t _cb_messageToSend;
+            static ::notifyHandshake_t _cb_notifyHandshake;
+            static ::inject_sync_event_t _cb_handle_sync_event_from_engine;
+
+            static bool _is_initialized;
         };
 
         extern thread_local Session session;

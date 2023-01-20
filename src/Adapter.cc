@@ -20,9 +20,15 @@ namespace pEp {
         // ---------------------------------------------------------------------------------------
         // SESSION
         // ---------------------------------------------------------------------------------------
-        Session::Session() :
-            _sync_mode{ SyncModes::Async }, _messageToSend{ nullptr }, _notifyHandshake{ nullptr },
-            _adapter_manages_sync_thread{ false }, _inject_action{ nullptr }
+        std::mutex mut{};
+        SyncModes Session::_sync_mode{ SyncModes::Async };
+        bool Session::_adapter_manages_sync_thread{ false };
+        ::messageToSend_t Session::_cb_messageToSend{ nullptr };
+        ::notifyHandshake_t Session::_cb_notifyHandshake{ nullptr };
+        ::inject_sync_event_t Session::_cb_handle_sync_event_from_engine{ nullptr };
+        bool Session::_is_initialized{ false };
+
+        Session::Session()
         {
             pEpLog("libpEpAdapter Session-manager created");
         }
@@ -61,37 +67,35 @@ namespace pEp {
             _cb_notifyHandshake = notifyHandshake;
             _sync_mode = sync_mode;
             _adapter_manages_sync_thread = adapter_manages_sync_thread;
-            refresh();
             ::adapter_group_init();
+            _is_initialized = true;
         }
 
         void Session::_new()
         {
             std::lock_guard<mutex> lock(mut);
 
-            // Switch to mode "Sync" ensures the sync thread to be shutdown
             if (_sync_mode == SyncModes::Sync) {
-                // process the event directly
-                _inject_action = _process_sync_event;
-                if (!_adapter_manages_sync_thread) {
-                    stop_sync();
-                } else {
-                    // The adapter needs to shutdown sync thread
-                }
+                _cb_handle_sync_event_from_engine = _cb_pass_sync_event_to_engine;
             }
-            // Switch to mode "ASync", sync thread needs to be started using start_sync
+
             if (_sync_mode == SyncModes::Async) {
-                // put the event on queue
-                _inject_action = _inject_sync_event;
+                _cb_handle_sync_event_from_engine = _cb_enqueue_sync_event;
             }
 
             // create
             ::PEP_SESSION session_{ nullptr };
-            ::PEP_STATUS status = ::init(&session_, _messageToSend, _inject_action, _ensure_passphrase);
+            ::PEP_STATUS status = ::init(&session_, _cb_messageToSend,
+                _cb_handle_sync_event_from_engine, _ensure_passphrase);
             throw_status(status);
 
-            // replace "atomically"
-            release();
+            status = ::register_sync_callbacks(
+                session_,
+                nullptr,
+                _cb_notifyHandshake,
+                _cb_dequeue_next_sync_event);
+            throw_status(status);
+
             _session = SessionPtr{ session_, ::release };
         }
 
