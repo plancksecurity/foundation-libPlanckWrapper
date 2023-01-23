@@ -9,7 +9,6 @@
 #include "callback_dispatcher.hh"
 #include "group_manager_api.h"
 
-using namespace std;
 
 thread_local pEp::Adapter::Session pEp::Adapter::session{};
 
@@ -73,7 +72,7 @@ namespace pEp {
 
         void Session::_new()
         {
-            std::lock_guard<mutex> lock(mut);
+            std::lock_guard<std::mutex> lock(mut);
 
             if (_sync_mode == SyncModes::Sync) {
                 _cb_handle_sync_event_from_engine = _cb_pass_sync_event_to_engine;
@@ -173,7 +172,7 @@ namespace pEp {
         // public
         bool on_sync_thread()
         {
-            return _sync_thread.get_id() == this_thread::get_id();
+            return _sync_thread.get_id() == std::this_thread::get_id();
         }
 
         // public
@@ -246,13 +245,13 @@ namespace pEp {
             return;
         }
         if (status == ::PEP_OUT_OF_MEMORY) {
-            throw bad_alloc();
+            throw std::bad_alloc();
         }
         if (status == ::PEP_ILLEGAL_VALUE) {
-            throw invalid_argument("illegal value");
+            throw std::invalid_argument("illegal value");
         }
 
-        string _status = status_to_string(status);
+        std::string _status = status_to_string(status);
         throw RuntimeError(_status, status);
     }
 
