@@ -24,12 +24,12 @@ using namespace pEp::PityTest11;
 using namespace pEp::Adapter::pEpLog;
 
 
-using TextContext = PityPerspective;
-using TestUnitSwarm = PityUnit<TextContext>;
+using TestContext = PityPerspective;
+using TestUnitSwarm = PityUnit<TestContext>;
 
 
-TextContext *local_ctx;
-PityUnit<TextContext> *local_pity;
+TestContext *local_ctx;
+PityUnit<TestContext> *local_pity;
 
 // Either group manager or group member, not both
 pEpIdent group_ident;
@@ -103,7 +103,7 @@ void processsAllMessages()
     }
 }
 
-void tofu_send(TestUnitSwarm &pity, TextContext *ctx, const std::string &addr, const std::string longmessage)
+void tofu_send(TestUnitSwarm &pity, TestContext *ctx, const std::string &addr, const std::string longmessage)
 {
     pEpMessage msg = createMessage(ctx->own_ident, addr, longmessage);
     EncryptResult msg_enc = encryptAndEncode(msg);
@@ -113,7 +113,7 @@ void tofu_send(TestUnitSwarm &pity, TextContext *ctx, const std::string &addr, c
     pity.transport()->sendMsg(addr, mime_text);
 }
 
-MinMsgRx tofu_receive(TestUnitSwarm &pity, TextContext *ctx)
+MinMsgRx tofu_receive(TestUnitSwarm &pity, TestContext *ctx)
 {
     MinMsgRx ret;
     const std::string mime_data_rx = pity.transport()->receiveMsg();
@@ -131,7 +131,7 @@ MinMsgRx tofu_receive(TestUnitSwarm &pity, TextContext *ctx)
     return ret;
 }
 
-void tofu_receiveAndReply(TestUnitSwarm &pity, TextContext *ctx)
+void tofu_receiveAndReply(TestUnitSwarm &pity, TestContext *ctx)
 {
     MinMsgRx rx_msg = tofu_receive(pity, ctx);
 
@@ -148,7 +148,7 @@ void tofu_receiveAndReply(TestUnitSwarm &pity, TextContext *ctx)
 // TESTUNITS
 // ------------------------------------------------------------------------------------------------
 
-int test_pEp_init(TestUnitSwarm &pity, TextContext *ctx)
+int test_pEp_init(TestUnitSwarm &pity, TestContext *ctx)
 {
     local_ctx = ctx;
     local_pity = &pity;
@@ -166,7 +166,7 @@ int test_pEp_init(TestUnitSwarm &pity, TextContext *ctx)
     return 0;
 }
 
-int test_create_myself(TestUnitSwarm &pity, TextContext *ctx)
+int test_create_myself(TestUnitSwarm &pity, TestContext *ctx)
 {
     // Create new identity
     pity.log("updating or creating identity for me");
@@ -176,7 +176,7 @@ int test_create_myself(TestUnitSwarm &pity, TextContext *ctx)
     return 0;
 }
 
-int test_start_sync(TestUnitSwarm &pity, TextContext *ctx)
+int test_start_sync(TestUnitSwarm &pity, TestContext *ctx)
 {
     Adapter::session
         .initialize(Adapter::SyncModes::Async, false, test_messageToSend, test_notifyHandshake);
@@ -184,7 +184,7 @@ int test_start_sync(TestUnitSwarm &pity, TextContext *ctx)
     return 0;
 }
 
-int test_tofu_init_all_peers(TestUnitSwarm &pity, TextContext *ctx)
+int test_tofu_init_all_peers(TestUnitSwarm &pity, TestContext *ctx)
 {
     for (auto &peer : ctx->peers) {
         tofu_send(pity, ctx, peer.addr, "INIT TOFU");
@@ -194,7 +194,7 @@ int test_tofu_init_all_peers(TestUnitSwarm &pity, TextContext *ctx)
     return 0;
 }
 
-int test_tofu_react(TestUnitSwarm &pity, TextContext *ctx)
+int test_tofu_react(TestUnitSwarm &pity, TestContext *ctx)
 {
     tofu_receiveAndReply(pity, ctx);
     tofu_receive(pity, ctx);
@@ -203,7 +203,7 @@ int test_tofu_react(TestUnitSwarm &pity, TextContext *ctx)
     return 0;
 }
 
-int test_group_create(TestUnitSwarm &pity, TextContext *ctx)
+int test_group_create(TestUnitSwarm &pity, TestContext *ctx)
 {
     if (ctx->groups.size() > 0) {
         group_ident = createCptIdent(ctx->groups.front().addr);
@@ -217,7 +217,7 @@ int test_group_create(TestUnitSwarm &pity, TextContext *ctx)
     return 0;
 }
 
-int test_group_invite_members(TestUnitSwarm &pity, TextContext *ctx)
+int test_group_invite_members(TestUnitSwarm &pity, TestContext *ctx)
 {
     PEP_STATUS status;
     if (ctx->groups.size() > 0) {
@@ -240,14 +240,14 @@ int test_group_invite_members(TestUnitSwarm &pity, TextContext *ctx)
     return 0;
 }
 
-int test_group_join(TestUnitSwarm &pity, TextContext *ctx)
+int test_group_join(TestUnitSwarm &pity, TestContext *ctx)
 {
     processMessage();
     PITYASSERT(signal_received, "test_group_join - no signal received");
     return 0;
 }
 
-int test_receive_joined(TestUnitSwarm &pity, TextContext *ctx)
+int test_receive_joined(TestUnitSwarm &pity, TestContext *ctx)
 {
     PEP_STATUS status;
     if (ctx->groups.size() > 0) {
@@ -260,7 +260,7 @@ int test_receive_joined(TestUnitSwarm &pity, TextContext *ctx)
 }
 
 
-int test_send_groupmessage(TestUnitSwarm &pity, TextContext *ctx)
+int test_send_groupmessage(TestUnitSwarm &pity, TestContext *ctx)
 {
     const std::string addr = group_ident->address;
     pEpMessage msg = createMessage(ctx->own_ident, addr, "GROUP MESSAGE");
@@ -284,7 +284,7 @@ int test_send_groupmessage(TestUnitSwarm &pity, TextContext *ctx)
 }
 
 
-int test_receive(TestUnitSwarm &pity, TextContext *ctx)
+int test_receive(TestUnitSwarm &pity, TestContext *ctx)
 {
     MinMsgRx ret;
     const std::string mime_data_rx = pity.transport()->receiveMsg();
@@ -302,7 +302,7 @@ int test_receive(TestUnitSwarm &pity, TextContext *ctx)
     return 0;
 }
 
-int test_receive_all(TestUnitSwarm &pity, TextContext *ctx)
+int test_receive_all(TestUnitSwarm &pity, TestContext *ctx)
 {
     while (local_pity->transport()->hasMsg()) {
         Utils::sleep_millis(100);
@@ -311,7 +311,7 @@ int test_receive_all(TestUnitSwarm &pity, TextContext *ctx)
     return 0;
 }
 
-int test_group_remove_member_one_by_one(TestUnitSwarm &pity, TextContext *ctx)
+int test_group_remove_member_one_by_one(TestUnitSwarm &pity, TestContext *ctx)
 {
     bool is_empty = false;
     do {
@@ -330,7 +330,7 @@ int test_group_remove_member_one_by_one(TestUnitSwarm &pity, TextContext *ctx)
     return 0;
 }
 
-int test_group_query1(TestUnitSwarm &pity, TextContext *ctx)
+int test_group_query1(TestUnitSwarm &pity, TestContext *ctx)
 {
     {
         ::identity_list *idl = nullptr;
@@ -342,7 +342,7 @@ int test_group_query1(TestUnitSwarm &pity, TextContext *ctx)
     return 0;
 }
 
-int test_group_query2(TestUnitSwarm &pity, TextContext *ctx)
+int test_group_query2(TestUnitSwarm &pity, TestContext *ctx)
 {
     {
         ::identity_list *idl = nullptr;
@@ -376,7 +376,7 @@ int test_group_query2(TestUnitSwarm &pity, TextContext *ctx)
 }
 
 
-int test_group_query3(TestUnitSwarm &pity, TextContext *ctx)
+int test_group_query3(TestUnitSwarm &pity, TestContext *ctx)
 {
     {
         ::identity_list *idl = nullptr;
@@ -409,7 +409,7 @@ int test_group_query3(TestUnitSwarm &pity, TextContext *ctx)
     return 0;
 }
 
-int test_group_query4(TestUnitSwarm &pity, TextContext *ctx)
+int test_group_query4(TestUnitSwarm &pity, TestContext *ctx)
 {
     {
         ::identity_list *idl = nullptr;
