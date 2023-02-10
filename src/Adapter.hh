@@ -104,8 +104,9 @@ namespace pEp {
         // ---------------------------------------------------------------------------------------
         // SYNC
         // ---------------------------------------------------------------------------------------
-        int _cb_enqueue_sync_event(::SYNC_EVENT ev, void *management);
-        int _cb_pass_sync_event_to_engine(::SYNC_EVENT ev, void *management);
+        int _cb_inject_sync_event_do_sync_protocol_step(::SYNC_EVENT ev, void *management);
+        int _cb_inject_sync_event_enqueue_sync_event(::SYNC_EVENT ev, void *management);
+
 
         void start_sync();
 
