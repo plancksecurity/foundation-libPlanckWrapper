@@ -10,21 +10,24 @@
 #include "group_manager_api.h"
 
 
-thread_local pEp::Adapter::Session pEp::Adapter::session{};
-
 namespace pEp {
     namespace Adapter {
-        ::SYNC_EVENT _cb_dequeue_next_sync_event(void *management, unsigned threshold);
+        ::SYNC_EVENT _cb_retrieve_next_sync_event_dequeue_next_sync_event(
+            void *management,
+            unsigned threshold);
 
         // ---------------------------------------------------------------------------------------
         // SESSION
         // ---------------------------------------------------------------------------------------
+        // the single thread-local instance of class Session
+        thread_local Session session{};
+
         std::mutex mut{};
-        SyncModes Session::_sync_mode{ SyncModes::Async };
-        bool Session::_adapter_manages_sync_thread{ false };
-        ::messageToSend_t Session::_cb_messageToSend{ nullptr };
-        ::notifyHandshake_t Session::_cb_notifyHandshake{ nullptr };
-        ::inject_sync_event_t Session::_cb_handle_sync_event_from_engine{ nullptr };
+        SyncModes Session::_cfg_sync_mode{ SyncModes::Async };
+        bool Session::_cfg_adapter_manages_sync_thread{ false };
+        ::messageToSend_t Session::_cfg_cb_messageToSend{ nullptr };
+        ::notifyHandshake_t Session::_cfg_cb_notifyHandshake{ nullptr };
+        ::inject_sync_event_t Session::_cfg_cb_inject_sync_event{ nullptr };
         bool Session::_is_initialized{ false };
 
         Session::Session()
@@ -62,10 +65,10 @@ namespace pEp {
             bool adapter_manages_sync_thread)
         {
             // cache the values for sync-thread session creation
-            _cb_messageToSend = messageToSend;
-            _cb_notifyHandshake = notifyHandshake;
-            _sync_mode = sync_mode;
-            _adapter_manages_sync_thread = adapter_manages_sync_thread;
+            _cfg_cb_messageToSend = messageToSend;
+            _cfg_cb_notifyHandshake = notifyHandshake;
+            _cfg_sync_mode = sync_mode;
+            _cfg_adapter_manages_sync_thread = adapter_manages_sync_thread;
             ::adapter_group_init();
             _is_initialized = true;
         }
@@ -74,25 +77,31 @@ namespace pEp {
         {
             std::lock_guard<std::mutex> lock(mut);
 
-            if (_sync_mode == SyncModes::Sync) {
-                _cb_handle_sync_event_from_engine = _cb_pass_sync_event_to_engine;
+            if (_cfg_sync_mode == SyncModes::Sync) {
+                _cfg_cb_inject_sync_event = _cb_inject_sync_event_do_sync_protocol_step;
             }
 
-            if (_sync_mode == SyncModes::Async) {
-                _cb_handle_sync_event_from_engine = _cb_enqueue_sync_event;
+            if (_cfg_sync_mode == SyncModes::Async) {
+                _cfg_cb_inject_sync_event = _cb_inject_sync_event_enqueue_sync_event;
             }
 
             // create
             ::PEP_SESSION session_{ nullptr };
-            ::PEP_STATUS status = ::init(&session_, _cb_messageToSend,
-                _cb_handle_sync_event_from_engine, _ensure_passphrase);
+
+            ::PEP_STATUS status = ::init(
+                &session_,
+                _cfg_cb_messageToSend,
+                _cfg_cb_inject_sync_event,
+                _ensure_passphrase);
             throw_status(status);
 
+            // _cb_retrieve_next_sync_event is only being called by ::do_sync_protocol()
+            // which is only being used in async operation using queue
             status = ::register_sync_callbacks(
                 session_,
                 nullptr,
-                _cb_notifyHandshake,
-                _cb_dequeue_next_sync_event);
+                _cfg_cb_notifyHandshake,
+                _cb_retrieve_next_sync_event_dequeue_next_sync_event);
             throw_status(status);
 
             _session = SessionPtr{ session_, ::release };
@@ -108,7 +117,7 @@ namespace pEp {
         // public
         ::PEP_SESSION Session::operator()()
         {
-            if(!_is_initialized) {
+            if (!_is_initialized) {
                 throw std::runtime_error(
                     "libpEpAdapter: No session! Before first use, call session::initialize()");
             } else {
@@ -117,6 +126,12 @@ namespace pEp {
                 }
             }
             return _session.get();
+        }
+
+        // public/static
+        bool Session::adapter_manages_sync_thread()
+        {
+            return _cfg_adapter_manages_sync_thread;
         }
 
         // ---------------------------------------------------------------------------------------
@@ -132,7 +147,9 @@ namespace pEp {
         }
 
         // private
-        int _cb_pass_sync_event_to_engine(::SYNC_EVENT ev, void *management)
+        // must be assigneble to ::inject_sync_event_t _cb_inject_sync_event;
+        // so, must be of type ::inject_sync_event_t
+        int _cb_inject_sync_event_do_sync_protocol_step(::SYNC_EVENT ev, void *management)
         {
             if (ev != nullptr) {
                 ::do_sync_protocol_step(session(), ev);
@@ -141,7 +158,9 @@ namespace pEp {
         }
 
         // public (json adapter needs it, but should use Session mgmt from libpEpAdapter eventually)
-        int _cb_enqueue_sync_event(::SYNC_EVENT ev, void *management)
+        // must be assigneble to ::inject_sync_event_t _cb_inject_sync_event;
+        // so, must be of type ::inject_sync_event_t
+        int _cb_inject_sync_event_enqueue_sync_event(::SYNC_EVENT ev, void *management)
         {
             try {
                 if (ev == nullptr) {
@@ -156,8 +175,10 @@ namespace pEp {
             return 0;
         }
 
-        // public
-        ::SYNC_EVENT _cb_dequeue_next_sync_event(void *management, unsigned threshold)
+        // private
+        // callback for pEpEngine retrieve_next_sync_event
+        // so, must be of type ::retrieve_next_sync_event_t
+        ::SYNC_EVENT _cb_retrieve_next_sync_event_dequeue_next_sync_event(void *management, unsigned threshold)
         {
             ::SYNC_EVENT syncEvent = nullptr;
             const bool success = sync_evt_q.try_pop_front(syncEvent, std::chrono::seconds(threshold));
@@ -179,7 +200,7 @@ namespace pEp {
         void inject_sync_shutdown()
         {
             pEpLog("called");
-            _cb_enqueue_sync_event(nullptr, nullptr);
+            _cb_inject_sync_event_enqueue_sync_event(nullptr, nullptr);
         }
 
         void start_sync()

@@ -15,21 +15,21 @@
 
 namespace pEp {
     namespace Adapter {
+        // Used to define if sync events are being processes
+        // sync (single-threaded) or async (multi-threaded)
         enum class SyncModes {
             Sync,
             Async
         };
 
-        // The thread-local pEp-session
+        // pEp-Session manager
+        // handles lifecycle (create/destroy) and configuratiin of a PEP_SESSION
         // CAVEAT: there is a default constructor Sesssion(),
         // BUT
         // the session object needs to be initialized in order to be usable.
         // The initialization defines the session configuration for all sessions that
         // are being created in the lifetime of a process
         // A Session object is not copyable/assignable
-
-        // TODO: remove initialize() and do that in the ctor's
-        // remove release() and do that in the destructor
 
         class Session {
         public:
@@ -70,7 +70,7 @@ namespace pEp {
 
             void release();
 
-            // returns the PEP_SESSION handle
+            // returns the managed PEP_SESSION
             PEP_SESSION operator()();
 
             bool adapter_manages_sync_thread()
@@ -92,15 +92,16 @@ namespace pEp {
 
             SessionPtr _session = nullptr;
 
-            static SyncModes _sync_mode;
-            static bool _adapter_manages_sync_thread;
-            static ::messageToSend_t _cb_messageToSend;
-            static ::notifyHandshake_t _cb_notifyHandshake;
-            static ::inject_sync_event_t _cb_handle_sync_event_from_engine;
+            static SyncModes _cfg_sync_mode;
+            static bool _cfg_adapter_manages_sync_thread;
+            static ::messageToSend_t _cfg_cb_messageToSend;
+            static ::notifyHandshake_t _cfg_cb_notifyHandshake;
+            static ::inject_sync_event_t _cfg_cb_inject_sync_event;
 
             static bool _is_initialized;
         };
 
+        // the single thread-local instance of class Session
         extern thread_local Session session;
 
         // ---------------------------------------------------------------------------------------
