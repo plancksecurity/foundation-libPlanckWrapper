@@ -40,7 +40,7 @@ void tofu_send(TestUnitSwarm &pity, TestContext *ctx, const std::string &addr, c
     EncryptResult msg_enc{ encryptAndEncode(msg) };
 
     std::string mime_text{ std::get<1>(msg_enc) };
-    ctx->getPeer(addr)->did_tx_encrypted{ std::get<2>(msg_enc) };
+    ctx->getPeer(addr)->did_tx_encrypted =  std::get<2>(msg_enc);
     pity.log("Sending Encrypted[" + std::to_string(std::get<2>(msg_enc)) + "] to: " + addr);
     pity.transport()->sendMsg(addr, mime_text);
 }
