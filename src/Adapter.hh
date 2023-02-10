@@ -73,10 +73,7 @@ namespace pEp {
             // returns the managed PEP_SESSION
             PEP_SESSION operator()();
 
-            bool adapter_manages_sync_thread()
-            {
-                return _adapter_manages_sync_thread;
-            }
+            static bool adapter_manages_sync_thread();
 
         private:
             using SessionPtr = std::unique_ptr<_pEpSession, std::function<void(PEP_SESSION)>>;
