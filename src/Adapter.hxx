@@ -44,7 +44,7 @@ namespace pEp {
             // 3. Enter Sync Event Processing Loop (do_sync_protocol())
             // this internally calls _retrieve_next_sync_event
             pEpLog("sync protocol loop started");
-            ::do_sync_protocol(session(), (void *)obj);
+            ::do_sync_protocol(session());
             pEpLog("sync protocol loop ended");
 
             // 4. unregister_sync_callbacks()

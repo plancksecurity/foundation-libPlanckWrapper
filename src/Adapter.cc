@@ -135,7 +135,7 @@ namespace pEp {
         int _cb_pass_sync_event_to_engine(::SYNC_EVENT ev, void *management)
         {
             if (ev != nullptr) {
-                ::do_sync_protocol_step(session(), nullptr, ev);
+                ::do_sync_protocol_step(session(), ev);
             }
             return 0;
         }
