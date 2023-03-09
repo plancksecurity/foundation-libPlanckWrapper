@@ -104,8 +104,16 @@ namespace pEp {
         // ---------------------------------------------------------------------------------------
         // SYNC
         // ---------------------------------------------------------------------------------------
+        // Sync/async impl of the sync event handling
+        // sync - deliver to engine directly
         int _cb_inject_sync_event_do_sync_protocol_step(::SYNC_EVENT ev, void *management);
+        // async - put on queue
         int _cb_inject_sync_event_enqueue_sync_event(::SYNC_EVENT ev, void *management);
+
+        // for async only - get event from queue
+        ::SYNC_EVENT _cb_retrieve_next_sync_event_dequeue_next_sync_event(
+            void *management,
+            unsigned threshold);
 
 
         void start_sync();

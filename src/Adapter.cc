@@ -12,10 +12,6 @@
 
 namespace pEp {
     namespace Adapter {
-        ::SYNC_EVENT _cb_retrieve_next_sync_event_dequeue_next_sync_event(
-            void *management,
-            unsigned threshold);
-
         // ---------------------------------------------------------------------------------------
         // SESSION
         // ---------------------------------------------------------------------------------------
