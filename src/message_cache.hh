@@ -123,6 +123,6 @@ namespace pEp {
     };
 
     extern MessageCache message_cache;
-}; // namespace pEp
+} // namespace pEp
 
 #endif // LIBPEPADAPTER_MESSAGE_CACHE_HH

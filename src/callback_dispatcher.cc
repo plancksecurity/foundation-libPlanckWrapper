@@ -143,4 +143,4 @@ namespace pEp {
 
         return PEP_STATUS_OK;
     }
-}; // namespace pEp
+} // namespace pEp

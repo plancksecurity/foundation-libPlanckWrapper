@@ -231,7 +231,7 @@ DYNAMIC_API PEP_STATUS adapter_group_query_members(
 
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #endif //LIBPEPADAPTER_GROUP_MANAGER_API_H

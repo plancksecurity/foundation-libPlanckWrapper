@@ -204,5 +204,5 @@ namespace pEp {
         {
             mkdir(outbox_path.c_str(), 0770);
         }
-    }; // namespace Test
-};     // namespace pEp
+    } // namespace Test
+}     // namespace pEp

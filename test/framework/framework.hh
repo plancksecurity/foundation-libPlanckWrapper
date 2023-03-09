@@ -58,7 +58,7 @@ namespace pEp {
 
         extern Transport transport;
         extern std::string per_user_dir;
-    }; // namespace Test
-};     // namespace pEp
+    } // namespace Test
+}     // namespace pEp
 
 #endif // LIBPEPADAPTER_FRAMEWORK_HH

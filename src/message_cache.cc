@@ -561,4 +561,4 @@ namespace pEp {
 
         return status;
     }
-}; // namespace pEp
+} // namespace pEp
