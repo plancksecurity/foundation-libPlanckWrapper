@@ -15,11 +15,10 @@ namespace pEp {
         // ---------------------------------------------------------------------------------------
         // SESSION
         // ---------------------------------------------------------------------------------------
-        // the single thread-local instance of class Session
+        // the thread-local instance of class Session
         thread_local Session session{};
 
         std::mutex mut{};
-        SyncModes Session::_cfg_sync_mode{ SyncModes::Async };
         bool Session::_cfg_adapter_manages_sync_thread{ false };
         ::messageToSend_t Session::_cfg_cb_messageToSend{ nullptr };
         ::notifyHandshake_t Session::_cfg_cb_notifyHandshake{ nullptr };
@@ -28,13 +27,13 @@ namespace pEp {
 
         Session::Session()
         {
-            pEpLog("libpEpAdapter Session-manager created");
+            pEpLog("libpEpAdapter: Session-Manager created");
         }
 
         // Public/Static
         void Session::initialize(SyncModes sync_mode, bool adapter_manages_sync_thread)
         {
-            pEpLog("Initializing session with CallbackDispatcher...");
+            pEpLog("libpEpAdapter: Initializing Session-Manager with CallbackDispatcher");
             _init(
                 pEp::CallbackDispatcher::messageToSend,
                 pEp::CallbackDispatcher::notifyHandshake,
@@ -49,7 +48,7 @@ namespace pEp {
             ::messageToSend_t messageToSend,
             ::notifyHandshake_t notifyHandshake)
         {
-            pEpLog("Initializing session...");
+            pEpLog("libpEpAdapter: Initializing Session-Manager with custom callbacks");
             _init(messageToSend, notifyHandshake, sync_mode, adapter_manages_sync_thread);
         }
 
@@ -60,26 +59,29 @@ namespace pEp {
             SyncModes sync_mode,
             bool adapter_manages_sync_thread)
         {
-            // cache the values for sync-thread session creation
-            _cfg_cb_messageToSend = messageToSend;
-            _cfg_cb_notifyHandshake = notifyHandshake;
-            _cfg_sync_mode = sync_mode;
-            _cfg_adapter_manages_sync_thread = adapter_manages_sync_thread;
-            ::adapter_group_init();
-            _is_initialized = true;
+            if (!_is_initialized) {
+                // cache the values for sync-thread session creation
+                _cfg_cb_messageToSend = messageToSend;
+                _cfg_cb_notifyHandshake = notifyHandshake;
+
+                if (sync_mode == SyncModes::Sync) {
+                    _cfg_cb_inject_sync_event = _cb_inject_sync_event_do_sync_protocol_step;
+                }
+
+                if (sync_mode == SyncModes::Async) {
+                    _cfg_cb_inject_sync_event = _cb_inject_sync_event_enqueue_sync_event;
+                }
+
+                _cfg_adapter_manages_sync_thread = adapter_manages_sync_thread;
+                ::adapter_group_init();
+                _is_initialized = true;
+            }
         }
 
         void Session::_new()
         {
             std::lock_guard<std::mutex> lock(mut);
-
-            if (_cfg_sync_mode == SyncModes::Sync) {
-                _cfg_cb_inject_sync_event = _cb_inject_sync_event_do_sync_protocol_step;
-            }
-
-            if (_cfg_sync_mode == SyncModes::Async) {
-                _cfg_cb_inject_sync_event = _cb_inject_sync_event_enqueue_sync_event;
-            }
+            pEpLog("libpEpAdapter: Creating new session for current thread");
 
             // create
             ::PEP_SESSION session_{ nullptr };
@@ -118,6 +120,7 @@ namespace pEp {
                     "libpEpAdapter: No session! Before first use, call session::initialize()");
             } else {
                 if (!_session.get()) {
+                    pEpLog("libpEpAdapter: No existing session for current thread");
                     _new();
                 }
             }
@@ -212,7 +215,7 @@ namespace pEp {
         {
             pEpLog("called");
             if (_sync_thread.joinable()) {
-                pEpLog("sync_is_running - injecting null event");
+                pEpLog("libpEpAdapter: sync_is_running - injecting null event");
                 inject_sync_shutdown();
                 _sync_thread.join();
                 pEp::CallbackDispatcher::notifyHandshake(nullptr, nullptr, SYNC_NOTIFY_STOP);

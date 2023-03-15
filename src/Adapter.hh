@@ -89,7 +89,6 @@ namespace pEp {
 
             SessionPtr _session = nullptr;
 
-            static SyncModes _cfg_sync_mode;
             static bool _cfg_adapter_manages_sync_thread;
             static ::messageToSend_t _cfg_cb_messageToSend;
             static ::notifyHandshake_t _cfg_cb_notifyHandshake;
