@@ -1,27 +1,44 @@
-include:
-  - '.gitlab-ci-files/common-prepare.yml'
 
 stages:
-  - build
+  - release
 
 
-# Debian
+.debian-release:
+  stage: release
+  tags: [ linux ]
+  needs: []
+  image: gcc:11-bullseye
+  script:
+    - echo "downloading coreV3 ref:${COREV3_REF}"
+    - corev3URL="https://git.planck.security/api/v4/projects/379/jobs/artifacts/${COREV3_REF}/raw/planckCoreV3.tar.gz?job=debian-release"
+    - curl --location --header "PRIVATE-TOKEN:${GITLAB_ACCESS_TOKEN}" ${corev3URL} --output planckCoreV3.tar.gz
+    - tar -C /opt -xvf planckCoreV3.tar.gz
+    - echo "downloading coreCxx11 ref:${CORECxx11_REF}"
+    - coreCxx11URL="https://git.planck.security/api/v4/projects/407/jobs/artifacts/${CORECxx11_REF}/raw/planckCoreCxx11.tar.gz?job=debian-release"
+    - curl --location --header "PRIVATE-TOKEN:${GITLAB_ACCESS_TOKEN}" ${coreCxx11URL} --output planckCoreCxx11.tar.gz
+    - tar -C /opt -xvf planckCoreCxx11.tar.gz
+    - cp gitlab/debian/libPlanckWrapper-release.conf local.conf
+    - make all
+    - make install
+    - tar  -C /opt/ -zcvf libPlanckWrapper.tar.gz planck
+  artifacts:
+    paths:
+      - libPlanckWrapper.tar.gz
+    expire_in: 6 mos
+    name: libPlanckWrapper-$CI_COMMIT_TAG
 
-debian10:build:
-  extends: .make_in_docker
-  stage: build
+
+debian-develop-release:
+  when: manual
   variables:
-    CI_DISTRO_TARGET: "debian10"
-    DEBIAN_FRONTEND: "noninteractive"
-  rules:
-    - if: '$CI_COMMIT_TAG  !~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
+    COREV3_REF: "develop"
+    CORECxx11_REF: "master"
+  extends: .debian-release
 
-debian10:tagged-build:
-  extends: .make_in_docker
-  stage: build
+debian-master-release:
+  when: manual
   variables:
-    CI_DISTRO_TARGET: "debian10"
-    DEBIAN_FRONTEND: "noninteractive"
-    TAGGED_BUILD: "true"
-  rules:
-    - if: '$CI_COMMIT_TAG  =~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/'
+    COREV3_REF: "master"
+    CORECxx11_REF: "master"
+  extends: .debian-release
+
