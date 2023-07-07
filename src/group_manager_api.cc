@@ -16,8 +16,8 @@ using namespace std;
 using namespace pEp;
 
 Adapter::GroupDriverReplicator adapter_grp_manager{};
-shared_ptr<Adapter::GroupDriverDummy> grp_drv_dummy;
-shared_ptr<Adapter::GroupDriverEngine> grp_drv_engine;
+shared_ptr<Adapter::GroupDriverDummy> grp_drv_dummy; //This goes to the libpEpAdapter->group_manager
+shared_ptr<Adapter::GroupDriverEngine> grp_drv_engine; //This goes to the pEpEngine
 
 DYNAMIC_API PEP_STATUS adapter_group_init()
 {

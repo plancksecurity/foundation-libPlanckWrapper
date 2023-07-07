@@ -216,41 +216,41 @@ namespace pEp {
         PEP_STATUS GroupDriverDummy::adapter_group_join(
             PEP_SESSION session,
             pEp_identity *group_identity,
-            pEp_identity *as_member) noexcept
+            pEp_identity *group_member) noexcept
         {
             pEpLogClass("called");
             // TODO: listmanager member db list_join()
-//            PEP_STATUS status = PEP_UNKNOWN_ERROR;
+            PEP_STATUS status = PEP_UNKNOWN_ERROR;
 
-//            if (!group_identity || !group_member) {
-//                status = PEP_ILLEGAL_VALUE;
-//            } else {
-//                if (Utils::is_c_str_empty(group_identity->address) ||
-//                    Utils::is_c_str_empty(group_member->address)) {
-//                    status = PEP_ILLEGAL_VALUE;
-//                } else {
-//                    const string addr_list{ group_identity->address };
-//                    const string addr_member{ group_member->address };
-//
-//                    try {
-//                        lmd.member_remove(addr_list, addr_member);
-//                        status = PEP_STATUS_OK;
-//                    } catch (const MemberDoesNotExistException &e) {
-//                        pEpLogClass(Utils::nested_exception_to_string(e));
-//                        // TODO: Silently succeed???
-//                        status = PEP_STATUS_OK;
-//                    } catch (const ListDoesNotExistException &e) {
-//                        pEpLogClass(Utils::nested_exception_to_string(e));
-//                        status = PEP_GROUP_NOT_FOUND;
-//                    } catch (const exception &e) {
-//                        pEpLogClass(Utils::nested_exception_to_string(e));
-//                        status = PEP_UNKNOWN_ERROR;
-//                    } catch (...) {
-//                        pEpLogClass("unknown exception");
-//                        status = PEP_UNKNOWN_ERROR;
-//                    }
-//                }
-//            }
+            if (!group_identity || !group_member) {
+                status = PEP_ILLEGAL_VALUE;
+            } else {
+                if (Utils::is_c_str_empty(group_identity->address) ||
+                    Utils::is_c_str_empty(group_member->address)) {
+                    status = PEP_ILLEGAL_VALUE;
+                } else {
+                    const string addr_list{ group_identity->address };
+                    const string addr_member{ group_member->address };
+
+                    try {
+                        lmd.member_add(addr_list, addr_member);
+                        status = PEP_STATUS_OK;
+                    } catch (const MemberDoesNotExistException &e) {
+                        pEpLogClass(Utils::nested_exception_to_string(e));
+                        //TODO: Silently succeed???
+                        status = PEP_STATUS_OK;
+                    } catch (const ListDoesNotExistException &e) {
+                        pEpLogClass(Utils::nested_exception_to_string(e));
+                        status = PEP_GROUP_NOT_FOUND;
+                    } catch (const exception &e) {
+                        pEpLogClass(Utils::nested_exception_to_string(e));
+                        status = PEP_UNKNOWN_ERROR;
+                    } catch (...) {
+                        pEpLogClass("unknown exception");
+                        status = PEP_UNKNOWN_ERROR;
+                    }
+                }
+            }
             return PEP_STATUS_OK;
         }
 
