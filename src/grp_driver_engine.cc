@@ -54,7 +54,9 @@ namespace pEp {
         PEP_STATUS GroupDriverEngine::adapter_group_join(
             PEP_SESSION session,
             pEp_identity *group_identity,
-            pEp_identity *as_member) noexcept
+            pEp_identity *as_member,
+            ::pEp_identity* manager
+        ) noexcept
         {
             pEpLogClass("called");
             return ::group_join(session, group_identity, as_member);

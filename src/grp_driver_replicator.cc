@@ -178,7 +178,9 @@ namespace pEp {
         PEP_STATUS GroupDriverReplicator::adapter_group_join(
             ::PEP_SESSION session,
             ::pEp_identity *group_identity,
-            ::pEp_identity *as_member)  noexcept
+            ::pEp_identity *as_member,
+            ::pEp_identity* manager
+        )  noexcept
         {
             pEpLogClass("called");
             if (!has_repl_src_and_dst()) {
@@ -189,13 +191,13 @@ namespace pEp {
             PEP_STATUS status = repl_src->adapter_group_join(
                 session,
                 group_identity,
-                as_member);
+                as_member, manager);
             if (status != PEP_STATUS_OK) {
                 return status;
             }
 
             // Do engine
-            status = repl_dst->adapter_group_join(session, group_identity, as_member);
+            status = repl_dst->adapter_group_join(session, group_identity, as_member, manager);
             if (status != PEP_STATUS_OK) {
                 // Rollback
                 // TODO: need group_leave

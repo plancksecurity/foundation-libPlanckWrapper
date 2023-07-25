@@ -106,10 +106,12 @@ DYNAMIC_API PEP_STATUS adapter_group_remove_member(
 DYNAMIC_API PEP_STATUS adapter_group_join(
     PEP_SESSION session,
     pEp_identity *group_identity,
-    pEp_identity *as_member)
+    pEp_identity *as_member,
+    pEp_identity* manager
+)
 {
     pEpLog("called");
-    PEP_STATUS status = adapter_grp_manager.adapter_group_join(session, group_identity, as_member);
+    PEP_STATUS status = adapter_grp_manager.adapter_group_join(session, group_identity, as_member, manager);
     return status;
 }
 

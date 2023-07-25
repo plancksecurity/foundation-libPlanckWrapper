@@ -161,7 +161,9 @@ DYNAMIC_API PEP_STATUS adapter_group_remove_member(
 DYNAMIC_API PEP_STATUS adapter_group_join(
     PEP_SESSION session,
     pEp_identity *group_identity,
-    pEp_identity *as_member);
+    pEp_identity *as_member,
+    pEp_identity* manager = nullptr
+);
 
 /*************************************************************************************************
  * Group query functions
