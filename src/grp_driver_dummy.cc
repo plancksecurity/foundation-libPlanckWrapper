@@ -40,10 +40,10 @@ namespace pEp {
                         lmd.list_add(addr_list, addr_manager);
                         status = PEP_STATUS_OK;
                     } catch (const AlreadyExistsException &e) {
-                        //pEpLogClass(Utils::nested_exception_to_string(e));
+                        pEpLogClass(Utils::nested_exception_to_string(e));
                         status = PEP_GROUP_EXISTS;
                     } catch (const exception &e) {
-                        //pEpLogClass(Utils::nested_exception_to_string(e));
+                        pEpLogClass(Utils::nested_exception_to_string(e));
                         status = PEP_UNKNOWN_ERROR;
                     } catch (...) {
                         pEpLogClass("unknown exception");
@@ -94,10 +94,10 @@ namespace pEp {
                         addr_manager_queried = lmd.moderator(addr_list);
                         status = PEP_STATUS_OK;
                     } catch (const ListDoesNotExistException &e) {
-                        //pEpLogClass(Utils::nested_exception_to_string(e));
+                        pEpLogClass(Utils::nested_exception_to_string(e));
                         status = PEP_GROUP_NOT_FOUND;
                     } catch (const exception &e) {
-                        //pEpLogClass(Utils::nested_exception_to_string(e));
+                        pEpLogClass(Utils::nested_exception_to_string(e));
                         status = PEP_UNKNOWN_ERROR;
                     } catch (...) {
                         pEpLogClass("unknown exception");
@@ -112,14 +112,14 @@ namespace pEp {
                                 lmd.list_delete(addr_list);
                                 status = PEP_STATUS_OK;
                             } catch (const MemberDoesNotExistException &e) {
-                                //pEpLogClass(Utils::nested_exception_to_string(e));
+                                pEpLogClass(Utils::nested_exception_to_string(e));
                                 // TODO: Silently succeed???
                                 status = PEP_STATUS_OK;
                             } catch (const ListDoesNotExistException &e) {
-                                //pEpLogClass(Utils::nested_exception_to_string(e));
+                                pEpLogClass(Utils::nested_exception_to_string(e));
                                 status = PEP_GROUP_NOT_FOUND;
                             } catch (const exception &e) {
-                                //pEpLogClass(Utils::nested_exception_to_string(e));
+                                pEpLogClass(Utils::nested_exception_to_string(e));
                                 status = PEP_UNKNOWN_ERROR;
                             } catch (...) {
                                 pEpLogClass("unknown exception");
@@ -156,13 +156,13 @@ namespace pEp {
                         status = PEP_STATUS_OK;
                     } catch (const AlreadyExistsException &e) {
                         // TODO: Silently succeed???
-                        //pEpLogClass(Utils::nested_exception_to_string(e));
+                        pEpLogClass(Utils::nested_exception_to_string(e));
                         status = PEP_STATUS_OK;
                     } catch (const ListDoesNotExistException &e) {
-                        //pEpLogClass(Utils::nested_exception_to_string(e));
+                        pEpLogClass(Utils::nested_exception_to_string(e));
                         return PEP_GROUP_NOT_FOUND;
                     } catch (const exception &e) {
-                        //pEpLogClass(Utils::nested_exception_to_string(e));
+                        pEpLogClass(Utils::nested_exception_to_string(e));
                         status = PEP_UNKNOWN_ERROR;
                     } catch (...) {
                         pEpLogClass("unknown exception");
@@ -195,14 +195,14 @@ namespace pEp {
                         lmd.member_remove(addr_list, addr_member);
                         status = PEP_STATUS_OK;
                     } catch (const MemberDoesNotExistException &e) {
-                        //pEpLogClass(Utils::nested_exception_to_string(e));
+                        pEpLogClass(Utils::nested_exception_to_string(e));
                         // TODO: Silently succeed???
                         status = PEP_STATUS_OK;
                     } catch (const ListDoesNotExistException &e) {
-                        //pEpLogClass(Utils::nested_exception_to_string(e));
+                        pEpLogClass(Utils::nested_exception_to_string(e));
                         status = PEP_GROUP_NOT_FOUND;
                     } catch (const exception &e) {
-                        //pEpLogClass(Utils::nested_exception_to_string(e));
+                        pEpLogClass(Utils::nested_exception_to_string(e));
                         status = PEP_UNKNOWN_ERROR;
                     } catch (...) {
                         pEpLogClass("unknown exception");
@@ -272,7 +272,7 @@ namespace pEp {
                     lists_queried = lmd.lists();
                     status = PEP_STATUS_OK;
                 } catch (const exception &e) {
-                    //pEpLogClass(Utils::nested_exception_to_string(e));
+                    pEpLogClass(Utils::nested_exception_to_string(e));
                     status = PEP_UNKNOWN_ERROR;
                 } catch (...) {
                     pEpLogClass("unknown exception");
@@ -313,10 +313,10 @@ namespace pEp {
                     addr_manager = lmd.moderator(addr_list);
                     status = PEP_STATUS_OK;
                 } catch (const ListDoesNotExistException &e) {
-                    //pEpLogClass(Utils::nested_exception_to_string(e));
+                    pEpLogClass(Utils::nested_exception_to_string(e));
                     status = PEP_GROUP_NOT_FOUND;
                 } catch (const exception &e) {
-                    //pEpLogClass(Utils::nested_exception_to_string(e));
+                    pEpLogClass(Utils::nested_exception_to_string(e));
                     status = PEP_UNKNOWN_ERROR;
                 } catch (...) {
                     pEpLogClass("unknown exception");
@@ -356,10 +356,10 @@ namespace pEp {
                         members_queried = lmd.members(addr_grp);
                         status = PEP_STATUS_OK;
                     } catch (const ListDoesNotExistException &e) {
-                        //pEpLogClass(Utils::nested_exception_to_string(e));
+                        pEpLogClass(Utils::nested_exception_to_string(e));
                         status = PEP_GROUP_NOT_FOUND;
                     } catch (const exception &e) {
-                        //pEpLogClass(Utils::nested_exception_to_string(e));
+                        pEpLogClass(Utils::nested_exception_to_string(e));
                         status = PEP_UNKNOWN_ERROR;
                     } catch (...) {
                         pEpLogClass("unknown exception");
