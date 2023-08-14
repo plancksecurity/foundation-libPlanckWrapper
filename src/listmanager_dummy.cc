@@ -1,3 +1,10 @@
+/* Changelog
+ * Monday 14 August 2023 Both functions ListManagerDummy::member_exists & ListManagerDummy::list_exists
+ * operated using throw_nested_exception(e) outside of a try...catch block, which is incorrect
+ * as there is no exception to nest and in turn would generated a fatal crash on
+ * android NDK compilations.
+ * */
+
 #include "listmanager_dummy.hh"
 #include "pEpSQLite.hh"
 #include <exception>
@@ -312,7 +319,7 @@ namespace pEp {
         if (rescount > 1) {
             DBException e{ "ListManagerDummy: list_exists(addr_list:\"" + addr_list +
                            "\") - FATAL DB CONSTRAINT ERROR: list exists more than once" };
-            throw_with_nested(e);
+            throw(e);
         }
 
         if (rescount == 1) {
@@ -348,7 +355,7 @@ namespace pEp {
             DBException e{ "member_exists(addr_list:\"" + addr_list + "\", addr_member:\"" +
                            addr_member +
                            "\") - FATAL DB CONSTRAINT ERROR: list exists more than once" };
-            throw_with_nested(e);
+            throw(e);
         }
 
         if (rescount == 1) {
