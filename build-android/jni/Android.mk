@@ -12,7 +12,7 @@ LOCAL_MODULE    := pEpAdapter
 
 
 LOCAL_CPP_FEATURES += exceptions
-LOCAL_CPPFLAGS += -std=c++14 -DANDROID_STL=c++_shared
+LOCAL_CPPFLAGS += -std=c++14 -DANDROID_STL=c++_shared -frtti
 
 #FIXME: WORKARROUND 
 STUB = $(shell sh $(LOCAL_PATH)/../takeOutHeaderFiles.sh $(LOCAL_PATH)/../../../planckCoreV3/ $(LOCAL_PATH)/../../)
