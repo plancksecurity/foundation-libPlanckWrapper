@@ -151,6 +151,8 @@ DYNAMIC_API PEP_STATUS adapter_group_remove_member(
  *                                      join the group. This must match the identity which was invited to the group.
  *                                      Must contain a user_id and address.
  *
+ *  @param[in]      manager             the pEp_identity object representing the group manager's identity.
+ *
  *  @retval         PEP_STATUS_OK       on success
  *                  error               on failure
  *
@@ -162,7 +164,7 @@ DYNAMIC_API PEP_STATUS adapter_group_join(
     PEP_SESSION session,
     pEp_identity *group_identity,
     pEp_identity *as_member,
-    pEp_identity* manager = nullptr
+    pEp_identity* manager
 );
 
 /*************************************************************************************************
