@@ -15,36 +15,11 @@ extern "C" {
 using namespace std;
 using namespace pEp;
 
-Adapter::GroupDriverReplicator adapter_grp_manager{};
-shared_ptr<Adapter::GroupDriverDummy> grp_drv_dummy;
-shared_ptr<Adapter::GroupDriverEngine> grp_drv_engine;
+Adapter::GroupDriverEngine adapter_grp_manager{};
 
 DYNAMIC_API PEP_STATUS adapter_group_init()
 {
     PEP_STATUS status = PEP_STATUS_OK;
-    try {
-        const string lm_dummy_db_filename = "groups.db";
-#ifdef WIN32
-        const string lm_dummy_db_path = string(::per_user_directory()) + "\\" + lm_dummy_db_filename;
-#else
-        const string lm_dummy_db_path = string(::per_user_directory()) + "/" + lm_dummy_db_filename;
-#endif
-
-        if(!grp_drv_dummy) {
-            grp_drv_dummy = make_shared<Adapter::GroupDriverDummy>(lm_dummy_db_path);
-        }
-        if(!grp_drv_engine) {
-            grp_drv_engine = make_shared<Adapter::GroupDriverEngine>();
-        }
-        //adapter_grp_manager.set_replication_source(*grp_drv_dummy.get());
-        adapter_grp_manager.set_replication_destination(*grp_drv_engine.get());
-    } catch (const std::exception &e) {
-        pEpLog(Utils::nested_exception_to_string(e));
-        status = PEP_UNKNOWN_ERROR;
-    } catch (...) {
-        pEpLog("unknown exception");
-        status = PEP_UNKNOWN_ERROR;
-    }
     return status;
 }
 
