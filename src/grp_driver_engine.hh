@@ -42,7 +42,7 @@ namespace pEp {
             )  noexcept override;
 
             // GroupQueryInterface
-            PEP_STATUS group_query_groups_as_manager(::PEP_SESSION session, ::pEp_identity *manager, ::identity_list **groups) noexcept override;
+            PEP_STATUS group_query_groups(::PEP_SESSION session, ::pEp_identity *manager, ::identity_list **groups) noexcept override;
 
             PEP_STATUS group_query_manager(
                     ::PEP_SESSION session,

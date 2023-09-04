@@ -186,7 +186,7 @@ DYNAMIC_API PEP_STATUS adapter_group_join(
  *
  */
 
-DYNAMIC_API PEP_STATUS adapter_group_query_groups_as_manager(
+DYNAMIC_API PEP_STATUS adapter_group_query_groups(
     PEP_SESSION session,
     pEp_identity *manager,
     identity_list **groups);

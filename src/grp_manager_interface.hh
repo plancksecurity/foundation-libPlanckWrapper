@@ -44,7 +44,7 @@ namespace pEp {
 
         class GroupQueryInterface {
         public:
-            virtual PEP_STATUS group_query_groups_as_manager(
+            virtual PEP_STATUS group_query_groups(
                 ::PEP_SESSION session,
                 ::pEp_identity *manager,
                 ::identity_list **groups) noexcept = 0;

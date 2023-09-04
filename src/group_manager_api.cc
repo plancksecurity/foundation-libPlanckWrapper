@@ -85,13 +85,13 @@ DYNAMIC_API PEP_STATUS adapter_group_join(
 /*************************************************************************************************
  * Group query functions
  *************************************************************************************************/
-DYNAMIC_API PEP_STATUS adapter_group_query_groups_as_manager(
+DYNAMIC_API PEP_STATUS adapter_group_query_groups(
     PEP_SESSION session,
     pEp_identity *manager,
     identity_list **groups)
 {
     pEpLog("called");
-    PEP_STATUS status = adapter_grp_manager.group_query_groups_as_manager(session, manager, groups);
+    PEP_STATUS status = adapter_grp_manager.group_query_groups(session, manager, groups);
     return status;
 }
 

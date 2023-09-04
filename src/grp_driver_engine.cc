@@ -63,9 +63,9 @@ namespace pEp {
         }
 
         // GroupQueryInterface
-        PEP_STATUS GroupDriverEngine::group_query_groups_as_manager(::PEP_SESSION session,
-                                                                    ::pEp_identity *manager,
-                                                                    ::identity_list **groups) noexcept
+        PEP_STATUS GroupDriverEngine::group_query_groups(::PEP_SESSION session,
+                                                         ::pEp_identity *manager,
+                                                         ::identity_list **groups) noexcept
         {
             pEpLogClass("called");
             return ::retrieve_all_groups_as_manager(session, manager, groups);
