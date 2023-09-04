@@ -15,12 +15,6 @@ using namespace pEp;
 
 Adapter::GroupDriverEngine adapter_grp_manager{};
 
-DYNAMIC_API PEP_STATUS adapter_group_init()
-{
-    PEP_STATUS status = PEP_STATUS_OK;
-    return status;
-}
-
 /*************************************************************************************************
 * Group management functions
 *************************************************************************************************/

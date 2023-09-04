@@ -73,7 +73,6 @@ namespace pEp {
                 }
 
                 _cfg_adapter_manages_sync_thread = adapter_manages_sync_thread;
-                ::adapter_group_init();
                 _is_initialized = true;
             }
         }
