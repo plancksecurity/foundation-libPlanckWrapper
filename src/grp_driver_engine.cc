@@ -61,5 +61,32 @@ namespace pEp {
             pEpLogClass("called");
             return ::group_join(session, group_identity, as_member);
         }
+
+        // GroupQueryInterface
+        PEP_STATUS GroupDriverEngine::group_query_groups_as_manager(::PEP_SESSION session,
+                                                                    ::pEp_identity *manager,
+                                                                    ::identity_list **groups) noexcept
+        {
+            pEpLogClass("called");
+            return ::retrieve_all_groups_as_manager(session, manager, groups);
+        }
+
+        PEP_STATUS GroupDriverEngine::group_query_manager(
+                PEP_SESSION session,
+                pEp_identity *group,
+                pEp_identity **manager) noexcept
+        {
+            pEpLogClass("called");
+            return ::get_group_manager(session, group, manager);
+        }
+
+        PEP_STATUS GroupDriverEngine::group_query_members(
+                PEP_SESSION session,
+                pEp_identity *group,
+                identity_list **members) noexcept
+        {
+            pEpLogClass("called");
+            return ::retrieve_active_member_ident_list(session, group, members);
+        }
     } // namespace Adapter
 } // namespace pEp

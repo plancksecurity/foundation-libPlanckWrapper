@@ -5,6 +5,7 @@
 #define LIBPEPADAPTER_GROUP_MANAGER_API_H
 
 #include <pEp/message_api.h>
+#include <pEp/group.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -187,8 +188,9 @@ DYNAMIC_API PEP_STATUS adapter_group_join(
  *
  */
 
-DYNAMIC_API PEP_STATUS adapter_group_query_groups(
+DYNAMIC_API PEP_STATUS adapter_group_query_groups_as_manager(
     PEP_SESSION session,
+    pEp_identity *manager,
     identity_list **groups);
 
 /**
@@ -209,7 +211,7 @@ DYNAMIC_API PEP_STATUS adapter_group_query_groups(
 
 DYNAMIC_API PEP_STATUS adapter_group_query_manager(
     PEP_SESSION session,
-    const pEp_identity *group,
+    pEp_identity *group,
     pEp_identity **manager);
 
 /**
@@ -230,7 +232,7 @@ DYNAMIC_API PEP_STATUS adapter_group_query_manager(
 
 DYNAMIC_API PEP_STATUS adapter_group_query_members(
     PEP_SESSION session,
-    const pEp_identity *group,
+    pEp_identity *group,
     identity_list **members);
 
 

@@ -36,7 +36,7 @@ DYNAMIC_API PEP_STATUS adapter_group_init()
         if(!grp_drv_engine) {
             grp_drv_engine = make_shared<Adapter::GroupDriverEngine>();
         }
-        adapter_grp_manager.set_replication_source(*grp_drv_dummy.get());
+        //adapter_grp_manager.set_replication_source(*grp_drv_dummy.get());
         adapter_grp_manager.set_replication_destination(*grp_drv_engine.get());
     } catch (const std::exception &e) {
         pEpLog(Utils::nested_exception_to_string(e));
@@ -118,18 +118,19 @@ DYNAMIC_API PEP_STATUS adapter_group_join(
 /*************************************************************************************************
  * Group query functions
  *************************************************************************************************/
-DYNAMIC_API PEP_STATUS adapter_group_query_groups(
+DYNAMIC_API PEP_STATUS adapter_group_query_groups_as_manager(
     PEP_SESSION session,
+    pEp_identity *manager,
     identity_list **groups)
 {
     pEpLog("called");
-    PEP_STATUS status = adapter_grp_manager.group_query_groups(session, groups);
+    PEP_STATUS status = adapter_grp_manager.group_query_groups_as_manager(session, manager, groups);
     return status;
 }
 
 DYNAMIC_API PEP_STATUS adapter_group_query_manager(
     PEP_SESSION session,
-    const pEp_identity *const group,
+    pEp_identity *group,
     pEp_identity **manager)
 {
     pEpLog("called");
@@ -139,7 +140,7 @@ DYNAMIC_API PEP_STATUS adapter_group_query_manager(
 
 DYNAMIC_API PEP_STATUS adapter_group_query_members(
     PEP_SESSION session,
-    const pEp_identity *const group,
+    pEp_identity *group,
     identity_list **members)
 {
     pEpLog("called");

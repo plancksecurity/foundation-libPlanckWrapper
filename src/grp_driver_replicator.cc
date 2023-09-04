@@ -1,6 +1,7 @@
 // This file is under GNU General Public License 3.0
 // see LICENSE.txt
 #include "grp_driver_replicator.hh"
+#include <pEp/group.h>
 
 using namespace std;
 
@@ -48,22 +49,22 @@ namespace pEp {
             identity_list *memberlist) noexcept
         {
             pEpLogClass("called");
-            if (!has_repl_src_and_dst()) {
-                return PEP_UNKNOWN_ERROR;
-            }
+            //if (!has_repl_src_and_dst()) {
+            //    return PEP_UNKNOWN_ERROR;
+            //}
 
             // Do listmanager
-            PEP_STATUS status = repl_src->adapter_group_create(
-                session,
-                group_identity,
-                manager,
-                memberlist);
-            if (status != PEP_STATUS_OK) {
-                return status;
-            }
+            //PEP_STATUS status = repl_src->adapter_group_create(
+            //    session,
+            //    group_identity,
+            //    manager,
+            //    memberlist);
+            //if (status != PEP_STATUS_OK) {
+            //    return status;
+            //}
 
             // Do engine
-            status = repl_dst->adapter_group_create(session, group_identity, manager, memberlist);
+            PEP_STATUS status = repl_dst->adapter_group_create(session, group_identity, manager, memberlist);
             if (status != PEP_STATUS_OK) {
                 // Rollback listman
                 PEP_STATUS rb_stat = repl_src->adapter_group_dissolve(session, group_identity, manager);
@@ -82,17 +83,17 @@ namespace pEp {
             pEp_identity *manager) noexcept
         {
             pEpLogClass("called");
-            if (!has_repl_src_and_dst()) {
-                return PEP_UNKNOWN_ERROR;
-            }
+            //if (!has_repl_src_and_dst()) {
+            //    return PEP_UNKNOWN_ERROR;
+            //}
             // Do listmanager
-            PEP_STATUS status = repl_src->adapter_group_dissolve(session, group_identity, manager);
-            if (status != PEP_STATUS_OK) {
-                return status;
-            }
+            //PEP_STATUS status = repl_src->adapter_group_dissolve(session, group_identity, manager);
+            //if (status != PEP_STATUS_OK) {
+            //    return status;
+            //}
 
             // Do engine
-            status = repl_dst->adapter_group_dissolve(session, group_identity, manager);
+            PEP_STATUS status = repl_dst->adapter_group_dissolve(session, group_identity, manager);
             if (status != PEP_STATUS_OK) {
                 // Rollback listman
                 // TODO: ????
@@ -111,21 +112,21 @@ namespace pEp {
             pEp_identity *group_member) noexcept
         {
             pEpLogClass("called");
-            if (!has_repl_src_and_dst()) {
-                return PEP_UNKNOWN_ERROR;
-            }
+            //if (!has_repl_src_and_dst()) {
+            //    return PEP_UNKNOWN_ERROR;
+            //}
 
             // Do listmanager
-            PEP_STATUS status = repl_src->adapter_group_invite_member(
-                session,
-                group_identity,
-                group_member);
-            if (status != PEP_STATUS_OK) {
-                return status;
-            }
+            //PEP_STATUS status = repl_src->adapter_group_invite_member(
+            //    session,
+            //    group_identity,
+            //    group_member);
+            //if (status != PEP_STATUS_OK) {
+            //    return status;
+            //}
 
             // Do engine
-            status = repl_dst->adapter_group_invite_member(session, group_identity, group_member);
+            PEP_STATUS status = repl_dst->adapter_group_invite_member(session, group_identity, group_member);
             if (status != PEP_STATUS_OK) {
                 // Rollback
                 PEP_STATUS rb_stat = repl_src->adapter_group_remove_member(
@@ -146,21 +147,21 @@ namespace pEp {
             pEp_identity *group_member) noexcept
         {
             pEpLogClass("called");
-            if (!has_repl_src_and_dst()) {
-                return PEP_UNKNOWN_ERROR;
-            }
+            //if (!has_repl_src_and_dst()) {
+            //    return PEP_UNKNOWN_ERROR;
+            //}
 
             // Do listmanager
-            PEP_STATUS status = repl_src->adapter_group_remove_member(
-                session,
-                group_identity,
-                group_member);
-            if (status != PEP_STATUS_OK) {
-                return status;
-            }
+            //PEP_STATUS status = repl_src->adapter_group_remove_member(
+            //    session,
+            //    group_identity,
+            //    group_member);
+            //if (status != PEP_STATUS_OK) {
+            //    return status;
+            //}
 
             // Do engine
-            status = repl_dst->adapter_group_remove_member(session, group_identity, group_member);
+            PEP_STATUS status = repl_dst->adapter_group_remove_member(session, group_identity, group_member);
             if (status != PEP_STATUS_OK) {
                 // Rollback
                 PEP_STATUS rb_stat = repl_src->adapter_group_invite_member(
@@ -183,21 +184,21 @@ namespace pEp {
         )  noexcept
         {
             pEpLogClass("called");
-            if (!has_repl_src_and_dst()) {
-                return PEP_UNKNOWN_ERROR;
-            }
+            //if (!has_repl_src_and_dst()) {
+            //    return PEP_UNKNOWN_ERROR;
+            //}
 
             // Do listmanager
-            PEP_STATUS status = repl_src->adapter_group_join(
-                session,
-                group_identity,
-                as_member, manager);
-            if (status != PEP_STATUS_OK) {
-                return status;
-            }
+            //PEP_STATUS status = repl_src->adapter_group_join(
+            //    session,
+            //    group_identity,
+            //    as_member, manager);
+            //if (status != PEP_STATUS_OK) {
+            //    return status;
+            //}
 
             // Do engine
-            status = repl_dst->adapter_group_join(session, group_identity, as_member, manager);
+            PEP_STATUS status = repl_dst->adapter_group_join(session, group_identity, as_member, manager);
             if (status != PEP_STATUS_OK) {
                 // Rollback
                 // TODO: need group_leave
@@ -214,40 +215,41 @@ namespace pEp {
         }
 
         // GroupQueryInterface
-        PEP_STATUS GroupDriverReplicator::group_query_groups(
-            PEP_SESSION session,
-            identity_list **groups) noexcept
+        PEP_STATUS GroupDriverReplicator::group_query_groups_as_manager(::PEP_SESSION session,
+                                                                        ::pEp_identity *manager,
+                                                                        ::identity_list **groups) noexcept
         {
             pEpLogClass("called");
-            if (!has_repl_src_and_dst()) {
-                return PEP_UNKNOWN_ERROR;
-            }
+            //if (!has_repl_src_and_dst()) {
+            //    return PEP_UNKNOWN_ERROR;
+            //}
 
-            return repl_src->group_query_groups(session, groups);
+            return repl_src->group_query_groups_as_manager(session, manager, groups);
+            //return repl_dst->g
         }
 
         PEP_STATUS GroupDriverReplicator::group_query_manager(
             PEP_SESSION session,
-            const pEp_identity *const group,
+            pEp_identity *group,
             pEp_identity **manager) noexcept
         {
             pEpLogClass("called");
-            if (!has_repl_src_and_dst()) {
-                return PEP_UNKNOWN_ERROR;
-            }
+            //if (!has_repl_src_and_dst()) {
+            //    return PEP_UNKNOWN_ERROR;
+            //}
 
             return repl_src->group_query_manager(session, group, manager);
         }
 
         PEP_STATUS GroupDriverReplicator::group_query_members(
             PEP_SESSION session,
-            const pEp_identity *const group,
+            pEp_identity *group,
             identity_list **members) noexcept
         {
             pEpLogClass("called");
-            if (!has_repl_src_and_dst()) {
-                return PEP_UNKNOWN_ERROR;
-            }
+            //if (!has_repl_src_and_dst()) {
+            //    return PEP_UNKNOWN_ERROR;
+            //}
 
             return repl_src->group_query_members(session, group, members);
         }

@@ -259,7 +259,9 @@ namespace pEp {
             return status;
         }
 
-        PEP_STATUS GroupDriverDummy::group_query_groups(PEP_SESSION session, identity_list **groups) noexcept
+        PEP_STATUS GroupDriverDummy::group_query_groups_as_manager(::PEP_SESSION session,
+                                                                   pEp_identity *manager,
+                                                                   ::identity_list **groups) noexcept
         {
             pEpLogClass("called");
             PEP_STATUS status = PEP_UNKNOWN_ERROR;
@@ -298,7 +300,7 @@ namespace pEp {
 
         PEP_STATUS GroupDriverDummy::group_query_manager(
             PEP_SESSION session,
-            const pEp_identity *const group,
+            pEp_identity *group,
             pEp_identity **manager) noexcept
         {
             pEpLogClass("called");
@@ -338,7 +340,7 @@ namespace pEp {
 
         PEP_STATUS GroupDriverDummy::group_query_members(
             PEP_SESSION session,
-            const pEp_identity *const group,
+            pEp_identity *group,
             identity_list **members) noexcept
         {
             pEpLogClass("called");
