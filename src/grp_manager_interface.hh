@@ -5,6 +5,7 @@
 #define LIBPEPADAPTER_GRP_MANAGER_INTERFACE_HH
 
 #include <pEp/message_api.h>
+#include <pEp/group.h>
 
 namespace pEp {
     namespace Adapter {
@@ -45,16 +46,17 @@ namespace pEp {
         public:
             virtual PEP_STATUS group_query_groups(
                 ::PEP_SESSION session,
+                ::pEp_identity *manager,
                 ::identity_list **groups) noexcept = 0;
 
             virtual PEP_STATUS group_query_manager(
                 ::PEP_SESSION session,
-                const ::pEp_identity *group,
+                ::pEp_identity *group,
                 ::pEp_identity **manager) noexcept = 0;
 
             virtual PEP_STATUS group_query_members(
                 ::PEP_SESSION session,
-                const ::pEp_identity *group,
+                ::pEp_identity *group,
                 ::identity_list **members) noexcept = 0;
 
         private:
