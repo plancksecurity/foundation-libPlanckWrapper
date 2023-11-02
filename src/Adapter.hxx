@@ -44,6 +44,7 @@ namespace pEp {
             // 3. Enter Sync Event Processing Loop (do_sync_protocol())
             // this internally calls _retrieve_next_sync_event
             pEpLog("sync protocol loop started");
+            sync_evt_q.clear();
             ::do_sync_protocol(session());
             pEpLog("sync protocol loop ended");
 
