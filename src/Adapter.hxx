@@ -65,7 +65,7 @@ namespace pEp {
         void startup(T *obj, std::function<void(T *)> _startup, std::function<void(T *)> _shutdown)
         {
             pEpLog("called");
-            if (!_sync_thread.joinable()) {
+            if (in_shutdown() || !_sync_thread.joinable()) {
                 _sync_thread = std::thread(sync_thread<T>, obj, _startup, _shutdown);
             } else {
                 pEpLog("Sync thread already running");
