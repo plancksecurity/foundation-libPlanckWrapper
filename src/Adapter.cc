@@ -179,10 +179,12 @@ namespace pEp {
         ::SYNC_EVENT _cb_retrieve_next_sync_event_dequeue_next_sync_event(void *management, unsigned threshold)
         {
             ::SYNC_EVENT syncEvent = nullptr;
-            const bool success = sync_evt_q.try_pop_front(syncEvent, std::chrono::seconds(threshold));
+            if (!in_shutdown()) {
+                const bool success = sync_evt_q.try_pop_front(syncEvent, std::chrono::seconds(threshold));
 
-            if (!success) {
-                return ::new_sync_timeout_event();
+                if (!success) {
+                    return ::new_sync_timeout_event();
+                }
             }
 
             return syncEvent;
@@ -225,7 +227,7 @@ namespace pEp {
         bool is_sync_running()
         {
             if (!session.adapter_manages_sync_thread()) {
-                return _sync_thread.joinable();
+                return !in_shutdown() && _sync_thread.joinable();
             }
             return false;
         }
