@@ -1,0 +1,52 @@
+name: foundation/libPlanckWrapper
+on:
+  push:
+  workflow_dispatch:
+concurrency:
+  group: "${{ github.ref }}"
+  cancel-in-progress: true
+jobs:
+  debian10-build:
+    runs-on:
+      - self-hosted
+      - kvm
+    if: ${{ github.ref }}  !~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/
+    timeout-minutes: 60
+    env:
+      CI_DISTRO_TARGET: debian10
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 20
+        lfs: true
+    - run: which docker || ( sudo apt-get update -y && sudo apt-get install docker.io -y )
+    - run: which ssh-agent || ( sudo apt-get update -y && sudo apt-get install openssh-client -y )
+    - run: which rsync || ( sudo apt-get update -y && sudo apt-get install rsync -y )
+    - run: which make || ( sudo apt-get update -y && sudo apt-get install make -y )
+    - run: docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
+    - run: cd scripts/${CI_DISTRO_TARGET}
+    - run: make
+  debian10-tagged-build:
+    runs-on:
+      - self-hosted
+      - kvm
+    if: # Unable to map conditional expression to GitHub Actions equivalent
+#         ${{ github.ref }}  =~ /^Release_[0-9]+\.[0-9]+\.[0-9]+$/
+    timeout-minutes: 60
+    env:
+      CI_DISTRO_TARGET: debian10
+      DEBIAN_FRONTEND: noninteractive
+      TAGGED_BUILD: 'true'
+    steps:
+    - uses: actions/checkout@v4.1.0
+      with:
+        fetch-depth: 20
+        lfs: true
+    - run: which docker || ( sudo apt-get update -y && sudo apt-get install docker.io -y )
+    - run: which ssh-agent || ( sudo apt-get update -y && sudo apt-get install openssh-client -y )
+    - run: which rsync || ( sudo apt-get update -y && sudo apt-get install rsync -y )
+    - run: which make || ( sudo apt-get update -y && sudo apt-get install make -y )
+    - run: docker login -u ${DOCKER_REGISTRY_USER} -p ${DOCKER_REGISTRY_PASS} ${DOCKER_REGISTRY_HOST}
+    - run: cd scripts/${CI_DISTRO_TARGET}
+    - run: make
