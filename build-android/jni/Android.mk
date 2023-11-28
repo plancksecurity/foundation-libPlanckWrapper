@@ -4,7 +4,7 @@
 # see LICENSE.txt
  
 LOCAL_PATH := $(call my-dir)
-PLANCK_CORE_PATH:=$(LOCAL_PATH)/../../submodules/planckCoreV3
+PLANCK_CORE_PATH:=$(LOCAL_PATH)/../../../planckCoreV3
 
 
 include $(CLEAR_VARS)
