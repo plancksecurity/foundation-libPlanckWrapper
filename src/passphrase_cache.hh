@@ -18,6 +18,15 @@ namespace pEp {
         using time_point = std::chrono::time_point<clock>;
         using duration = clock::duration;
 
+    public:
+        struct simple_cache_entry {
+            simple_cache_entry(const std::string email, const std::string p);
+
+            std::string email;
+            std::string passphrase;
+        };
+
+    private:
         struct cache_entry {
             static const size_t max_len = static_cast<const size_t>(250 * 4);
             cache_entry(const std::string email, const std::string& p, time_point t);
@@ -27,12 +36,6 @@ namespace pEp {
             time_point tp;
         };
 
-        struct simple_cache_entry {
-            simple_cache_entry(const std::string email, const std::string p);
-
-            std::string email;
-            std::string passphrase;
-        };
         using cache = std::list<cache_entry>;
 
         cache _cache;
@@ -61,6 +64,7 @@ namespace pEp {
         // adds the passphrase to the cache, which will timeout
         // returns a ptr to the passsword entry in the cache. Don't free() it!
         const char* add(const std::string email, const std::string& passphrase);
+        const char* add(const simple_cache_entry entry);
 
         // adds the stored passphrase to the cache, which will not timeout
         const char* add_stored(const simple_cache_entry entry);
