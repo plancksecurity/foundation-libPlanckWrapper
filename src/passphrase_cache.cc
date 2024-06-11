@@ -143,7 +143,7 @@ namespace pEp {
         }
 
         --c._which;
-        return cache_entry(c._which->email, c._which->passphrase);
+        return *c._which;
     }
 
     PEP_STATUS PassphraseCache::config_next_passphrase(bool reset, PEP_SESSION session)
