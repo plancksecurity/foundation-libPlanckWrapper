@@ -25,13 +25,17 @@ namespace pEp {
 
             std::string email;
             std::string passphrase;
+
+            bool operator==(const cache_entry& other) const {
+                return email == other.email && passphrase == other.passphrase;
+            }
         };
 
     private:
         using cache = std::list<cache_entry>;
 
         cache _cache;
-        cache_entry _stored;
+        cache_entry _stored; // should not be used for now, it needs to be a list
         std::mutex _mtx;
         std::mutex _stored_mtx;
         size_t _max_size;
@@ -55,8 +59,8 @@ namespace pEp {
 
         // adds the passphrase to the cache, which will timeout
         // returns a ptr to the passsword entry in the cache. Don't free() it!
-        const char* add(const std::string email, const std::string& passphrase);
-        const char* add(const cache_entry entry);
+        const cache_entry add(const std::string email, const std::string& passphrase);
+        const cache_entry add(const cache_entry entry);
 
         // adds the stored passphrase to the cache, which will not timeout
         const char* add_stored(const cache_entry entry);

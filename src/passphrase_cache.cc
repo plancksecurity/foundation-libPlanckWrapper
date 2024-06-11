@@ -37,14 +37,15 @@ namespace pEp {
         return *this;
     }
 
-    const char* PassphraseCache::add(const cache_entry entry)
+    const PassphraseCache::cache_entry PassphraseCache::add(const cache_entry entry)
     {
         const std::string passphrase = entry.passphrase;
         const std::string email = entry.email;
         if (!passphrase.empty() && !email.empty()) {
-            const char* result = nullptr;
+            cache_entry result = cache_entry("", "");
             {
                 std::lock_guard<std::mutex> lock(_mtx);
+
 
                 while (_cache.size() >= _max_size) {
                     _cache.pop_front();
@@ -53,20 +54,21 @@ namespace pEp {
                 _cache.push_back({ email, passphrase });
                 auto back = _cache.end();
                 assert(!_cache.empty());
-                result = (--back)->passphrase.c_str();
+                --back;
+                result = *back;
             }
             callback_dispatcher.semaphore.go();
             return result;
         }
 
-        static const char* empty = "";
+        static const cache_entry empty = cache_entry("", "");
         return empty;
     }
 
-    const char* PassphraseCache::add(const std::string email, const std::string& passphrase)
+    const PassphraseCache::cache_entry PassphraseCache::add(const std::string email, const std::string& passphrase)
     {
         if (!passphrase.empty() && !email.empty()) {
-            const char* result = nullptr;
+            cache_entry result = cache_entry("", "");
             {
                 std::lock_guard<std::mutex> lock(_mtx);
 
@@ -77,13 +79,14 @@ namespace pEp {
                 _cache.push_back({ email, passphrase });
                 auto back = _cache.end();
                 assert(!_cache.empty());
-                result = (--back)->passphrase.c_str();
+                --back;
+                result = *back;
             }
             callback_dispatcher.semaphore.go();
             return result;
         }
 
-        static const char* empty = "";
+        static const cache_entry empty = cache_entry("", "");
         return empty;
     }
 
