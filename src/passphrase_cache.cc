@@ -9,16 +9,9 @@
 pEp::PassphraseCache pEp::passphrase_cache;
 
 namespace pEp {
-    PassphraseCache::cache_entry::cache_entry(const std::string email, const std::string& p, time_point t) :
+    PassphraseCache::cache_entry::cache_entry(const std::string email, const std::string& p) :
         email { email, 0, PassphraseCache::cache_entry::max_len },
-        passphrase{ p, 0, PassphraseCache::cache_entry::max_len },
-        tp{ t }
-    {
-    }
-
-    PassphraseCache::simple_cache_entry::simple_cache_entry(const std::string email, const std::string p) :
-            email { email, 0, PassphraseCache::cache_entry::max_len },
-            passphrase{ p, 0, PassphraseCache::cache_entry::max_len }
+        passphrase{ p, 0, PassphraseCache::cache_entry::max_len }
     {
     }
 
@@ -44,7 +37,7 @@ namespace pEp {
         return *this;
     }
 
-    const char* PassphraseCache::add(const simple_cache_entry entry)
+    const char* PassphraseCache::add(const cache_entry entry)
     {
         const std::string passphrase = entry.passphrase;
         const std::string email = entry.email;
@@ -57,7 +50,7 @@ namespace pEp {
                     _cache.pop_front();
                 }
 
-                _cache.push_back({ email, passphrase, clock::now() });
+                _cache.push_back({ email, passphrase });
                 auto back = _cache.end();
                 assert(!_cache.empty());
                 result = (--back)->passphrase.c_str();
@@ -81,7 +74,7 @@ namespace pEp {
                     _cache.pop_front();
                 }
 
-                _cache.push_back({ email, passphrase, clock::now() });
+                _cache.push_back({ email, passphrase });
                 auto back = _cache.end();
                 assert(!_cache.empty());
                 result = (--back)->passphrase.c_str();
@@ -94,7 +87,7 @@ namespace pEp {
         return empty;
     }
 
-    const char* PassphraseCache::add_stored(const simple_cache_entry entry)
+    const char* PassphraseCache::add_stored(const cache_entry entry)
     {
         std::lock_guard<std::mutex> lock(_stored_mtx);
         _stored = entry;
@@ -103,7 +96,7 @@ namespace pEp {
 
     bool PassphraseCache::for_each_passphrase(const passphrase_callee& callee)
     {
-        if (callee(simple_cache_entry("", ""))) {
+        if (callee(cache_entry("", ""))) {
             return true;
         }
 
@@ -119,7 +112,7 @@ namespace pEp {
             cleanup();
 
             for (auto entry = _cache.begin(); entry != _cache.end(); ++entry) {
-                if (callee(simple_cache_entry(entry->email, entry->passphrase))) {
+                if (callee(cache_entry(entry->email, entry->passphrase))) {
                     refresh(entry);
                     return true;
                 }
@@ -142,14 +135,14 @@ namespace pEp {
         //_cache.splice(_cache.end(), _cache, entry);
     }
 
-    const char* PassphraseCache::latest_passphrase(PassphraseCache& c)
+    const PassphraseCache::cache_entry PassphraseCache::latest_passphrase(PassphraseCache& c)
     {
         if (c.first_time) {
             c.cleanup();
             c._which = c._cache.end();
             c.first_time = false;
-            if (!c._stored.email.empty()) {
-                return c._stored.passphrase.c_str();
+            if (!c._stored.email.empty() && !c._stored.passphrase.empty()) {
+                return c._stored;
             }
         }
 
@@ -164,7 +157,7 @@ namespace pEp {
         }
 
         --c._which;
-        return c._which->passphrase.c_str();
+        return cache_entry(c._which->email, c._which->passphrase);
     }
 
     PEP_STATUS PassphraseCache::config_next_passphrase(bool reset, PEP_SESSION session)
@@ -185,7 +178,7 @@ namespace pEp {
         try {
             ::config_passphrase(
                 session != nullptr ? session : Adapter::session(),
-                latest_passphrase(_copy));
+                latest_passphrase(_copy).passphrase.c_str());
             return PEP_STATUS_OK;
         } catch (pEp::PassphraseCache::Empty&) {
             new_copy = true;
@@ -200,7 +193,7 @@ namespace pEp {
     {
         PEP_STATUS status{ PEP_STATUS_OK };
 
-        for_each_passphrase([&](const simple_cache_entry& entry) {
+        for_each_passphrase([&](const cache_entry& entry) {
             status = ::config_passphrase(session, entry.passphrase.c_str());
             if (status != 0) {
                 return true;

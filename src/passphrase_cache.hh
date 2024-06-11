@@ -19,27 +19,19 @@ namespace pEp {
         using duration = clock::duration;
 
     public:
-        struct simple_cache_entry {
-            simple_cache_entry(const std::string email, const std::string p);
+        struct cache_entry {
+            static const size_t max_len = static_cast<const size_t>(250 * 4);
+            cache_entry(const std::string email, const std::string& p);
 
             std::string email;
             std::string passphrase;
         };
 
     private:
-        struct cache_entry {
-            static const size_t max_len = static_cast<const size_t>(250 * 4);
-            cache_entry(const std::string email, const std::string& p, time_point t);
-
-            std::string email;
-            std::string passphrase;
-            time_point tp;
-        };
-
         using cache = std::list<cache_entry>;
 
         cache _cache;
-        simple_cache_entry _stored;
+        cache_entry _stored;
         std::mutex _mtx;
         std::mutex _stored_mtx;
         size_t _max_size;
@@ -64,10 +56,10 @@ namespace pEp {
         // adds the passphrase to the cache, which will timeout
         // returns a ptr to the passsword entry in the cache. Don't free() it!
         const char* add(const std::string email, const std::string& passphrase);
-        const char* add(const simple_cache_entry entry);
+        const char* add(const cache_entry entry);
 
         // adds the stored passphrase to the cache, which will not timeout
-        const char* add_stored(const simple_cache_entry entry);
+        const char* add_stored(const cache_entry entry);
 
         // call this function inside the messageToSend() implementation of the adapter
         // this function is using latest_passphrase() to test one passphrase after the
@@ -86,8 +78,8 @@ namespace pEp {
         template<typename... A>
         PEP_STATUS api(PEP_STATUS f(PEP_SESSION, A...), PEP_SESSION session, A... a);
 
-        static const char* latest_passphrase(PassphraseCache& _cache);
-        using passphrase_callee = std::function<bool(simple_cache_entry)>;
+        static const cache_entry latest_passphrase(PassphraseCache& _cache);
+        using passphrase_callee = std::function<bool(cache_entry)>;
         bool for_each_passphrase(const passphrase_callee& callee);
         PEP_STATUS ensure_passphrase(PEP_SESSION entry, std::string fpr);
 
