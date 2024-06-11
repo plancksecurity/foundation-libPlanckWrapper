@@ -12,8 +12,8 @@ namespace pEp {
     {
         PEP_STATUS status{ PEP_STATUS_OK };
 
-        for_each_passphrase([&](const std::string& passphrase) {
-            status = ::config_passphrase(session, passphrase.c_str());
+        for_each_passphrase([&](const simple_cache_entry entry) {
+            status = ::config_passphrase(session, entry.passphrase.c_str());
             if (status) {
                 return true;
             }
