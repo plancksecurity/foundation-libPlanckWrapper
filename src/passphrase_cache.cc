@@ -37,31 +37,39 @@ namespace pEp {
         return *this;
     }
 
-    const PassphraseCache::cache_entry PassphraseCache::add(const cache_entry entry)
+    const PassphraseCache::cache_entry PassphraseCache::add(const cache_entry& entry)
     {
-        const std::string passphrase = entry.passphrase;
-        const std::string email = entry.email;
+        const std::string& passphrase = entry.passphrase;
+        const std::string& email = entry.email;
         if (!passphrase.empty() && !email.empty()) {
-            cache_entry result = cache_entry("", "");
-            {
-                std::lock_guard<std::mutex> lock(_mtx);
+            std::lock_guard<std::mutex> lock(_mtx);
 
-
-                while (_cache.size() >= _max_size) {
-                    _cache.pop_front();
+            // Check if there is an existing entry with the same email
+            for (auto it = _cache.begin(); it != _cache.end(); ++it) {
+                if (it->email == email) {
+                    // Found an existing entry, update it
+                    it->passphrase = passphrase;
+                    callback_dispatcher.semaphore.go();
+                    return *it;
                 }
-
-                _cache.push_back({ email, passphrase });
-                auto back = _cache.end();
-                assert(!_cache.empty());
-                --back;
-                result = *back;
             }
+
+            // No existing entry found, add a new one
+            while (_cache.size() >= _max_size) {
+                _cache.pop_front();
+            }
+
+            _cache.emplace_back(email, passphrase);
+            auto back = _cache.end();
+            assert(!_cache.empty());
+            --back;
+            cache_entry result = std::move(*back);
+
             callback_dispatcher.semaphore.go();
             return result;
         }
 
-        static const cache_entry empty = cache_entry("", "");
+        static const cache_entry empty("", "");
         return empty;
     }
 

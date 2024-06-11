@@ -59,7 +59,7 @@ namespace pEp {
 
         // adds the passphrase to the cache, which will timeout
         // returns the cache entry added
-        const cache_entry add(const cache_entry entry);
+        const cache_entry add(const cache_entry& entry);
 
         // adds the stored passphrase to the cache, which will not timeout
         const char* add_stored(const cache_entry entry);
