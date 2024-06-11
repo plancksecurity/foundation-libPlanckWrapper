@@ -131,15 +131,15 @@ namespace pEp {
 
     void PassphraseCache::cleanup()
     {
-        while (!_cache.empty() && _cache.front().tp < clock::now() - _timeout) {
-            _cache.pop_front();
-        }
+        //while (!_cache.empty() && _cache.front().tp < clock::now() - _timeout) {
+        //    _cache.pop_front();
+        //}
     }
 
     void PassphraseCache::refresh(cache::iterator entry)
     {
-        entry->tp = clock::now();
-        _cache.splice(_cache.end(), _cache, entry);
+        //entry->tp = clock::now();
+        //_cache.splice(_cache.end(), _cache, entry);
     }
 
     const char* PassphraseCache::latest_passphrase(PassphraseCache& c)
