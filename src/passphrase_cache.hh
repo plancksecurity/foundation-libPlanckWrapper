@@ -19,6 +19,8 @@ namespace pEp {
         using duration = clock::duration;
 
     public:
+        static const std::string PASSPHRASE_FOR_NEW_KEYS_ENTRY;
+
         struct cache_entry {
             static const size_t max_len = static_cast<const size_t>(250 * 4);
             cache_entry(const std::string email, const std::string& p);
@@ -60,6 +62,7 @@ namespace pEp {
         // adds the passphrase to the cache, which will timeout
         // returns the cache entry added
         const cache_entry add(const cache_entry& entry);
+        const char* add_passphrase_for_new_keys(const std::string& passphrase);
 
         // adds the stored passphrase to the cache, which will not timeout
         const char* add_stored(const cache_entry entry);

@@ -9,6 +9,8 @@
 pEp::PassphraseCache pEp::passphrase_cache;
 
 namespace pEp {
+    const std::string pEp::PassphraseCache::PASSPHRASE_FOR_NEW_KEYS_ENTRY = "PASSPHRASE_FOR_NEW_KEYS_ENTRY";
+
     PassphraseCache::cache_entry::cache_entry(const std::string email, const std::string& p) :
         email { email, 0, PassphraseCache::cache_entry::max_len },
         passphrase{ p, 0, PassphraseCache::cache_entry::max_len }
@@ -71,6 +73,10 @@ namespace pEp {
 
         static const cache_entry empty("", "");
         return empty;
+    }
+
+    const char* PassphraseCache::add_passphrase_for_new_keys(const std::string& passphrase) {
+        return add(cache_entry(PASSPHRASE_FOR_NEW_KEYS_ENTRY, passphrase)).passphrase.c_str();
     }
 
     const char* PassphraseCache::add_stored(const cache_entry entry)
