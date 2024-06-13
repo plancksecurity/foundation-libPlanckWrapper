@@ -37,7 +37,7 @@ namespace pEp {
         using cache = std::list<cache_entry>;
 
         cache _cache;
-        cache_entry _stored; // should not be used for now, it needs to be a list
+        cache_entry _new_keys_passphrase;
         std::mutex _mtx;
         std::mutex _stored_mtx;
         size_t _max_size;
@@ -63,9 +63,8 @@ namespace pEp {
         // returns the cache entry added
         const cache_entry add(const cache_entry& entry);
         const char* add_passphrase_for_new_keys(const std::string& passphrase);
+        const char* add_passphrase_for_new_keys(const cache_entry& entry);
 
-        // adds the stored passphrase to the cache, which will not timeout
-        const char* add_stored(const cache_entry entry);
 
         // call this function inside the messageToSend() implementation of the adapter
         // this function is using latest_passphrase() to test one passphrase after the

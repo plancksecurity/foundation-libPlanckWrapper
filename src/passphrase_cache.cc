@@ -18,13 +18,13 @@ namespace pEp {
     }
 
     PassphraseCache::PassphraseCache(size_t max_size, duration timeout) :
-        _max_size{ max_size }, _timeout{ timeout }, _which(_cache.end()), first_time(true), _stored("", "")
+            _max_size{ max_size }, _timeout{ timeout }, _which(_cache.end()), first_time(true), _new_keys_passphrase("", "")
     {
     }
 
     PassphraseCache::PassphraseCache(const PassphraseCache& second) :
-        _cache{ second._cache }, _max_size{ second._max_size }, _timeout{ second._timeout },
-        _stored{ second._stored }, _which(_cache.end()), first_time(true)
+            _cache{ second._cache }, _max_size{ second._max_size }, _timeout{ second._timeout },
+            _new_keys_passphrase{second._new_keys_passphrase }, _which(_cache.end()), first_time(true)
     {
         cleanup();
     }
@@ -65,7 +65,7 @@ namespace pEp {
             auto back = _cache.end();
             assert(!_cache.empty());
             --back;
-            cache_entry result = std::move(*back);
+            cache_entry result = *back;
 
             callback_dispatcher.semaphore.go();
             return result;
@@ -76,27 +76,21 @@ namespace pEp {
     }
 
     const char* PassphraseCache::add_passphrase_for_new_keys(const std::string& passphrase) {
-        return add(cache_entry(PASSPHRASE_FOR_NEW_KEYS_ENTRY, passphrase)).passphrase.c_str();
+        std::lock_guard<std::mutex> lock(_stored_mtx);
+        _new_keys_passphrase = cache_entry(PASSPHRASE_FOR_NEW_KEYS_ENTRY, passphrase);
+        return _new_keys_passphrase.passphrase.c_str();
     }
 
-    const char* PassphraseCache::add_stored(const cache_entry entry)
-    {
+    const char* PassphraseCache::add_passphrase_for_new_keys(const cache_entry& entry) {
         std::lock_guard<std::mutex> lock(_stored_mtx);
-        _stored = entry;
-        return _stored.passphrase.c_str();
+        _new_keys_passphrase = entry;
+        return _new_keys_passphrase.passphrase.c_str();
     }
 
     bool PassphraseCache::for_each_passphrase(const passphrase_callee& callee)
     {
         if (callee(cache_entry("", ""))) {
             return true;
-        }
-
-        {
-            std::lock_guard<std::mutex> lock(_stored_mtx);
-            if (!_stored.email.empty() && callee(_stored)) {
-                return true;
-            }
         }
 
         {
@@ -108,6 +102,14 @@ namespace pEp {
                     refresh(entry);
                     return true;
                 }
+            }
+        }
+
+        { // should not use passphrase for new keys normally, but at the same time it will be used initially in managed environments.
+            // Only as fallback? or the entry for the new mail should be added as soon as the account is created?
+            std::lock_guard<std::mutex> lock(_stored_mtx);
+            if (!_new_keys_passphrase.passphrase.empty() && callee(_new_keys_passphrase)) {
+                return true;
             }
         }
 
@@ -133,18 +135,21 @@ namespace pEp {
             c.cleanup();
             c._which = c._cache.end();
             c.first_time = false;
-            if (!c._stored.email.empty() && !c._stored.passphrase.empty()) {
-                return c._stored;
-            }
         }
 
         if (c._cache.empty()) {
             c.first_time = true;
+            if (!c._new_keys_passphrase.email.empty() && !c._new_keys_passphrase.passphrase.empty()) {
+                return c._new_keys_passphrase;
+            }
             throw Empty();
         }
 
         if (c._which == c._cache.begin()) {
             c.first_time = true;
+            if (!c._new_keys_passphrase.email.empty() && !c._new_keys_passphrase.passphrase.empty()) {
+                return c._new_keys_passphrase;
+            }
             throw Exhausted();
         }
 
