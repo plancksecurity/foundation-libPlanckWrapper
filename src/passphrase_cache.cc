@@ -173,9 +173,10 @@ namespace pEp {
         }
 
         try {
+            cache_entry entry = latest_passphrase(_copy);
             ::config_passphrase(
                 session != nullptr ? session : Adapter::session(),
-                latest_passphrase(_copy).passphrase.c_str());
+                entry.email.c_str(), entry.passphrase.c_str());
             return PEP_STATUS_OK;
         } catch (pEp::PassphraseCache::Empty&) {
             new_copy = true;
@@ -191,7 +192,7 @@ namespace pEp {
         PEP_STATUS status{ PEP_STATUS_OK };
 
         for_each_passphrase([&](const cache_entry& entry) {
-            status = ::config_passphrase(session, entry.passphrase.c_str());
+            status = ::config_passphrase(session, entry.email.c_str(), entry.passphrase.c_str());
             if (status != 0) {
                 return true;
             }

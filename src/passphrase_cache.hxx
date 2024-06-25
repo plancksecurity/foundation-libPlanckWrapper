@@ -13,10 +13,10 @@ namespace pEp {
         PEP_STATUS status{ PEP_STATUS_OK };
 
         for_each_passphrase([&](const cache_entry entry) {
-            status = ::config_passphrase(session, entry.passphrase.c_str());
-            if (entry.email == PASSPHRASE_FOR_NEW_KEYS_ENTRY && !entry.passphrase.empty()) { // if this entry exists, app is running in managed environment
-                status = ::config_passphrase_for_new_keys(session, true, entry.passphrase.c_str());
-            }
+            status = ::config_passphrase(session, entry.email.c_str(), entry.passphrase.c_str());
+            //if (entry.email == PASSPHRASE_FOR_NEW_KEYS_ENTRY && !entry.passphrase.empty()) { // if this entry exists, app is running in managed environment
+            //    status = ::config_passphrase_for_new_keys(session, true, entry.passphrase.c_str());
+            //}
             if (status) {
                 return true;
             }
