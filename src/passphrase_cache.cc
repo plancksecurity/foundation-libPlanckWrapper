@@ -177,7 +177,7 @@ namespace pEp {
             if (status != 0) {
                 return true;
             }
-            status = ::probe_encrypt(session, fpr.c_str());
+            status = ::probe_encrypt(session, email.c_str(), fpr.c_str());
             return status == PEP_STATUS_OK;
         });
 
