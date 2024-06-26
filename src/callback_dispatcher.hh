@@ -54,6 +54,7 @@ namespace pEp {
             ::sync_handshake_signal signal);
 
         friend const char *PassphraseCache::add(const std::string &passphrase);
+        friend const char *PassphraseCache::add(const std::string& account_email, const std::string &passphrase);
     };
 
     extern CallbackDispatcher callback_dispatcher;

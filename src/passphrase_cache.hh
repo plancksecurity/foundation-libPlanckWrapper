@@ -61,6 +61,8 @@ namespace pEp {
         // returns a ptr to the passsword entry in the cache. Don't free() it!
         const char* add(const std::string& passphrase);
 
+        const char* add(const std::string& account_email, const std::string& passphrase);
+
         // adds the stored passphrase to the cache, which will not timeout
         const char* add_stored(const std::string& passphrase);
 

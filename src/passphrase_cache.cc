@@ -73,6 +73,19 @@ namespace pEp {
         return empty;
     }
 
+    const char* PassphraseCache::add(const std::string& account_email, const std::string& passphrase)
+    {
+        if (!passphrase.empty()) {
+            auto entry = cache_entry(account_email, passphrase, clock::now());
+            const char* result = add(entry);
+            callback_dispatcher.semaphore.go();
+            return result;
+        }
+
+        static const char* empty = "";
+        return empty;
+    }
+
     const char* PassphraseCache::add_stored(const std::string& passphrase)
     {
         std::lock_guard<std::mutex> lock(_stored_mtx);
