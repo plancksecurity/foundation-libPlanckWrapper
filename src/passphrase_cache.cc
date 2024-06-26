@@ -197,7 +197,12 @@ namespace pEp {
 
     void PassphraseCache::configure_session(PEP_SESSION session)
     {
-        // TODO: Put known (email, passphrase) tuples into the session
+        std::lock_guard<std::mutex> lock(_mtx);
+
+        for (auto entry = _cache.begin(); entry != _cache.end(); ++entry) {
+            if (!entry->account_email.empty()) {
+            }
+        }
     }
 
 } // namespace pEp
