@@ -123,12 +123,7 @@ namespace pEp {
                     _new();
                 }
             }
-
-            PEP_SESSION session = _session.get();
-            ::config_passphrase_for_new_keys(session, true, "uiae");
-            passphrase_cache.add("uiae");
-
-            return session;
+            return _session.get();
         }
 
         // public/static
