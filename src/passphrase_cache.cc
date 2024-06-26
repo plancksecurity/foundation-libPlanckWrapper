@@ -23,7 +23,6 @@ namespace pEp {
         _cache{ second._cache }, _max_size{ second._max_size }, _timeout{ second._timeout },
         _stored{ second._stored }, _which(_cache.end()), first_time(true)
     {
-        cleanup();
     }
 
     PassphraseCache& PassphraseCache::operator=(const PassphraseCache& second)
@@ -32,7 +31,6 @@ namespace pEp {
         _max_size = second._max_size;
         _timeout = second._timeout;
         _which = _cache.end();
-        cleanup();
         return *this;
     }
 
@@ -82,7 +80,6 @@ namespace pEp {
 
         {
             std::lock_guard<std::mutex> lock(_mtx);
-            cleanup();
 
             for (auto entry = _cache.begin(); entry != _cache.end(); ++entry) {
                 if (callee(entry->passphrase)) {
@@ -95,13 +92,6 @@ namespace pEp {
         return false;
     }
 
-    void PassphraseCache::cleanup()
-    {
-        while (!_cache.empty() && _cache.front().tp < clock::now() - _timeout) {
-            _cache.pop_front();
-        }
-    }
-
     void PassphraseCache::refresh(cache::iterator entry)
     {
         entry->tp = clock::now();
@@ -111,7 +101,6 @@ namespace pEp {
     const char* PassphraseCache::latest_passphrase(PassphraseCache& c)
     {
         if (c.first_time) {
-            c.cleanup();
             c._which = c._cache.end();
             c.first_time = false;
             if (!c._stored.empty()) {
