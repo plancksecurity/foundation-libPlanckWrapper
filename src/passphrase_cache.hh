@@ -10,6 +10,7 @@
 #include <mutex>
 #include <functional>
 #include <exception>
+#include <map>
 #include <pEp/message_api.h>
 
 namespace pEp {
@@ -34,10 +35,10 @@ namespace pEp {
         };
 
     private:
-        using cache = std::list<cache_entry>;
+        using cache = std::map<std::string, std::string>;
 
         cache _cache;
-        cache_entry _new_keys_passphrase;
+        //cache_entry _new_keys_passphrase;
         std::mutex _mtx;
         std::mutex _stored_mtx;
         size_t _max_size;
@@ -62,8 +63,8 @@ namespace pEp {
         // adds the passphrase to the cache, which will timeout
         // returns the cache entry added
         const cache_entry add(const cache_entry& entry);
-        const char* add_passphrase_for_new_keys(const std::string& passphrase);
-        const char* add_passphrase_for_new_keys(const cache_entry& entry);
+        //const char* add_passphrase_for_new_keys(const std::string& passphrase);
+        //const char* add_passphrase_for_new_keys(const cache_entry& entry);
 
 
         // call this function inside the messageToSend() implementation of the adapter
@@ -86,7 +87,7 @@ namespace pEp {
         static const cache_entry latest_passphrase(PassphraseCache& _cache);
         using passphrase_callee = std::function<bool(cache_entry)>;
         bool for_each_passphrase(const passphrase_callee& callee);
-        PEP_STATUS ensure_passphrase(PEP_SESSION entry, std::string fpr);
+        PEP_STATUS ensure_passphrase(PEP_SESSION entry, std::string email, std::string fpr);
 
     protected:
         void cleanup();

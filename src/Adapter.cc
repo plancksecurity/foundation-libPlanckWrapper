@@ -242,9 +242,9 @@ namespace pEp {
             return !ev;
         }
 
-        PEP_STATUS _ensure_passphrase(::PEP_SESSION session, const char *fpr)
+        PEP_STATUS _ensure_passphrase(::PEP_SESSION session, const char *email, const char *fpr)
         {
-            return passphrase_cache.ensure_passphrase(session, fpr);
+            return passphrase_cache.ensure_passphrase(session, email, fpr);
         }
 
     } // namespace Adapter

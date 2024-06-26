@@ -141,7 +141,7 @@ namespace pEp {
         bool is_sync_running();
         bool in_shutdown();
 
-        ::PEP_STATUS _ensure_passphrase(::PEP_SESSION session, const char *fpr);
+        ::PEP_STATUS _ensure_passphrase(::PEP_SESSION session, const char *email, const char *fpr);
     } // namespace Adapter
 
     // throws std::bad_alloc if status==PEP_OUT_OF_MEMORY,
