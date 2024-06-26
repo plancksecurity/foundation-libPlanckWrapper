@@ -199,12 +199,19 @@ namespace pEp {
     {
         std::lock_guard<std::mutex> lock(_mtx);
 
+        stringpair_list_t *account_passphrases = nullptr;
+
         for (auto entry = _cache.begin(); entry != _cache.end(); ++entry) {
             if (!entry->account_email.empty()) {
+                stringpair_t *pair = new_stringpair(entry->account_email.c_str(), entry->passphrase.c_str());
+                stringpair_list_t *list = stringpair_list_add(account_passphrases, pair);
+                if (!account_passphrases) {
+                    account_passphrases = list;
+                }
             }
         }
 
-        ::configure_account_passphrases(session, nullptr);
+        ::configure_account_passphrases(session, account_passphrases);
     }
 
 } // namespace pEp
