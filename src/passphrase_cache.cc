@@ -14,6 +14,12 @@ namespace pEp {
     {
     }
 
+    PassphraseCache::cache_entry::cache_entry(const std::string& e, const std::string& p, time_point t) :
+        account_email{ e, 0, PassphraseCache::cache_entry::max_len },
+        passphrase{ p, 0, PassphraseCache::cache_entry::max_len }, tp{ t }
+    {
+    }
+
     PassphraseCache::PassphraseCache(size_t max_size, duration timeout) :
         _max_size{ max_size }, _timeout{ timeout }, _which(_cache.end()), first_time(true)
     {
@@ -34,18 +40,31 @@ namespace pEp {
         return *this;
     }
 
+    const char *PassphraseCache::add(const cache_entry& entry)
+    {
+        const char* result = nullptr;
+        std::lock_guard<std::mutex> lock(_mtx);
+
+        auto found = find(_cache.begin(), _cache.end(), entry);
+
+        if (found != _cache.end()) {
+            refresh(found);
+            result = found->passphrase.c_str();
+        } else {
+            _cache.push_back(entry);
+            auto back = _cache.end();
+            assert(!_cache.empty());
+            result = (--back)->passphrase.c_str();
+        }
+
+        return result;
+    }
+
     const char* PassphraseCache::add(const std::string& passphrase)
     {
         if (!passphrase.empty()) {
-            const char* result = nullptr;
-            {
-                std::lock_guard<std::mutex> lock(_mtx);
-
-                _cache.push_back({ passphrase, clock::now() });
-                auto back = _cache.end();
-                assert(!_cache.empty());
-                result = (--back)->passphrase.c_str();
-            }
+            auto entry = cache_entry(passphrase, clock::now());
+            const char* result = add(entry);
             callback_dispatcher.semaphore.go();
             return result;
         }

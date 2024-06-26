@@ -21,9 +21,16 @@ namespace pEp {
         struct cache_entry {
             static const size_t max_len = static_cast<const size_t>(250 * 4);
             cache_entry(const std::string& p, time_point t);
+            cache_entry(const std::string& e, const std::string& p, time_point t);
 
+            std::string account_email;
             std::string passphrase;
             time_point tp;
+
+            bool operator==(const cache_entry &other)
+            {
+                return account_email == other.account_email && passphrase == other.passphrase;
+            }
         };
         using cache = std::list<cache_entry>;
 
@@ -82,6 +89,7 @@ namespace pEp {
     protected:
         void cleanup();
         void refresh(cache::iterator entry);
+        const char *add(const cache_entry& entry);
     };
 
     extern PassphraseCache passphrase_cache;
