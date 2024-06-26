@@ -38,6 +38,17 @@ namespace pEp {
         bool first_time;
 
     public:
+        struct passphrase_entry {
+            static const size_t max_len = static_cast<const size_t>(250 * 4);
+            passphrase_entry(const std::string email, const std::string passphrase);
+
+            std::string email;
+            std::string passphrase;
+
+            bool operator==(const passphrase_entry& other) const {
+                return email == other.email && passphrase == other.passphrase;
+            }
+        };
         struct Empty : public std::underflow_error {
             Empty() : std::underflow_error("passphrase cache empty") {}
         };

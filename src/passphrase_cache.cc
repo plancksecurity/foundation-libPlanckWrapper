@@ -14,6 +14,13 @@ namespace pEp {
     {
     }
 
+    PassphraseCache::passphrase_entry::passphrase_entry(const std::string email,
+                                                        const std::string passphrase) :
+            email { email, 0, PassphraseCache::passphrase_entry::max_len },
+            passphrase{ passphrase, 0, PassphraseCache::passphrase_entry::max_len }
+    {
+    }
+
     PassphraseCache::PassphraseCache(size_t max_size, duration timeout) :
         _max_size{ max_size }, _timeout{ timeout }, _which(_cache.end()), first_time(true)
     {
