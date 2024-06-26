@@ -57,7 +57,7 @@ namespace pEp {
         PassphraseCache(const PassphraseCache& second);
         PassphraseCache& operator=(const PassphraseCache& second);
 
-        // adds the passphrase to the cache, which will timeout
+        // adds a passphrase to the cache
         // returns a ptr to the passsword entry in the cache. Don't free() it!
         const char* add(const std::string& passphrase);
 
