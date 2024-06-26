@@ -194,4 +194,10 @@ namespace pEp {
 
         return status;
     }
+
+    void PassphraseCache::configure_session(PEP_SESSION session)
+    {
+        // TODO: Put known (email, passphrase) tuples into the session
+    }
+
 } // namespace pEp

@@ -87,6 +87,7 @@ namespace pEp {
         using passphrase_callee = std::function<bool(std::string)>;
         bool for_each_passphrase(const passphrase_callee& callee);
         PEP_STATUS ensure_passphrase(PEP_SESSION session, std::string fpr);
+        void configure_session(PEP_SESSION session);
 
     protected:
         void cleanup();
