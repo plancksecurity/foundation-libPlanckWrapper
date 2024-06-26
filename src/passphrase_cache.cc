@@ -203,6 +203,8 @@ namespace pEp {
             if (!entry->account_email.empty()) {
             }
         }
+
+        ::configure_account_passphrases(session, nullptr);
     }
 
 } // namespace pEp
