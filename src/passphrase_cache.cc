@@ -9,8 +9,7 @@
 pEp::PassphraseCache pEp::passphrase_cache;
 
 namespace pEp {
-    PassphraseCache::cache_entry::cache_entry(const std::string &e, const std::string& p, time_point t) :
-        account_email{ e, 0, PassphraseCache::cache_entry::max_len },
+    PassphraseCache::cache_entry::cache_entry(const std::string& p, time_point t) :
         passphrase{ p, 0, PassphraseCache::cache_entry::max_len }, tp{ t }
     {
     }
@@ -37,7 +36,7 @@ namespace pEp {
         return *this;
     }
 
-    const char* PassphraseCache::add(const std::string& account_email, const std::string& passphrase)
+    const char* PassphraseCache::add(const std::string& passphrase)
     {
         if (!passphrase.empty()) {
             const char* result = nullptr;
@@ -48,7 +47,7 @@ namespace pEp {
                     _cache.pop_front();
                 }
 
-                _cache.push_back({ account_email, passphrase, clock::now() });
+                _cache.push_back({ passphrase, clock::now() });
                 auto back = _cache.end();
                 assert(!_cache.empty());
                 result = (--back)->passphrase.c_str();
