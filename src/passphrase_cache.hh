@@ -20,8 +20,9 @@ namespace pEp {
 
         struct cache_entry {
             static const size_t max_len = static_cast<const size_t>(250 * 4);
-            cache_entry(const std::string& p, time_point t);
+            cache_entry(const std::string &e, const std::string& p, time_point t);
 
+            std::string account_email;
             std::string passphrase;
             time_point tp;
         };
@@ -52,7 +53,7 @@ namespace pEp {
 
         // adds the passphrase to the cache, which will timeout
         // returns a ptr to the passsword entry in the cache. Don't free() it!
-        const char* add(const std::string& passphrase);
+        const char* add(const std::string &account_email, const std::string& passphrase);
 
         // adds the stored passphrase to the cache, which will not timeout
         const char* add_stored(const std::string& passphrase);
