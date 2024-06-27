@@ -197,13 +197,6 @@ namespace pEp {
 
     void PassphraseCache::configure_session(PEP_SESSION session)
     {
-        // TODO: Testing. Remove.
-        ::config_passphrase_for_new_keys(session, true, "uiae2");
-        pEp::passphrase_cache.add("uiae1");
-        pEp::passphrase_cache.add("deckard@planck.dev", "uiae2");
-        pEp::passphrase_cache.add("not_there@planck.dev", "uiae3");
-        // End of testing (remove with any testing setup that gets removed)
-
         std::lock_guard<std::mutex> lock(_mtx);
 
         stringpair_list_t *account_passphrases = nullptr;
