@@ -86,6 +86,12 @@ namespace pEp {
         return empty;
     }
 
+    void PassphraseCache::remove(const std::string& account_email, const std::string& passphrase)
+    {
+        auto entry = cache_entry(account_email, passphrase, clock::now());
+        _cache.remove_if([&entry](const cache_entry& entry2) { return entry == entry2; });
+    }
+
     const char* PassphraseCache::add_stored(const std::string& passphrase)
     {
         std::lock_guard<std::mutex> lock(_stored_mtx);
