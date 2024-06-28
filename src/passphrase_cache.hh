@@ -21,7 +21,9 @@ namespace pEp {
         struct cache_entry {
             static const size_t max_len = static_cast<const size_t>(250 * 4);
             cache_entry(const std::string& p, time_point t);
+            cache_entry(const std::string& e, const std::string& p, time_point t);
 
+            std::string account_email;
             std::string passphrase;
             time_point tp;
         };
@@ -50,9 +52,28 @@ namespace pEp {
         PassphraseCache(const PassphraseCache& second);
         PassphraseCache& operator=(const PassphraseCache& second);
 
-        // adds the passphrase to the cache, which will timeout
+        // adds a passphrase to the cache
         // returns a ptr to the passsword entry in the cache. Don't free() it!
         const char* add(const std::string& passphrase);
+
+        /// <summary>
+        /// Adds an (account_email, passphrase) tuple to the cache.
+        /// </summary>
+        ///
+        /// The `account_email` is treated as unique, that is, there cannot be
+        /// several entries with the same `account_email`.
+        /// A later call with the same `account_email` will overwrite the existing one.
+        ///
+        /// <param name="account_email"></param>
+        /// <param name="passphrase"></param>
+        /// <returns>A ptr to the passsword entry in the cache. Don't free() it!</returns>
+        const char* add(const std::string& account_email, const std::string& passphrase);
+
+        /// <summary>
+        /// Removes all entries that share the same account_email.
+        /// </summary>
+        /// <param name="account_email">The account email to remove</param>
+        void remove(const std::string& account_email);
 
         // adds the stored passphrase to the cache, which will not timeout
         const char* add_stored(const std::string& passphrase);
@@ -78,10 +99,12 @@ namespace pEp {
         using passphrase_callee = std::function<bool(std::string)>;
         bool for_each_passphrase(const passphrase_callee& callee);
         PEP_STATUS ensure_passphrase(PEP_SESSION session, std::string fpr);
+        void configure_session(PEP_SESSION session);
 
     protected:
         void cleanup();
         void refresh(cache::iterator entry);
+        const char *add(const cache_entry& entry);
     };
 
     extern PassphraseCache passphrase_cache;

@@ -123,7 +123,11 @@ namespace pEp {
                     _new();
                 }
             }
-            return _session.get();
+
+            PEP_SESSION session = _session.get();
+            passphrase_cache.configure_session(session);
+
+            return session;
         }
 
         // public/static

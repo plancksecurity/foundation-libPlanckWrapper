@@ -2,7 +2,7 @@ BasedOnStyle: LLVM
 Language: Cpp
 Standard: c++11
 DerivePointerAlignment: true
-SortIncludes: Never
+SortIncludes: No
 ReflowComments: false
 PointerAlignment: Left
 AlignAfterOpenBracket: AlwaysBreak
