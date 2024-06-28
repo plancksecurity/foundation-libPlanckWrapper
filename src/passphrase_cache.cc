@@ -50,7 +50,7 @@ namespace pEp {
         if (entry.account_email.empty()) {
             // search by passphrase
             found = find_if(_cache.begin(), _cache.end(), [&entry](const cache_entry& e) {
-                return entry.passphrase == e.passphrase;
+                return entry.account_email.empty() && entry.passphrase == e.passphrase;
             });
         } else {
             // search by account_email
