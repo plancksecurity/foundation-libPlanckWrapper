@@ -45,10 +45,22 @@ namespace pEp {
         const char* result = nullptr;
         std::lock_guard<std::mutex> lock(_mtx);
 
-        auto found = find(_cache.begin(), _cache.end(), entry);
+        cache::iterator found = _cache.end();
+
+        if (entry.account_email.empty()) {
+            // search by passphrase
+            found = find_if(_cache.begin(), _cache.end(), [&entry](const cache_entry& e) {
+                return entry.passphrase == e.passphrase;
+            });
+        } else {
+            // search by account_email
+            found = find_if(_cache.begin(), _cache.end(), [&entry](const cache_entry& e) {
+                return entry.account_email == e.account_email;
+            });
+        }
 
         if (found != _cache.end()) {
-            refresh(found);
+            *found = entry;
             result = found->passphrase.c_str();
         } else {
             _cache.push_back(entry);
@@ -86,10 +98,9 @@ namespace pEp {
         return empty;
     }
 
-    void PassphraseCache::remove(const std::string& account_email, const std::string& passphrase)
+    void PassphraseCache::remove(const std::string& account_email)
     {
-        auto entry = cache_entry(account_email, passphrase, clock::now());
-        _cache.remove_if([&entry](const cache_entry& entry2) { return entry == entry2; });
+        _cache.remove_if([&account_email](const cache_entry& entry) { return entry.account_email == account_email; });
     }
 
     const char* PassphraseCache::add_stored(const std::string& passphrase)
