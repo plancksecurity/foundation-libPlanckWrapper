@@ -2,6 +2,8 @@
 // see LICENSE.txt
 
 #include <cassert>
+#include <algorithm>
+
 #include "Adapter.hh"
 #include "passphrase_cache.hh"
 #include "callback_dispatcher.hh"
