@@ -70,7 +70,7 @@ namespace pEp {
         PEP_enc_format enc_format,
         PEP_encrypt_flags_t flags)
     {
-        return message_cache.encrypt_message(session, src, extra, dst, enc_format, flags, false);
+        return message_cache.encrypt_message(session, src, extra, dst, enc_format, flags);
     }
 
     PEP_STATUS MessageCache::cache_encrypt_message_with_full_input(
@@ -81,7 +81,8 @@ namespace pEp {
         PEP_enc_format enc_format,
         PEP_encrypt_flags_t flags)
     {
-        return message_cache.encrypt_message(session, src, extra, dst, enc_format, flags, true);
+        // TODO
+        return message_cache.encrypt_message(session, src, extra, dst, enc_format, flags);
     }
 
     PEP_STATUS MessageCache::cache_encrypt_message_for_self(
@@ -535,17 +536,14 @@ namespace pEp {
         stringlist_t *extra,
         message **dst,
         PEP_enc_format enc_format,
-        PEP_encrypt_flags_t flags,
-        bool full_input)
+        PEP_encrypt_flags_t flags)
     {
         ::message *_msg{ nullptr };
         std::string _id = cacheID(src);
         {
             std::lock_guard<std::mutex> l(_mtx);
             _msg = message_cache._cache.at(_id).src;
-            if (!full_input) {
-                swapContent(src, _msg);
-            }
+            swapContent(src, _msg);
         }
 
         ::message *_dst = nullptr;
