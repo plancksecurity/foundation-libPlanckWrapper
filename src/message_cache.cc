@@ -378,13 +378,16 @@ namespace pEp {
         {
             std::lock_guard<std::mutex> l(_mtx);
             swapContent(_msg, src);
-            if (full_message_return) {
-                cache_release(_id);
-            } else {
+            if (!full_message_return) {
                 ::free_message(message_cache._cache.at(_id).dst);
                 message_cache._cache.at(_id).dst = _dst;
             }
         }
+
+        if (full_message_return) {
+            cache_release(_id);
+        }
+
         return status;
     }
 
