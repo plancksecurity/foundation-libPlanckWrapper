@@ -56,6 +56,14 @@ namespace pEp {
             PEP_rating *rating,
             PEP_decrypt_flags_t *flags);
 
+        static PEP_STATUS cache_decrypt_message_with_full_output(
+            PEP_SESSION session,
+            message *src,
+            message **dst,
+            stringlist_t **keylist,
+            PEP_rating *rating,
+            PEP_decrypt_flags_t *flags);
+
         static PEP_STATUS cache_encrypt_message(
             PEP_SESSION session,
             message *src,
@@ -99,7 +107,8 @@ namespace pEp {
             message **dst,
             stringlist_t **keylist,
             PEP_rating *rating,
-            PEP_decrypt_flags_t *flags);
+            PEP_decrypt_flags_t *flags,
+            bool full_message_return);
 
         PEP_STATUS encrypt_message(
             PEP_SESSION session,

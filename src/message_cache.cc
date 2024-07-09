@@ -28,7 +28,18 @@ namespace pEp {
         PEP_rating *rating,
         PEP_decrypt_flags_t *flags)
     {
-        return message_cache.decrypt_message(session, src, dst, keylist, rating, flags);
+        return message_cache.decrypt_message(session, src, dst, keylist, rating, flags, false);
+    }
+
+    PEP_STATUS MessageCache::cache_decrypt_message_with_full_output(
+        PEP_SESSION session,
+        message *src,
+        message **dst,
+        stringlist_t **keylist,
+        PEP_rating *rating,
+        PEP_decrypt_flags_t *flags)
+    {
+        return message_cache.decrypt_message(session, src, dst, keylist, rating, flags, true);
     }
 
     PEP_STATUS MessageCache::cache_mime_encode_message(
@@ -337,7 +348,8 @@ namespace pEp {
         message **dst,
         stringlist_t **keylist,
         PEP_rating *rating,
-        PEP_decrypt_flags_t *flags)
+        PEP_decrypt_flags_t *flags,
+        bool full_message_return)
     {
         if (!src || cacheID(src) == "") {
             return PEP_ILLEGAL_VALUE;
@@ -356,7 +368,12 @@ namespace pEp {
 
         ::message *_dst = nullptr;
         PEP_STATUS status = ::decrypt_message(session, src, &_dst, keylist, rating, flags);
-        *dst = empty_message_copy(_dst, _id, true);
+
+        if (full_message_return) {
+            *dst = ::message_dup(_dst);
+        } else {
+            *dst = empty_message_copy(_dst, _id, true);
+        }
 
         {
             std::lock_guard<std::mutex> l(_mtx);
