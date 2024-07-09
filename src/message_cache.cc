@@ -81,8 +81,7 @@ namespace pEp {
         PEP_enc_format enc_format,
         PEP_encrypt_flags_t flags)
     {
-        // TODO
-        return message_cache.encrypt_message(session, src, extra, dst, enc_format, flags);
+        return message_cache.encrypt_message_with_full_input(session, src, extra, dst, enc_format, flags);
     }
 
     PEP_STATUS MessageCache::cache_encrypt_message_for_self(
@@ -555,6 +554,30 @@ namespace pEp {
             swapContent(_msg, src);
             ::free_message(message_cache._cache.at(_id).dst);
             message_cache._cache.at(_id).dst = _dst;
+        }
+
+        return status;
+    }
+
+    PEP_STATUS MessageCache::encrypt_message_with_full_input(
+        PEP_SESSION session,
+        message *src,
+        stringlist_t *extra,
+        message **dst,
+        PEP_enc_format enc_format,
+        PEP_encrypt_flags_t flags)
+    {
+        ::message *_dst = nullptr;
+        PEP_STATUS status = ::encrypt_message(session, src, extra, &_dst, enc_format, flags);
+
+        generateCacheID(_dst);
+        *dst = empty_message_copy(_dst);
+        std::string id1 = cacheID(_dst);
+        std::string id = cacheID(*dst);
+
+        {
+            std::lock_guard<std::mutex> l(_mtx);
+            message_cache._cache.emplace(std::make_pair(id, cache_entry(*dst, _dst)));
         }
 
         return status;

@@ -126,6 +126,14 @@ namespace pEp {
             PEP_enc_format enc_format,
             PEP_encrypt_flags_t flags);
 
+        PEP_STATUS encrypt_message_with_full_input(
+            PEP_SESSION session,
+            message *src,
+            stringlist_t *extra,
+            message **dst,
+            PEP_enc_format enc_format,
+            PEP_encrypt_flags_t flags);
+
         PEP_STATUS encrypt_message_for_self(
             PEP_SESSION session,
             pEp_identity *target_id,
