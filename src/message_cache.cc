@@ -370,11 +370,7 @@ namespace pEp {
         PEP_STATUS status = ::decrypt_message(session, src, &_dst, keylist, rating, flags);
 
         if (full_message_return) {
-            if (_dst) {
-                removeCacheID(_dst);
-                *dst = ::message_dup(_dst);
-            }
-            cache_release(_id);
+            *dst = ::message_dup(_dst);
         } else {
             *dst = empty_message_copy(_dst, _id, true);
         }
