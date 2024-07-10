@@ -7,7 +7,6 @@
 #include <string>
 #include <unordered_map>
 #include <mutex>
-#include <functional>
 
 #include <pEp/message_api.h>
 #include <pEp/mime.h>
