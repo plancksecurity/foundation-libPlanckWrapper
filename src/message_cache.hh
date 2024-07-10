@@ -89,6 +89,14 @@ namespace pEp {
             PEP_enc_format enc_format,
             PEP_encrypt_flags_t flags);
 
+        static PEP_STATUS cache_encrypt_message_for_self_with_full_input(
+            PEP_SESSION session,
+            pEp_identity *target_id,
+            message *src,
+            stringlist_t *extra,
+            message **dst,
+            PEP_enc_format enc_format,
+            PEP_encrypt_flags_t flags);
 
         static PEP_STATUS cache_release(const std::string& id);
         static void removeCacheID(::message *msg);
@@ -135,6 +143,15 @@ namespace pEp {
             PEP_encrypt_flags_t flags);
 
         PEP_STATUS encrypt_message_for_self(
+            PEP_SESSION session,
+            pEp_identity *target_id,
+            message *src,
+            stringlist_t *extra,
+            message **dst,
+            PEP_enc_format enc_format,
+            PEP_encrypt_flags_t flags);
+
+        PEP_STATUS encrypt_message_for_self_with_full_input(
             PEP_SESSION session,
             pEp_identity *target_id,
             message *src,
