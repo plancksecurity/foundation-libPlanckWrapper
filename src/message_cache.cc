@@ -572,16 +572,14 @@ namespace pEp {
         return status;
     }
 
-    PEP_STATUS MessageCache::encrypt_message_with_full_input(
-        PEP_SESSION session,
+    template<class T>
+    PEP_STATUS MessageCache::encrypt_with_action_and_full_input(
+        T action,
         message *src,
-        stringlist_t *extra,
-        message **dst,
-        PEP_enc_format enc_format,
-        PEP_encrypt_flags_t flags)
+        message **dst)
     {
         ::message *_dst = nullptr;
-        PEP_STATUS status = ::encrypt_message(session, src, extra, &_dst, enc_format, flags);
+        PEP_STATUS status = action(&_dst);
 
         // Point either to the decorated source message (in the case no encryption took place),
         // or to the resulting encrypted message.
@@ -608,6 +606,21 @@ namespace pEp {
         }
 
         return status;
+    }
+
+    PEP_STATUS MessageCache::encrypt_message_with_full_input(
+        PEP_SESSION session,
+        message *src,
+        stringlist_t *extra,
+        message **dst,
+        PEP_enc_format enc_format,
+        PEP_encrypt_flags_t flags)
+    {
+        auto action = [&session, &src, &extra, &enc_format, &flags](message **dst) {
+            return ::encrypt_message(session, src, extra, dst, enc_format, flags);
+        };
+
+        return encrypt_with_action_and_full_input(action, src, dst);
     }
 
     PEP_STATUS MessageCache::encrypt_message_for_self(
@@ -657,34 +670,11 @@ namespace pEp {
         PEP_enc_format enc_format,
         PEP_encrypt_flags_t flags)
     {
-        ::message *_dst = nullptr;
-        PEP_STATUS status = ::encrypt_message_for_self(session, target_id, src, extra, &_dst, enc_format, flags);
+        auto action = [&session, &target_id, &src, &extra, &enc_format, &flags](message **dst) {
+            return ::encrypt_message_for_self(session, target_id, src, extra, dst, enc_format, flags);
+        };
 
-        // Point either to the decorated source message (in the case no encryption took place),
-        // or to the resulting encrypted message.
-        ::message *msg = _dst;
-        if (!msg) {
-            msg = src;
-        }
-
-        generateCacheID(msg); // Generate a X-pEp-Adapter-Cache-ID header
-        *dst = empty_message_copy(msg); // Put the slimmed-down version into the resulting message
-
-        std::string id = cacheID(msg); // Read the generated X-pEp-Adapter-Cache-ID header
-
-        // We don't have ownership of the messages we return, so copy them.
-        // They will end up in the cache.
-        ::message *summary = ::message_dup(*dst);
-        ::message *full = ::message_dup(msg);
-
-        // Cache the slimmed-down version, together with the full version,
-        // using X-pEp-Adapter-Cache-ID as the key.
-        {
-            std::lock_guard<std::mutex> l(_mtx);
-            message_cache._cache.emplace(std::make_pair(id, cache_entry(summary, full)));
-        }
-
-        return status;
+        return encrypt_with_action_and_full_input(action, src, dst);
     }
 
 } // namespace pEp

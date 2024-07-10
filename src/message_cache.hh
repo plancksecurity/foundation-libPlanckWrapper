@@ -7,6 +7,8 @@
 #include <string>
 #include <unordered_map>
 #include <mutex>
+#include <functional>
+
 #include <pEp/message_api.h>
 #include <pEp/mime.h>
 
@@ -133,6 +135,12 @@ namespace pEp {
             message **dst,
             PEP_enc_format enc_format,
             PEP_encrypt_flags_t flags);
+
+        template<class T>
+        PEP_STATUS encrypt_with_action_and_full_input(
+            T action,
+            message *src,
+            message **dst);
 
         PEP_STATUS encrypt_message_with_full_input(
             PEP_SESSION session,
