@@ -570,14 +570,28 @@ namespace pEp {
         ::message *_dst = nullptr;
         PEP_STATUS status = ::encrypt_message(session, src, extra, &_dst, enc_format, flags);
 
-        generateCacheID(_dst);
-        *dst = empty_message_copy(_dst);
-        std::string id1 = cacheID(_dst);
-        std::string id = cacheID(*dst);
+        // Point either to the decorated source message (in the case no encryption took place),
+        // or to the resulting encrypted message.
+        ::message *msg = _dst;
+        if (!msg) {
+            msg = src;
+        }
 
+        generateCacheID(msg); // Generate a X-pEp-Adapter-Cache-ID header
+        *dst = empty_message_copy(msg); // Put the slimmed-down version into the resulting message
+
+        std::string id = cacheID(msg); // Read the generated X-pEp-Adapter-Cache-ID header
+
+        // We don't have ownership of the messages we return, so copy them.
+        // They will end up in the cache.
+        ::message *summary = ::message_dup(*dst);
+        ::message *full = ::message_dup(msg);
+
+        // Cache the slimmed-down version, together with the full version,
+        // using X-pEp-Adapter-Cache-ID as the key.
         {
             std::lock_guard<std::mutex> l(_mtx);
-            message_cache._cache.emplace(std::make_pair(id, cache_entry(*dst, _dst)));
+            message_cache._cache.emplace(std::make_pair(id, cache_entry(summary, full)));
         }
 
         return status;
