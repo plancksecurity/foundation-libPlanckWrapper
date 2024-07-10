@@ -616,7 +616,7 @@ namespace pEp {
         PEP_enc_format enc_format,
         PEP_encrypt_flags_t flags)
     {
-        auto action = [&session, &src, &extra, &enc_format, &flags](message **dst) {
+        auto action = [&](message **dst) {
             return ::encrypt_message(session, src, extra, dst, enc_format, flags);
         };
 
@@ -670,7 +670,7 @@ namespace pEp {
         PEP_enc_format enc_format,
         PEP_encrypt_flags_t flags)
     {
-        auto action = [&session, &target_id, &src, &extra, &enc_format, &flags](message **dst) {
+        auto action = [&](message **dst) {
             return ::encrypt_message_for_self(session, target_id, src, extra, dst, enc_format, flags);
         };
 
