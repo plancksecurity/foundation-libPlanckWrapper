@@ -592,7 +592,7 @@ namespace pEp {
         message *src,
         message **dst)
     {
-        PEP_STATUS status = action(dst);
+        PEP_STATUS status = action();
 
         if (status != PEP_STATUS_OK) {
             return status;
@@ -619,7 +619,7 @@ namespace pEp {
         PEP_enc_format enc_format,
         PEP_encrypt_flags_t flags)
     {
-        auto action = [&](message **dst) {
+        auto action = [&]() {
             return ::encrypt_message(session, src, extra, dst, enc_format, flags);
         };
 
@@ -673,7 +673,7 @@ namespace pEp {
         PEP_enc_format enc_format,
         PEP_encrypt_flags_t flags)
     {
-        auto action = [&](message **dst) {
+        auto action = [&]() {
             return ::encrypt_message_for_self(session, target_id, src, extra, dst, enc_format, flags);
         };
 
