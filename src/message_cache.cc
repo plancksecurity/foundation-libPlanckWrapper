@@ -601,11 +601,14 @@ namespace pEp {
         generateCacheID(src); // Generate a X-pEp-Adapter-Cache-ID header
         std::string id = cacheID(src); // Read the generated X-pEp-Adapter-Cache-ID header
 
+        message *cached_src = empty_message_copy(src);
+        message *cached_dst = dup(*dst);
+
         // Cache the slimmed-down source version, together with the full (encrypted) version
         // (if it got created), using X-pEp-Adapter-Cache-ID as the key.
         {
             std::lock_guard<std::mutex> l(_mtx);
-            message_cache._cache.emplace(std::make_pair(id, cache_entry(empty_message_copy(src), dup(*dst))));
+            message_cache._cache.emplace(std::make_pair(id, cache_entry(cached_src, cached_dst)));
         }
 
         return status;
