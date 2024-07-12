@@ -240,6 +240,20 @@ namespace pEp {
         return dst;
     }
 
+    static ::message *dup(const ::message *src)
+    {
+        if (!src) {
+            return nullptr;
+        }
+
+        ::message *msg = ::message_dup(src);
+        if (!msg) {
+            throw std::bad_alloc();
+        }
+
+        return msg;
+    }
+
     static bool emptystr(const char *str)
     {
         if (!(str && str[0])) {
