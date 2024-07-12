@@ -594,8 +594,14 @@ namespace pEp {
     {
         PEP_STATUS status = action();
 
-        if (status != PEP_STATUS_OK) {
-            return status;
+        switch (status) {
+            case PEP_STATUS_OK:
+            case PEP_UNENCRYPTED:
+                // continue on to caching
+                break;
+            default:
+                // don't cache anything on error
+                return status;
         }
 
         generateCacheID(src); // Generate a X-pEp-Adapter-Cache-ID header
