@@ -605,7 +605,8 @@ namespace pEp {
         message *cached_dst = dup(*dst);
 
         // Cache the slimmed-down source version, together with the full (encrypted) version
-        // (if it got created), using X-pEp-Adapter-Cache-ID as the key.
+        // (which can be NULL),
+        // using X-pEp-Adapter-Cache-ID as the key.
         {
             std::lock_guard<std::mutex> l(_mtx);
             message_cache._cache.emplace(std::make_pair(id, cache_entry(cached_src, cached_dst)));
