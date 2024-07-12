@@ -581,6 +581,10 @@ namespace pEp {
         ::message *_dst = nullptr;
         PEP_STATUS status = action(&_dst);
 
+        if (status != PEP_STATUS_OK) {
+            return status;
+        }
+
         // Point either to the decorated source message (in the case no encryption took place),
         // or to the resulting encrypted message.
         ::message *msg = _dst;
