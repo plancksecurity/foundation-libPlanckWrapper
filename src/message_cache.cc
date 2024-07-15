@@ -631,9 +631,6 @@ namespace pEp {
             message_cache._cache.emplace(std::make_pair(cid, cache_entry(::message_dup(src), _dst)));
         }
 
-        auto fsrc = src;
-        auto fdst = *dst;
-
         return status;
     }
 
