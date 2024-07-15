@@ -625,9 +625,8 @@ namespace pEp {
         // using X-pEp-Adapter-Cache-ID as the key.
         {
             std::lock_guard<std::mutex> l(_mtx);
-            // If no encryption took place, `_dst` is null. That's OK to cache since the
-            // caller of the subsequent cache_mime_encode_message shouldn't access the destination.
-            // `src` is the full message.
+            // If no encryption took place, `_dst` is null.
+            // `src` is the full message provided by the caller, maybe decorated.
             message_cache._cache.emplace(std::make_pair(cid, cache_entry(::message_dup(src), _dst)));
         }
 
