@@ -453,6 +453,11 @@ namespace pEp {
         } else /* msg_dst */ {
             std::lock_guard<std::mutex> l(_mtx);
             ::message *_dst = _cache.at(cacheID(msg)).dst;
+            if (!_dst) {
+                // `which` is `msg_dst`, but there's no cached dst message
+                ::free_message(_msg);
+                return PEP_ILLEGAL_VALUE;
+            }
             swapContent(_msg, _dst);
         }
 
