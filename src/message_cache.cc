@@ -465,11 +465,11 @@ namespace pEp {
         return status;
     }
 
-    void MessageCache::generateCacheID(::message *msg)
+    void MessageCache::putCacheID(::message *msg, std::string cid)
     {
-        std::string _range = std::to_string(id_range);
-        std::string _id = std::to_string(next_id++);
-        std::string cid = _range + _id;
+        if (!msg) {
+            return;
+        }
 
         // if opt_fields is an empty list generate a new list
         if (!msg->opt_fields || !msg->opt_fields->value) {
@@ -490,6 +490,15 @@ namespace pEp {
             }
             msg->opt_fields->next = spl;
         }
+    }
+
+    void MessageCache::generateCacheID(::message *msg)
+    {
+        std::string _range = std::to_string(id_range);
+        std::string _id = std::to_string(next_id++);
+        std::string cid = _range + _id;
+
+        putCacheID(msg, cid);
     }
 
     std::string MessageCache::cacheID(const ::message *msg)
@@ -593,6 +602,7 @@ namespace pEp {
         message **dst)
     {
         generateCacheID(src); // Generate a X-pEp-Adapter-Cache-ID header
+        std::string cid = cacheID(src); // Read the generated X-pEp-Adapter-Cache-ID header
 
         ::message *_dst = nullptr;
         PEP_STATUS status = action(&_dst); // action result returned in _dst
@@ -607,6 +617,9 @@ namespace pEp {
                 return status;
         }
 
+        // If a message was created, put the cache id into it as well.
+        putCacheID(_dst, cid);
+
         // Point either to the decorated source message (in the case no encryption took place),
         // or to the resulting encrypted message.
         message *msg = _dst;
@@ -618,15 +631,13 @@ namespace pEp {
         // returning a slimmed-down version of either _dst or src.
         *dst = empty_message_copy(msg);
 
-        std::string id = cacheID(src); // Read the generated X-pEp-Adapter-Cache-ID header
-
         // using X-pEp-Adapter-Cache-ID as the key.
         {
             std::lock_guard<std::mutex> l(_mtx);
             // If no encryption took place, `_dst` is null. That's OK to cache since the
             // caller of the subsequent cache_mime_encode_message shouldn't access the destination.
             // `src` is the full message.
-            message_cache._cache.emplace(std::make_pair(id, cache_entry(::message_dup(src), _dst)));
+            message_cache._cache.emplace(std::make_pair(cid, cache_entry(::message_dup(src), _dst)));
         }
 
         return status;

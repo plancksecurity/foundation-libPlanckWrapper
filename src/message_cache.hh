@@ -167,6 +167,7 @@ namespace pEp {
             PEP_enc_format enc_format,
             PEP_encrypt_flags_t flags);
 
+        void putCacheID(::message *msg, std::string cid);
         void generateCacheID(::message *msg);
         static std::string cacheID(const ::message *msg);
     };
