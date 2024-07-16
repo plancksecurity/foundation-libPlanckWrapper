@@ -608,7 +608,10 @@ namespace pEp {
                 return status;
         }
 
-        // If a message was created, put the cache id into it as well.
+        // The encryption should have carried the cache ID in an opt field to the encrypted message.
+        // Observer behaviour is that this sometimes doesn't happen,
+        // (e.g. for cache_encrypt_message_for_self_with_full_input),
+        // so instead of tracking this down, we add this kludge.
         putCacheID(_dst, cid);
 
         // Point either to the decorated source message (in the case no encryption took place),
