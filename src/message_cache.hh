@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <mutex>
+
 #include <pEp/message_api.h>
 #include <pEp/mime.h>
 
@@ -56,7 +57,23 @@ namespace pEp {
             PEP_rating *rating,
             PEP_decrypt_flags_t *flags);
 
+        static PEP_STATUS cache_decrypt_message_with_full_output(
+            PEP_SESSION session,
+            message *src,
+            message **dst,
+            stringlist_t **keylist,
+            PEP_rating *rating,
+            PEP_decrypt_flags_t *flags);
+
         static PEP_STATUS cache_encrypt_message(
+            PEP_SESSION session,
+            message *src,
+            stringlist_t *extra,
+            message **dst,
+            PEP_enc_format enc_format,
+            PEP_encrypt_flags_t flags);
+
+        static PEP_STATUS cache_encrypt_message_with_full_input(
             PEP_SESSION session,
             message *src,
             stringlist_t *extra,
@@ -73,6 +90,14 @@ namespace pEp {
             PEP_enc_format enc_format,
             PEP_encrypt_flags_t flags);
 
+        static PEP_STATUS cache_encrypt_message_for_self_with_full_input(
+            PEP_SESSION session,
+            pEp_identity *target_id,
+            message *src,
+            stringlist_t *extra,
+            message **dst,
+            PEP_enc_format enc_format,
+            PEP_encrypt_flags_t flags);
 
         static PEP_STATUS cache_release(const std::string& id);
         static void removeCacheID(::message *msg);
@@ -99,9 +124,24 @@ namespace pEp {
             message **dst,
             stringlist_t **keylist,
             PEP_rating *rating,
-            PEP_decrypt_flags_t *flags);
+            PEP_decrypt_flags_t *flags,
+            bool full_message_return);
 
         PEP_STATUS encrypt_message(
+            PEP_SESSION session,
+            message *src,
+            stringlist_t *extra,
+            message **dst,
+            PEP_enc_format enc_format,
+            PEP_encrypt_flags_t flags);
+
+        template<class T>
+        PEP_STATUS encrypt_with_action_and_full_input(
+            T action,
+            message *src,
+            message **dst);
+
+        PEP_STATUS encrypt_message_with_full_input(
             PEP_SESSION session,
             message *src,
             stringlist_t *extra,
@@ -118,6 +158,16 @@ namespace pEp {
             PEP_enc_format enc_format,
             PEP_encrypt_flags_t flags);
 
+        PEP_STATUS encrypt_message_for_self_with_full_input(
+            PEP_SESSION session,
+            pEp_identity *target_id,
+            message *src,
+            stringlist_t *extra,
+            message **dst,
+            PEP_enc_format enc_format,
+            PEP_encrypt_flags_t flags);
+
+        void putCacheID(::message *msg, std::string cid);
         void generateCacheID(::message *msg);
         static std::string cacheID(const ::message *msg);
     };

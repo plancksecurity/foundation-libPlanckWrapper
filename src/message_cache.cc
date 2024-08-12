@@ -28,7 +28,18 @@ namespace pEp {
         PEP_rating *rating,
         PEP_decrypt_flags_t *flags)
     {
-        return message_cache.decrypt_message(session, src, dst, keylist, rating, flags);
+        return message_cache.decrypt_message(session, src, dst, keylist, rating, flags, false);
+    }
+
+    PEP_STATUS MessageCache::cache_decrypt_message_with_full_output(
+        PEP_SESSION session,
+        message *src,
+        message **dst,
+        stringlist_t **keylist,
+        PEP_rating *rating,
+        PEP_decrypt_flags_t *flags)
+    {
+        return message_cache.decrypt_message(session, src, dst, keylist, rating, flags, true);
     }
 
     PEP_STATUS MessageCache::cache_mime_encode_message(
@@ -62,6 +73,17 @@ namespace pEp {
         return message_cache.encrypt_message(session, src, extra, dst, enc_format, flags);
     }
 
+    PEP_STATUS MessageCache::cache_encrypt_message_with_full_input(
+        PEP_SESSION session,
+        message *src,
+        stringlist_t *extra,
+        message **dst,
+        PEP_enc_format enc_format,
+        PEP_encrypt_flags_t flags)
+    {
+        return message_cache.encrypt_message_with_full_input(session, src, extra, dst, enc_format, flags);
+    }
+
     PEP_STATUS MessageCache::cache_encrypt_message_for_self(
         PEP_SESSION session,
         pEp_identity *target_id,
@@ -73,6 +95,19 @@ namespace pEp {
     {
         return message_cache
             .encrypt_message_for_self(session, target_id, src, extra, dst, enc_format, flags);
+    }
+
+    PEP_STATUS MessageCache::cache_encrypt_message_for_self_with_full_input(
+        PEP_SESSION session,
+        pEp_identity *target_id,
+        message *src,
+        stringlist_t *extra,
+        message **dst,
+        PEP_enc_format enc_format,
+        PEP_encrypt_flags_t flags)
+    {
+        return message_cache
+            .encrypt_message_for_self_with_full_input(session, target_id, src, extra, dst, enc_format, flags);
     }
 
     PEP_STATUS MessageCache::cache_release(const std::string &id)
@@ -337,7 +372,8 @@ namespace pEp {
         message **dst,
         stringlist_t **keylist,
         PEP_rating *rating,
-        PEP_decrypt_flags_t *flags)
+        PEP_decrypt_flags_t *flags,
+        bool full_message_return)
     {
         if (!src || cacheID(src) == "") {
             return PEP_ILLEGAL_VALUE;
@@ -356,14 +392,26 @@ namespace pEp {
 
         ::message *_dst = nullptr;
         PEP_STATUS status = ::decrypt_message(session, src, &_dst, keylist, rating, flags);
-        *dst = empty_message_copy(_dst, _id, true);
+
+        if (full_message_return) {
+            *dst = _dst;
+        } else {
+            *dst = empty_message_copy(_dst, _id, true);
+        }
 
         {
             std::lock_guard<std::mutex> l(_mtx);
             swapContent(_msg, src);
-            ::free_message(message_cache._cache.at(_id).dst);
-            message_cache._cache.at(_id).dst = _dst;
+            if (!full_message_return) {
+                ::free_message(message_cache._cache.at(_id).dst);
+                message_cache._cache.at(_id).dst = _dst;
+            }
         }
+
+        if (full_message_return) {
+            cache_release(_id);
+        }
+
         return status;
     }
 
@@ -391,6 +439,11 @@ namespace pEp {
         } else /* msg_dst */ {
             std::lock_guard<std::mutex> l(_mtx);
             ::message *_dst = _cache.at(cacheID(msg)).dst;
+            if (!_dst) {
+                // `which` is `msg_dst`, but there's no cached dst message
+                ::free_message(_msg);
+                return PEP_ILLEGAL_VALUE;
+            }
             swapContent(_msg, _dst);
         }
 
@@ -403,11 +456,11 @@ namespace pEp {
         return status;
     }
 
-    void MessageCache::generateCacheID(::message *msg)
+    void MessageCache::putCacheID(::message *msg, std::string cid)
     {
-        std::string _range = std::to_string(id_range);
-        std::string _id = std::to_string(next_id++);
-        std::string cid = _range + _id;
+        if (!msg) {
+            return;
+        }
 
         // if opt_fields is an empty list generate a new list
         if (!msg->opt_fields || !msg->opt_fields->value) {
@@ -428,6 +481,15 @@ namespace pEp {
             }
             msg->opt_fields->next = spl;
         }
+    }
+
+    void MessageCache::generateCacheID(::message *msg)
+    {
+        std::string _range = std::to_string(id_range);
+        std::string _id = std::to_string(next_id++);
+        std::string cid = _range + _id;
+
+        putCacheID(msg, cid);
     }
 
     std::string MessageCache::cacheID(const ::message *msg)
@@ -524,6 +586,71 @@ namespace pEp {
         return status;
     }
 
+    template<class T>
+    PEP_STATUS MessageCache::encrypt_with_action_and_full_input(
+        T action,
+        message *src,
+        message **dst)
+    {
+        generateCacheID(src); // Generate a X-pEp-Adapter-Cache-ID header
+        std::string cid = cacheID(src); // Read the generated X-pEp-Adapter-Cache-ID header
+
+        ::message *_dst = nullptr;
+        PEP_STATUS status = action(&_dst); // action result returned in _dst
+
+        switch (status) {
+            case PEP_STATUS_OK:
+            case PEP_UNENCRYPTED:
+                // continue on to caching
+                break;
+            default:
+                // don't cache anything on error
+                return status;
+        }
+
+        // The encryption should have carried the cache ID in an opt field to the encrypted message.
+        // Observer behaviour is that this sometimes doesn't happen,
+        // (e.g. for cache_encrypt_message_for_self_with_full_input),
+        // so instead of tracking this down, we add this kludge.
+        putCacheID(_dst, cid);
+
+        // Point either to the decorated source message (in the case no encryption took place),
+        // or to the resulting encrypted message.
+        message *msg = _dst;
+        if (!msg) {
+            msg = src;
+        }
+
+        // Put the slimmed-down version into the resulting message,
+        // returning a slimmed-down version of either _dst or src.
+        *dst = empty_message_copy(msg);
+
+        // using X-pEp-Adapter-Cache-ID as the key.
+        {
+            std::lock_guard<std::mutex> l(_mtx);
+            // If no encryption took place, `_dst` is null.
+            // `src` is the full message provided by the caller, maybe decorated.
+            message_cache._cache.emplace(std::make_pair(cid, cache_entry(::message_dup(src), _dst)));
+        }
+
+        return status;
+    }
+
+    PEP_STATUS MessageCache::encrypt_message_with_full_input(
+        PEP_SESSION session,
+        message *src,
+        stringlist_t *extra,
+        message **dst,
+        PEP_enc_format enc_format,
+        PEP_encrypt_flags_t flags)
+    {
+        auto action = [&](message **_dst) {
+            return ::encrypt_message(session, src, extra, _dst, enc_format, flags);
+        };
+
+        return encrypt_with_action_and_full_input(action, src, dst);
+    }
+
     PEP_STATUS MessageCache::encrypt_message_for_self(
         PEP_SESSION session,
         pEp_identity *target_id,
@@ -561,4 +688,21 @@ namespace pEp {
 
         return status;
     }
+
+    PEP_STATUS MessageCache::encrypt_message_for_self_with_full_input(
+        PEP_SESSION session,
+        pEp_identity *target_id,
+        message *src,
+        stringlist_t *extra,
+        message **dst,
+        PEP_enc_format enc_format,
+        PEP_encrypt_flags_t flags)
+    {
+        auto action = [&](message **_dst) {
+            return ::encrypt_message_for_self(session, target_id, src, extra, _dst, enc_format, flags);
+        };
+
+        return encrypt_with_action_and_full_input(action, src, dst);
+    }
+
 } // namespace pEp
