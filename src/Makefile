@@ -15,7 +15,8 @@ DEPENDS=$(subst .cc,.d,$(SRC_CXX))
 CXXFLAGS+= -MMD -MP -g
 
 ifeq ($(DEBUG), release)
-    CXXFLAGS+=-O3
+    CXXFLAGS+=-O3 -DNDEBUG=1
+    CFLAGS+=-DNDEBUG=1
 else
     CXXFLAGS+=-O0
 endif
