@@ -12,7 +12,14 @@ OBJ_CXX=$(subst .cc,.o,$(SRC_CXX))
 OBJ_C=$(subst .c,.o,$(SRC_C))
 OBJECTS=$(OBJ_CXX) $(OBJ_C)
 DEPENDS=$(subst .cc,.d,$(SRC_CXX))
-CXXFLAGS+= -MMD -MP
+CXXFLAGS+= -MMD -MP -g
+
+ifeq ($(DEBUG), release)
+    CXXFLAGS+=-O3 -DNDEBUG=1
+    CFLAGS+=-DNDEBUG=1
+else
+    CXXFLAGS+=-O0
+endif
 
 ifneq ($(MAKECMDGOALS),clean)
     -include $(DEPENDS)
